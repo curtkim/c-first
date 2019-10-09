@@ -21,7 +21,7 @@ int main() {
         myThread.join();
 
     if (myThread2.joinable() == true)
-        myThread.join();
+        myThread2.join();
 
     return 0;
 }
