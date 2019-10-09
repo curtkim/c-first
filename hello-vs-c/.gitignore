@@ -1,0 +1,3 @@
+*.dSYM
+*.out
+.vscode/ipch
