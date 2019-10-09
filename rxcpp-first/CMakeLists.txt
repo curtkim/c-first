@@ -14,5 +14,8 @@ find_package(rxcpp CONFIG)
 # add the executable
 add_executable(rxcpp-first main.cpp)
 set_property(TARGET rxcpp-first PROPERTY CXX_STANDARD 17)
-
 target_link_libraries (rxcpp-first rxcpp)
+
+add_executable(rxcpp-main2 main2.cpp)
+set_property(TARGET rxcpp-main2 PROPERTY CXX_STANDARD 17)
+target_link_libraries (rxcpp-main2 rxcpp)
