@@ -100,7 +100,7 @@
 //                              The legacy default has been "fast" in the open
 //                              source version since 2008. The recommended value
 //                              is "threadsafe", and can be set in
-//                              custom/gtest-port.h.
+//                              custom/gtest_lib-port.h.
 
 // Platform-indicating macros
 // --------------------------
@@ -541,7 +541,7 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 #endif  // GTEST_HAS_PTHREAD
 
 #if GTEST_HAS_PTHREAD
-// gtest-port.h guarantees to #include <pthread.h> when GTEST_HAS_PTHREAD is
+// gtest_lib-port.h guarantees to #include <pthread.h> when GTEST_HAS_PTHREAD is
 // true.
 # include <pthread.h>  // NOLINT
 
@@ -738,7 +738,7 @@ typedef struct _RTL_CRITICAL_SECTION GTEST_CRITICAL_SECTION;
 
 // GTEST_API_ qualifies all symbols that must be exported. The definitions below
 // are guarded by #ifndef to give embedders a chance to define GTEST_API_ in
-// gtest/internal/custom/gtest-port.h
+// gtest_lib/internal/custom/gtest_lib-port.h
 #ifndef GTEST_API_
 
 #ifdef _MSC_VER
@@ -866,7 +866,7 @@ GTEST_API_ bool IsTrue(bool condition);
 // Defines RE.
 
 #if GTEST_USES_PCRE
-// if used, PCRE is injected by custom/gtest-port.h
+// if used, PCRE is injected by custom/gtest_lib-port.h
 #elif GTEST_USES_POSIX_RE || GTEST_USES_SIMPLE_RE
 
 // A simple C++ wrapper for <regex.h>.  It uses the POSIX Extended

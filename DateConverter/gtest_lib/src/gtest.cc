@@ -637,7 +637,7 @@ namespace internal {
 // on whether the call is from the Google Test framework itself or
 // from user test code.  GetTestTypeId() is guaranteed to always
 // return the same value, as it always calls GetTypeId<>() from the
-// gtest.cc, which is within the Google Test framework.
+// gtest_lib.cc, which is within the Google Test framework.
 TypeId GetTestTypeId() {
   return GetTypeId<Test>();
 }
@@ -4803,7 +4803,7 @@ void UnitTest::AddTestPartResult(
     // command line for debugging.
     if (GTEST_FLAG(break_on_failure)) {
 #if GTEST_OS_WINDOWS && !GTEST_OS_WINDOWS_PHONE && !GTEST_OS_WINDOWS_RT
-      // Using DebugBreak on Windows allows gtest to still break into a debugger
+      // Using DebugBreak on Windows allows gtest_lib to still break into a debugger
       // when a failure happens and both the --gtest_break_on_failure and
       // the --gtest_catch_exceptions flags are specified.
       DebugBreak();

@@ -684,7 +684,7 @@ std::vector<std::string> GenerateNames() {
 // such that we can call this function in a namespace scope.
 //
 // Implementation note: The GTEST_TEMPLATE_ macro declares a template
-// template parameter.  It's defined in gtest-type-util.h.
+// template parameter.  It's defined in gtest_lib-type-util.h.
 template <GTEST_TEMPLATE_ Fixture, class TestSel, typename Types>
 class TypeParameterizedTest {
  public:

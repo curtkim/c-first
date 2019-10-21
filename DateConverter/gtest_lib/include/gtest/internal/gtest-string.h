@@ -33,7 +33,7 @@
 // Google Test.  They are subject to change without notice. They should not used
 // by code external to Google Test.
 //
-// This header file is #included by gtest-internal.h.
+// This header file is #included by gtest_lib-internal.h.
 // It should not be #included by other files.
 
 // GOOGLETEST_CM0001 DO NOT DELETE

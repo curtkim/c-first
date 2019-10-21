@@ -32,7 +32,7 @@
 // This header file declares classes and functions used internally by
 // Google Test.  They are subject to change without notice.
 //
-// This file is #included in gtest/internal/gtest-internal.h.
+// This file is #included in gtest_lib/internal/gtest_lib-internal.h.
 // Do not include this header file separately!
 
 // GOOGLETEST_CM0001 DO NOT DELETE

@@ -119,11 +119,11 @@ include_directories(${gtest_build_include_dirs})
 
 ########################################################################
 #
-# Defines the gtest & gtest_main libraries.  User tests should link
+# Defines the gtest_lib & gtest_main libraries.  User tests should link
 # with one of them.
 
 # Google Test libraries.  We build them using more strict warnings than what
-# are used for other targets, to ensure that gtest can be compiled by a user
+# are used for other targets, to ensure that gtest_lib can be compiled by a user
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
@@ -147,7 +147,7 @@ install_project(gtest gtest_main)
 
 ########################################################################
 #
-# Samples on how to link user tests with gtest or gtest_main.
+# Samples on how to link user tests with gtest_lib or gtest_main.
 #
 # They are not built by default.  To build them, set the
 # gtest_build_samples option to ON.  You can do it by running ccmake

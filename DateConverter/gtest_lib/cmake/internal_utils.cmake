@@ -131,18 +131,18 @@ macro(config_compiler_and_linker)
   endif()
   set(cxx_base_flags "${cxx_base_flags} ${GTEST_HAS_PTHREAD_MACRO}")
 
-  # For building gtest's own tests and samples.
+  # For building gtest_lib's own tests and samples.
   set(cxx_exception "${cxx_base_flags} ${cxx_exception_flags}")
   set(cxx_no_exception
     "${CMAKE_CXX_FLAGS} ${cxx_base_flags} ${cxx_no_exception_flags}")
   set(cxx_default "${cxx_exception}")
   set(cxx_no_rtti "${cxx_default} ${cxx_no_rtti_flags}")
 
-  # For building the gtest libraries.
+  # For building the gtest_lib libraries.
   set(cxx_strict "${cxx_default} ${cxx_strict_flags}")
 endmacro()
 
-# Defines the gtest & gtest_main libraries.  User tests should link
+# Defines the gtest_lib & gtest_main libraries.  User tests should link
 # with one of them.
 function(cxx_library_with_type name type cxx_flags)
   # type can be either STATIC or SHARED to denote a static or shared library.
@@ -229,7 +229,7 @@ function(cxx_executable_with_flags name cxx_flags libs)
   endforeach()
 endfunction()
 
-# cxx_executable(name dir lib srcs...)
+# cxx_executable(name dir gtest_lib srcs...)
 #
 # creates a named target that depends on the given libs and is built
 # from the given source files.  dir/name.cc is implicitly included in

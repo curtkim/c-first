@@ -720,7 +720,7 @@ class ParameterizedTestSuiteRegistry {
 }  // namespace internal
 
 // Forward declarations of ValuesIn(), which is implemented in
-// include/gtest/gtest-param-test.h.
+// include/gtest_lib/gtest_lib-param-test.h.
 template <class Container>
 internal::ParamGenerator<typename Container::value_type> ValuesIn(
     const Container& container);

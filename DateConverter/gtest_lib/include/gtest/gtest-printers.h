@@ -78,7 +78,7 @@
 //
 //   // Prints the fields of a tuple tersely to a string vector, one
 //   // element for each field. Tuple support must be enabled in
-//   // gtest-port.h.
+//   // gtest_lib-port.h.
 //   std::vector<string> UniversalTersePrintTupleFieldsToStrings(
 //       const Tuple& value);
 //

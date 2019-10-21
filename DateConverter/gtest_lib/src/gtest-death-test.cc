@@ -90,8 +90,8 @@ namespace testing {
 
 // The default death test style.
 //
-// This is defined in internal/gtest-port.h as "fast", but can be overridden by
-// a definition in internal/custom/gtest-port.h. The recommended value, which is
+// This is defined in internal/gtest_lib-port.h as "fast", but can be overridden by
+// a definition in internal/custom/gtest_lib-port.h. The recommended value, which is
 // used internally at Google, is "threadsafe".
 static const char kDefaultDeathTestStyle[] = GTEST_DEFAULT_DEATH_TEST_STYLE;
 

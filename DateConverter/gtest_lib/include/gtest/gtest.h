@@ -2122,7 +2122,7 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 //
 // Google Test uses ULP-based comparison to automatically pick a default
 // error bound that is appropriate for the operands.  See the
-// FloatingPoint template class in gtest-internal.h if you are
+// FloatingPoint template class in gtest_lib-internal.h if you are
 // interested in the implementation details.
 
 #define EXPECT_FLOAT_EQ(val1, val2)\

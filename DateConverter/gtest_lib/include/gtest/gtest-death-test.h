@@ -31,7 +31,7 @@
 // The Google C++ Testing and Mocking Framework (Google Test)
 //
 // This header file defines the public API for death tests.  It is
-// #included by gtest.h so a user doesn't need to include this
+// #included by gtest_lib.h so a user doesn't need to include this
 // directly.
 // GOOGLETEST_CM0001 DO NOT DELETE
 
