@@ -9,7 +9,6 @@ set(SOURCE_FILES
         )
 
 add_library(mymath STATIC ${SOURCE_FILES} ${HEADER_FILES})
-#add_subdirectory(test)
 
-add_executable(mymath_test ${HEADER_FILES} ${SOURCE_FILES} mymath_test.cpp)
+add_executable(mymath_test mymath_test.cpp)
 target_link_libraries(mymath_test mymath ${CONAN_LIBS})
