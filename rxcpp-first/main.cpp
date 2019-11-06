@@ -1,4 +1,5 @@
 #include "rx.hpp"
+
 namespace Rx {
     using namespace rxcpp;
     using namespace rxcpp::sources;
