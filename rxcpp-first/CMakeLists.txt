@@ -27,3 +27,7 @@ target_link_libraries (rxcpp-main3 rxcpp)
 add_executable(rxcpp-main4 main4.cpp)
 set_property(TARGET rxcpp-main4 PROPERTY CXX_STANDARD 17)
 target_link_libraries (rxcpp-main4 rxcpp pthread)
+
+add_executable(rxcpp-examples examples.cpp)
+set_property(TARGET rxcpp-examples PROPERTY CXX_STANDARD 17)
+target_link_libraries (rxcpp-examples rxcpp pthread)
