@@ -4,13 +4,10 @@
 
 #include <iterator>
 #include <vector>
+#include <algorithm>
+
 using namespace std;
 
-void typeinfo()
-{
-  auto p1 = std::make_shared<int>(1);
-  std::cout << typeid(p1).name() << '\n';
-}
 
 void add(std::shared_ptr<int> p){
   // reference가 증가한다.
@@ -18,19 +15,8 @@ void add(std::shared_ptr<int> p){
   cout << p.get() + 1 << endl;
 }
 
-void do_iterate() {
-  vector<int> ar = { 1, 2, 3, 4, 5 };
-
-  // Declaring iterator to a vector
-  vector<int>::iterator ptr;
-
-  // Displaying vector elements using begin() and end()
-  cout << "The vector elements are : ";
-  for (ptr = ar.begin(); ptr < ar.end(); ptr++)
-    cout << *ptr << " ";
-}
-
-int main() {
+void test_shared_ptr() {
+  cout << "=== " << __FUNCTION__ << endl;
   std::shared_ptr<int> p1{new int{1}};
   std::cout << *p1 << '\n';
 
@@ -47,9 +33,57 @@ int main() {
 
   std::cout << std::boolalpha << static_cast<bool>(p1) << '\n';
   std::cout << std::boolalpha << static_cast<bool>(p2) << '\n';
+}
 
+void typeinfo()
+{
+  cout << "=== " << __FUNCTION__ << endl;
+  auto p1 = std::make_shared<int>(1);
+  int a = 1;
+  float b = 2.0;
+  std::cout << "typeid" <<  typeid(p1).name() << '\n';
+  std::cout << "typeid" <<  typeid(a).name() << '\n';
+  std::cout << "typeid" <<  typeid(b).name() << '\n';
+}
+
+void vector_iterate() {
+  cout << "=== " << __FUNCTION__ << endl;
+  vector<int> ar = { 1, 2, 3, 4, 5 };
+
+  // Declaring iterator to a vector
+  vector<int>::iterator ptr;
+
+  // Displaying vector elements using begin() and end()
+  cout << "The vector elements are : ";
+  for (ptr = ar.begin(); ptr < ar.end(); ptr++)
+    cout << *ptr << " ";
+  cout << endl;
+}
+
+void vector_contains() {
+  cout << "=== " << __FUNCTION__ << endl;
+  vector<string> v = { "1", "2", "3" };
+
+  bool contains = std::find(v.begin(), v.end(), "3") != v.end();
+  cout << (contains ? "contains" : "no contains") << endl;
+}
+
+void vector_distance() {
+  cout << "=== " << __FUNCTION__ << endl;
+  vector<string> v = { "1", "2", "3" };
+
+  std::vector<string>::iterator it = std::find(v.begin(), v.end(), "3");
+  int index = std::distance(v.begin(), it);
+  cout << "index=" << index << endl;
+  cout << v[index] << endl;
+}
+
+int main() {
+
+  test_shared_ptr();
   typeinfo();
-
-  do_iterate();
+  vector_iterate();
+  vector_contains();
+  vector_distance();
   return 0;
 }
