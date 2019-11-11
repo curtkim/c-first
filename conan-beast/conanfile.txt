@@ -1,5 +1,6 @@
 [requires]
 boost_beast/1.69.0@bincrafters/stable
+jsonformoderncpp/3.7.0@vthiery/stable
 
 [generators]
 cmake

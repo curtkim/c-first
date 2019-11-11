@@ -5,9 +5,20 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <nlohmann/json.hpp>
 
 using tcp = boost::asio::ip::tcp;               // from <boost/asio/ip/tcp.hpp>
 namespace websocket = boost::beast::websocket;  // from <boost/beast/websocket.hpp>
+
+using json = nlohmann::json;
+
+json make_record(int i) {
+  return {
+    {"id", i},
+    {"pi", 3.141},
+    {"happy", true}
+  };
+}
 
 // Sends a WebSocket message and prints the response
 int main(int argc, char** argv)
@@ -45,7 +56,7 @@ int main(int argc, char** argv)
 
         for(int i = 0; i < 10; i++) {
         // Send the message
-        	ws.write(boost::asio::buffer(std::string(text) + std::to_string(i)));
+        	ws.write(boost::asio::buffer(make_record(i).dump()));
         	sleep(1);
     	}
 
