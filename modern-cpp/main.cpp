@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <functional>
+#include <algorithm>
 
 #include "TestObject.h"
 

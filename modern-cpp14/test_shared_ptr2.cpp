@@ -39,7 +39,7 @@ int main()
   std::cout << "Created a shared Derived (as a pointer to Base)\n"
             << "  p.get() = " << p.get()
             << ", p.use_count() = " << p.use_count() << '\n';
-  
+
   std::thread t1(thr, p), t2(thr, p), t3(thr, p);
   p.reset(); // release ownership from main
   std::cout << "Shared ownership between 3 threads and released\n"
