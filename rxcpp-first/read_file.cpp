@@ -28,8 +28,6 @@ void read_file(){
       file.close();
     });
 
-
-
   lines.
   subscribe(
     [](std::string str){printf("OnNext: %s\n", str.c_str());},
