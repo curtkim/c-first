@@ -41,7 +41,7 @@ conan_basic_setup()''')
         # self.run("cmake --build . %s" % cmake.build_config)
 
     def package(self):
-        self.copy("*.h", src="include/geos", dst="include", keep_path=True) # from build
+        self.copy("*.h", src="include/geos", dst="include", keep_path=True) # from build(매우 애매함)
         self.copy("*.h", src="geos/include", dst="include", keep_path=True) # from source
         #self.copy("*.dll", dst="bin", keep_path=False)
         #self.copy("*.so", dst="lib", keep_path=False)
