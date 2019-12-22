@@ -32,3 +32,7 @@ target_link_libraries (schedulers rxcpp pthread)
 add_executable(read_file read_file.cpp)
 set_property(TARGET read_file PROPERTY CXX_STANDARD 17)
 target_link_libraries (read_file rxcpp pthread)
+
+add_executable(coordination coordination.cpp)
+set_property(TARGET coordination PROPERTY CXX_STANDARD 17)
+target_link_libraries (coordination rxcpp pthread)
