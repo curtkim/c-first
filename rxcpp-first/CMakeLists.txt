@@ -41,3 +41,7 @@ target_link_libraries (coordination ${CONAN_LIBS} pthread)
 add_executable(rxcurl_ex rxcurl_ex.cpp)
 set_property(TARGET rxcurl_ex PROPERTY CXX_STANDARD 17)
 target_link_libraries (rxcurl_ex ${CONAN_LIBS} pthread)
+
+add_executable(omega omega.cpp)
+set_property(TARGET omega PROPERTY CXX_STANDARD 17)
+target_link_libraries (omega ${CONAN_LIBS} pthread)
