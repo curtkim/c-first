@@ -123,6 +123,22 @@ void test_lambda_capture2() {
     std::cout << x << std::endl; // print x = 100
 }
 
+void test_lambda_capture3(){
+    int sum = 0;
+    int divisor = 3;
+    vector<int> numbers { 1, 2, 3, 4, 5, 10, 15, 20, 25, 35, 45, 50 };
+    for_each(numbers.begin(), numbers.end(), [divisor, &sum] (int y)
+    {
+        if (y % divisor == 0)
+        {
+            cout << y << endl;
+            sum += y;
+        }
+    });
+
+    cout << sum << endl;
+}
+
 void test_generic_lambda() {
     // gerneric lambda
     auto sum = [](auto a, decltype(a) b) { return a + b; };
@@ -154,6 +170,7 @@ int main()
 
     test_lambda_capture();
     test_lambda_capture2();
+    test_lambda_capture3();
     test_generic_lambda();
 
     return 0;

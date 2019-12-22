@@ -3,7 +3,7 @@ project (modern-cpp)
 
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(modern-cpp main.cpp TestObject.h cpp17.cpp)
+add_executable(modern-cpp main.cpp TestObject.h)
 set_property(TARGET modern-cpp PROPERTY CXX_STANDARD 17)
 
 add_executable(modern-thread thread_main.cpp)

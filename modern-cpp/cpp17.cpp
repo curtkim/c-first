@@ -113,6 +113,7 @@ int main() {
 
     cout << MyClass::sValue << endl;
     cout << sum2(1, 2, 3, 4, 5) << "\n";
+    cout << sum2(1.0, 2.0, 3.0, 4.0, 5.0) << "\n";
 
     return 0;
 }
