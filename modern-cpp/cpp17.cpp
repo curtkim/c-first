@@ -112,8 +112,12 @@ int main() {
     test_init_if();
 
     cout << MyClass::sValue << endl;
-    cout << sum2(1, 2, 3, 4, 5) << "\n";
-    cout << sum2(1.0, 2.0, 3.0, 4.0, 5.0) << "\n";
+
+    int sumInt = sum2(1,2,3,4,5);
+    cout << sumInt << "\n";
+
+    double sumDouble = sum2(1.0, 2.0, 3.0, 4.0, 5.0);
+    cout << sumDouble << "\n";
 
     return 0;
 }
