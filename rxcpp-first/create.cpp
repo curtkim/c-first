@@ -24,14 +24,14 @@ int main() {
 
     // iterate
     std::array< int, 3 > a={{1, 2, 3}};
-    auto values1 = observable<>::iterate(a);
+    auto values1 = rxcpp::observable<>::iterate(a);
     values1.
             subscribe(
             [](int v){printf("OnNext: %d\n", v);},
             [](){printf("OnCompleted\n");});
 
     // range
-    auto values = observable<>::range(1); // infinite (until overflow) stream of integers
+    auto values = rxcpp::observable<>::range(1); // infinite (until overflow) stream of integers
 
     auto s1 = values.
             take(3).

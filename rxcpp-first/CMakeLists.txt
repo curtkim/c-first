@@ -26,6 +26,7 @@ target_link_libraries (op rxcpp)
 
 add_executable(schedulers schedulers.cpp)
 set_property(TARGET schedulers PROPERTY CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=0")
 target_link_libraries (schedulers rxcpp pthread)
 
 add_executable(read_file read_file.cpp)
