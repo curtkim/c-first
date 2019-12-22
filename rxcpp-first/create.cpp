@@ -1,5 +1,6 @@
-#include "rx.hpp"
+#include <rxcpp/rx.hpp>
 
+/*
 namespace Rx {
     using namespace rxcpp;
     using namespace rxcpp::sources;
@@ -7,11 +8,12 @@ namespace Rx {
     using namespace rxcpp::util;
 }
 using namespace Rx;
+*/
 
 int main() {
 
     // create
-    auto ints = rxcpp::observable<>::create<int>(
+    auto ints = rxcpp::sources::create<int>(
             [](rxcpp::subscriber<int> s){
                 s.on_next(1);
                 s.on_next(2);
@@ -24,14 +26,14 @@ int main() {
 
     // iterate
     std::array< int, 3 > a={{1, 2, 3}};
-    auto values1 = rxcpp::observable<>::iterate(a);
+    auto values1 = rxcpp::sources::iterate(a);
     values1.
             subscribe(
             [](int v){printf("OnNext: %d\n", v);},
             [](){printf("OnCompleted\n");});
 
     // range
-    auto values = rxcpp::observable<>::range(1); // infinite (until overflow) stream of integers
+    auto values = rxcpp::sources::range(1); // infinite (until overflow) stream of integers
 
     auto s1 = values.
             take(3).

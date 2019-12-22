@@ -1,0 +1,8 @@
+[requires]
+rxcpp/4.1.0@bincrafters/stable
+cpprestsdk/2.10.14@bincrafters/stable
+gtest/1.8.1@bincrafters/stable
+libcurl/7.67.0
+
+[generators]
+cmake

@@ -1,4 +1,4 @@
-#include "rx.hpp"
+#include <rxcpp/rx.hpp>
 #include <thread>
 
 namespace Rx {

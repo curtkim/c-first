@@ -1,4 +1,4 @@
-#include "rx.hpp"
+#include <rxcpp/rx.hpp>
 
 namespace Rx {
 using namespace rxcpp;
