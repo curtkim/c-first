@@ -17,3 +17,6 @@ target_link_libraries(test ${CONAN_LIBS})
 
 add_executable(test2 test2.cpp)
 target_link_libraries(test2 ${CONAN_LIBS})
+
+add_executable(test_pplx test_pplx.cpp)
+target_link_libraries(test_pplx ${CONAN_LIBS})
