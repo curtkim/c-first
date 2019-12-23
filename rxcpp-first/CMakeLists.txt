@@ -49,3 +49,7 @@ target_link_libraries (omega ${CONAN_LIBS} pthread)
 add_executable(async async.cpp)
 set_property(TARGET async PROPERTY CXX_STANDARD 17)
 target_link_libraries (async ${CONAN_LIBS} pthread)
+
+add_executable(rxrest rxrest.cpp)
+set_property(TARGET rxrest PROPERTY CXX_STANDARD 17)
+target_link_libraries (rxrest ${CONAN_LIBS} pthread)
