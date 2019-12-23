@@ -6,6 +6,10 @@ add_definitions("-std=c++11")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(thread_pool thread_pool.cpp)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat=0")
+
+add_executable(thread_pool thread_pool.cpp)
 target_link_libraries(thread_pool ${CONAN_LIBS})
+
+add_executable(thread_pool2 thread_pool2.cpp)
+target_link_libraries(thread_pool2 ${CONAN_LIBS})

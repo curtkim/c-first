@@ -5,7 +5,7 @@
 #include <thread>
 
 int main() {
-  boost::asio::thread_pool pool(2); // 4 threads
+  boost::asio::thread_pool pool(2); // 2 threads
 
   for(int i = 0; i < 5; i++)
     boost::asio::post(pool, [i](){
