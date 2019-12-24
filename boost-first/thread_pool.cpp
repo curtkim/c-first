@@ -3,14 +3,19 @@
 
 #include <string>
 #include <thread>
+#include <iostream>
 
 int main() {
-  boost::asio::thread_pool pool(2); // 2 threads
 
-  for(int i = 0; i < 5; i++)
-    boost::asio::post(pool, [i](){
-      printf("%d %ld\n", i, std::this_thread::get_id());
-    });
+  for(int j = 0; j < 10; j++) {
+      boost::asio::thread_pool pool(2); // 2 threads
+      for (int i = 0; i < 5; i++)
+          boost::asio::post(pool, [j, i]() {
+              printf("%d th  %d %ld\n", j, i, std::this_thread::get_id());
+          });
+      pool.join();
+  }
 
-  pool.join();
+  std::cout << "end" << std::endl;
+  return 0;
 }
