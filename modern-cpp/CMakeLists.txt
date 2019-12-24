@@ -24,3 +24,7 @@ set_property(TARGET test_shared_ptr PROPERTY CXX_STANDARD 14)
 add_executable(test_shared_ptr2 test_shared_ptr2.cpp)
 set_property(TARGET test_shared_ptr2 PROPERTY CXX_STANDARD 14)
 target_link_libraries( test_shared_ptr2 pthread )
+
+add_executable(generic generic.cpp)
+set_property(TARGET generic PROPERTY CXX_STANDARD 14)
+target_link_libraries( generic pthread )
