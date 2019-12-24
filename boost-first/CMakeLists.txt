@@ -13,3 +13,6 @@ target_link_libraries(thread_pool ${CONAN_LIBS})
 
 add_executable(thread_pool2 thread_pool2.cpp)
 target_link_libraries(thread_pool2 ${CONAN_LIBS})
+
+add_executable(program_options program_options.cpp)
+target_link_libraries(program_options ${CONAN_LIBS})
