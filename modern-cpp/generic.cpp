@@ -6,7 +6,7 @@ auto compose(T1 a, T2 b) -> decltype(a + b){
 }
 
 template <typename T1, typename T2>
-auto compose2(T1 a, T2 b) {
+auto compose2(T1 a, T2 b) { // "-> decltype(a + b)" 필요없다.
     return a+b;
 }
 

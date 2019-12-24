@@ -28,3 +28,7 @@ target_link_libraries( test_shared_ptr2 pthread )
 add_executable(generic generic.cpp)
 set_property(TARGET generic PROPERTY CXX_STANDARD 14)
 target_link_libraries( generic pthread )
+
+add_executable(Threadpool_test Threadpool_test.cpp Threadpool.hpp)
+set_property(TARGET Threadpool_test PROPERTY CXX_STANDARD 14)
+target_link_libraries( Threadpool_test pthread )
