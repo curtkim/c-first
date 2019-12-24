@@ -1,6 +1,5 @@
 // Include standard headers
 #include <stdio.h>
-#include <stdlib.h>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -10,8 +9,8 @@
 GLFWwindow* window;
 
 // Include GLM
-#include <glm/glm.hpp>
-using namespace glm;
+//#include <glm/glm.hpp>
+//using namespace glm;
 
 #include <common/shader.hpp>
 
