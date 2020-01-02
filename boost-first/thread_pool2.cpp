@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 int sleep_print(int seconds) {
-    std::cout << "going to sleep (" << seconds << ")" << std::endl;
+    std::cout << "going to sleep (" << seconds << ")" << std::this_thread::get_id() << std::endl;
     sleep(seconds);
     std::cout << "wake up (" << seconds << ")" << std::endl;
     return seconds;
@@ -32,7 +32,7 @@ int main() {
     boost::thread_group threads;
     boost::asio::io_service::work work(io_service);
 
-    for (int i = 0; i < boost::thread::hardware_concurrency(); ++i)
+    for (int i = 0; i < 2; ++i) // boost::thread::hardware_concurrency()
     {
         threads.create_thread(boost::bind(&boost::asio::io_service::run,
                                           &io_service));
