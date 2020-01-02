@@ -8,10 +8,10 @@
 #include <unistd.h>
 
 int sleep_print(int seconds) {
-    std::cout << "goint to sleep (" << seconds << ")" << std::endl;
+    std::cout << "going to sleep (" << seconds << ")" << std::endl;
     sleep(seconds);
     std::cout << "wake up (" << seconds << ")" << std::endl;
-    return 0;
+    return seconds;
 }
 
 typedef boost::packaged_task<int> task_t;
@@ -44,11 +44,23 @@ int main() {
     push_job(3, io_service, pending_data);
     push_job(4, io_service, pending_data);
     boost::wait_for_all(pending_data.begin(), pending_data.end());
+    std::cout << "--- " << pending_data.size() << std::endl;
+    for(std::vector<boost::shared_future<int>>::iterator it = pending_data.begin(); it != pending_data.end(); ++it) {
+        int value = it->get();
+        std::cout << value << std::endl;
+    }
+    pending_data.clear();
 
     push_job(3, io_service, pending_data);
     push_job(4, io_service, pending_data);
     push_job(5, io_service, pending_data);
     boost::wait_for_all(pending_data.begin(), pending_data.end());
+
+    std::cout << "--- " << pending_data.size() << std::endl;
+    for(std::vector<boost::shared_future<int>>::iterator it = pending_data.begin(); it != pending_data.end(); ++it) {
+        int value = it->get();
+        std::cout << value << std::endl;
+    }
 
     return 0;
 }
