@@ -31,6 +31,7 @@ int main() {
     for(auto i = 0; i < num_tasks; ++i)
         results.emplace_back(pool.enqueue(std::bind(task, i % 4), i % 4));
 
+
     // we need the results here
     for(auto i = 0; i < num_tasks; ++i)
         std::cout << "result of task " << i << " is " << results[i].get() << std::endl;

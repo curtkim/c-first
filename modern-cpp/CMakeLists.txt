@@ -8,6 +8,7 @@ set_property(TARGET modern-cpp PROPERTY CXX_STANDARD 17)
 
 add_executable(modern-thread thread_main.cpp)
 set_property(TARGET modern-thread PROPERTY CXX_STANDARD 17)
+target_link_libraries( modern-thread pthread )
 
 add_executable(cpp17 cpp17.cpp)
 set_property(TARGET cpp17 PROPERTY CXX_STANDARD 17)
@@ -32,3 +33,7 @@ target_link_libraries( generic pthread )
 add_executable(Threadpool_test Threadpool_test.cpp Threadpool.hpp)
 set_property(TARGET Threadpool_test PROPERTY CXX_STANDARD 14)
 target_link_libraries( Threadpool_test pthread )
+
+add_executable(thread_pool_executor_example thread_pool_executor_example.cpp thread_pool_executor.hpp concurrent_queue.hpp)
+set_property(TARGET thread_pool_executor_example PROPERTY CXX_STANDARD 14)
+target_link_libraries( thread_pool_executor_example pthread )
