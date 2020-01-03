@@ -18,12 +18,12 @@
 #include "concurrent_queue.hpp"
 
 
-using namespace std::chrono_literals;
+//using namespace std::chrono_literals;
 
 
 class ThreadPoolExecutor {
 public:
-    ThreadPoolExecutor(size_t pool_size, size_t max_pool_size = 0, std::chrono::milliseconds keep_alive_time = 0s, size_t max_queue_size = std::numeric_limits<size_t>::max()):
+    ThreadPoolExecutor(size_t pool_size, size_t max_pool_size = 0, std::chrono::milliseconds keep_alive_time = std::chrono::milliseconds(0), size_t max_queue_size = std::numeric_limits<size_t>::max()):
         pool_size(pool_size),
         max_pool_size(max_pool_size ? max_pool_size : pool_size),
         keep_alive_time(keep_alive_time),
