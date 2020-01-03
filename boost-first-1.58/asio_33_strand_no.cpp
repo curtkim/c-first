@@ -2,12 +2,14 @@
 #include <boost/thread.hpp>
 #include <iostream>
 
+
 boost::mutex global_stream_lock;
 
 void WorkerThread( boost::shared_ptr< boost::asio::io_service > io_service )
 {
     global_stream_lock.lock();
-    std::cout << "[" << boost::this_thread::get_id() << "] Thread Start" << std::endl;
+    std::cout << "[" << boost::this_thread::get_id()
+              << "] Thread Start" << std::endl;
     global_stream_lock.unlock();
 
     io_service->run();
@@ -40,22 +42,25 @@ int main( int argc, char * argv[] )
     global_stream_lock.unlock();
 
     boost::thread_group worker_threads;
-    for( int x = 0; x < 4; ++x )
+    for( int x = 0; x < 2; ++x )
     {
         worker_threads.create_thread( boost::bind( &WorkerThread, io_service ) );
     }
 
-    boost::this_thread::sleep( boost::posix_time::milliseconds( 100 ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 1 ) ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 2 ) ) );
+    boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );
 
-    boost::this_thread::sleep( boost::posix_time::milliseconds( 100 ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 3 ) ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 4 ) ) );
+    // the strand object is correctly serializing the event processing to only one thread at a time
+    strand.post( boost::bind( &PrintNum, 1 ) );
+    strand.post( boost::bind( &PrintNum, 2 ) );
+    strand.post( boost::bind( &PrintNum, 3 ) );
+    strand.post( boost::bind( &PrintNum, 4 ) );
+    strand.post( boost::bind( &PrintNum, 5 ) );
 
-    boost::this_thread::sleep( boost::posix_time::milliseconds( 100 ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 5 ) ) );
-    io_service->post( strand.wrap( boost::bind( &PrintNum, 6 ) ) );
+//    io_service->post( boost::bind( &PrintNum, 1 ) );
+//    io_service->post( boost::bind( &PrintNum, 2 ) );
+//    io_service->post( boost::bind( &PrintNum, 3 ) );
+//    io_service->post( boost::bind( &PrintNum, 4 ) );
+//    io_service->post( boost::bind( &PrintNum, 5 ) );
 
     work.reset();
 

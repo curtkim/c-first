@@ -7,7 +7,6 @@ boost::mutex global_stream_lock;
 void WorkerThread( boost::shared_ptr< boost::asio::io_service > io_service )
 {
     global_stream_lock.lock();
-
     std::cout << "[" << boost::this_thread::get_id() <<"] Thread Start" << std::endl;
     global_stream_lock.unlock();
 
