@@ -40,3 +40,6 @@ target_link_libraries( thread_pool_executor_example pthread )
 
 add_executable(rvalue_reference rvalue_reference.cpp)
 set_property(TARGET rvalue_reference PROPERTY CXX_STANDARD 14)
+
+add_executable(array array.cpp)
+set_property(TARGET array PROPERTY CXX_STANDARD 11)
