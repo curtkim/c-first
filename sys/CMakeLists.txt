@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
-project (modern-cpp)
+project (sys)
 
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
