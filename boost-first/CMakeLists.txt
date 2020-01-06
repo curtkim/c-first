@@ -19,3 +19,6 @@ target_link_libraries(thread_pool3 ${CONAN_LIBS})
 
 add_executable(program_options program_options.cpp)
 target_link_libraries(program_options ${CONAN_LIBS})
+
+add_executable(date_time date_time.cpp)
+target_link_libraries(date_time ${CONAN_LIBS})
