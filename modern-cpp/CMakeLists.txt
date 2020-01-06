@@ -37,3 +37,6 @@ target_link_libraries( Threadpool_test pthread )
 add_executable(thread_pool_executor_example thread_pool_executor_example.cpp thread_pool_executor.hpp concurrent_queue.hpp)
 set_property(TARGET thread_pool_executor_example PROPERTY CXX_STANDARD 11)
 target_link_libraries( thread_pool_executor_example pthread )
+
+add_executable(rvalue_reference rvalue_reference.cpp)
+set_property(TARGET rvalue_reference PROPERTY CXX_STANDARD 14)
