@@ -1,0 +1,4 @@
+*.dSYM
+*.out
+.vscode/ipch
+helloworld
