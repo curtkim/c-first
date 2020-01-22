@@ -1,0 +1,9 @@
+[requires]
+opencv/2.4.13.5@conan/stable
+freeglut/3.0.0@bincrafters/stable
+
+[generators]
+cmake
+
+[options]
+glut:shared=False
