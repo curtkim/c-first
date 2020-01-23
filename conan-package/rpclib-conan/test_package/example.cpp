@@ -1,14 +1,20 @@
+#include <iostream>
+
 #include "rpc/server.h"
-#include <string>
-using std::string;
+#include "rpc/this_server.h"
+#include "rpc/client.h"
 
 int main() {
-  rpc::server srv(8080);
-
-  srv.bind("echo", [](string const& s) {
-    return string("> ") + s;
+  rpc::server server(18080);
+  server.bind("hello", [](){
+    std::cout << "Hello from RPC!\n";
+    rpc::this_server().stop();
   });
 
-  srv.run();
+  server.async_run();
+
+  rpc::client client("localhost", 18080);
+  client.call("hello");
+
   return 0;
 }

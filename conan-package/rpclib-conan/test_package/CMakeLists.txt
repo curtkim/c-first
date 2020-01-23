@@ -8,8 +8,10 @@ message("===")
 message(${CONAN_LIBS})
 message("===")
 
+find_package(Threads REQUIRED)
+
 add_executable(example example.cpp)
-target_link_libraries(example ${CONAN_LIBS})
+target_link_libraries(example ${CONAN_LIBS} Threads::Threads)
 set_property(TARGET example PROPERTY CXX_STANDARD 14)
 
 # CTest is a testing tool that can be used to test your project.

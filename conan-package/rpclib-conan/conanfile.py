@@ -8,7 +8,6 @@ class RpclibConan(ConanFile):
     author = "<Put your name here> <And your email here>"
     url = "<Package recipe repository url here, for issues about the package>"
     description = "<Description of Rpclib here>"
-    topics = ("<Put some tag here>", "<here>", "<and here>")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
@@ -42,7 +41,7 @@ conan_basic_setup()''')
         self.copy("*.a", src="lib", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["rpclib"]
+        self.cpp_info.libs = ["rpc"]
+        #self.cpp_info.libs = ["rpclib"]
 
-        self.cpp_info.static.libs = ["librpc.a"]
 
