@@ -1,0 +1,5 @@
+[requires]
+msgpack/3.2.1@bincrafters/stable
+
+[generators]
+cmake
