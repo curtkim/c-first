@@ -14,6 +14,6 @@ protobuf_generate_python(PROTO_PYS sensor.proto)
 add_executable(${PROJECT_NAME} main.cc ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC CONAN_PKG::protobuf)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 add_custom_target(proto_python ALL DEPENDS ${PROTO_PYS})
