@@ -8,3 +8,9 @@ add_executable(consumer consumer.cpp)
 
 add_executable(graceful graceful.cpp)
 target_link_libraries( graceful pthread )
+
+add_executable(server server.cpp)
+add_executable(client client.cpp)
+
+add_executable(namedpipe_write namedpipe_write.cpp)
+add_executable(namedpipe_read namedpipe_read.cpp)
