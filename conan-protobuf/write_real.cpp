@@ -1,15 +1,18 @@
+#include <string>
 #include <iostream>
+#include <fstream>
 
 #include <sys/stat.h>
 #include <fcntl.h>
 
 #include <unistd.h>
-#include <string>
 
 #include "sensor.pb.h"
 
 #include <google/protobuf/text_format.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
+
+
 
 
 bool SetProtoToASCIIFile(const google::protobuf::Message &message,
@@ -62,6 +65,27 @@ bool GetProtoFromASCIIFile(const std::string &file_name,
     return success;
 }
 
+bool SetProtoToBinaryFile(const google::protobuf::Message &message,
+                          const std::string &file_name) {
+    std::fstream output(file_name, std::ios::out | std::ios::trunc | std::ios::binary);
+    return message.SerializeToOstream(&output);
+}
+
+bool GetProtoFromBinaryFile(const std::string &file_name,
+                            google::protobuf::Message *message) {
+    std::fstream input(file_name, std::ios::in | std::ios::binary);
+    if (!input.good()) {
+        std::cout << "Failed to open file " << file_name << " in binary mode.";
+        return false;
+    }
+    if (!message->ParseFromIstream(&input)) {
+        std::cout << "Failed to parse file " << file_name << " as binary proto.";
+        return false;
+    }
+    return true;
+}
+
+
 int main() {
     Sensor sensor;
     sensor.set_name("Laboratory");
@@ -69,12 +93,19 @@ int main() {
     sensor.set_humidity(68);
     sensor.set_door(Sensor_SwitchLevel_OPEN);
 
+    // text
     std::string filename = "sensor.pb.txt";
     SetProtoToASCIIFile(sensor, filename);
     Sensor sensor2;
     GetProtoFromASCIIFile(filename, &sensor2);
+    std::cout << sensor2.name() << std::endl;
 
-    std::cout << sensor.name() << std::endl;
+    // binary
+    std::string filename2 = "sensor.pb.bin";
+    SetProtoToBinaryFile(sensor, filename2);
+    Sensor sensor3;
+    GetProtoFromBinaryFile(filename2, &sensor3);
+    std::cout << sensor3.name() << std::endl;
 
     return 0;
 }
