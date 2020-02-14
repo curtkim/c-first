@@ -17,3 +17,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 
 add_custom_target(proto_python ALL DEPENDS ${PROTO_PYS})
+
+
+add_executable(write_real write_real.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(write_real PUBLIC CONAN_PKG::protobuf)
+target_include_directories(write_real PRIVATE ${CMAKE_BINARY_DIR})
+set_target_properties(write_real PROPERTIES CXX_STANDARD 17)
