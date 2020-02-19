@@ -39,7 +39,8 @@ void Run3( boost::shared_ptr< boost::asio::io_service > io_service )
 {
     for( int x = 0; x < 3; ++x )
     {
-        // Dispatched events can execute from the current worker thread even if there are other pending events queued up
+        // Dispatched events can execute from the current worker thread
+        // even if there are other pending events queued up
         io_service->dispatch( boost::bind( &Dispatch, x * 2 ) );
 
         // The posted events have to wait until the handler completes

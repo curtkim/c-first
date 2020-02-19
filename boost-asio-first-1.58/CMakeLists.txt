@@ -55,3 +55,6 @@ target_link_libraries(asio_81 pthread ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIB
 
 add_executable(bind_tutorial bind_tutorial.cpp)
 target_link_libraries(bind_tutorial ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})
+
+add_executable(tcp_async_echo_server tcp_async_echo_server.cpp)
+target_link_libraries(tcp_async_echo_server ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY})

@@ -74,7 +74,8 @@ int main( int argc, char * argv[] )
     io_service->post( boost::bind( CalculateFib, 4 ) );
     io_service->post( boost::bind( CalculateFib, 5 ) );
 
-    work.reset();
+    work.reset(); // 음... 이미 시작된 WorkerThread가 끝니기를 기다린다.
+    //io_service->stop();을 호출하면, post된 job을 기라지 않는다.
     worker_threads.join_all();
 
     return 0;
