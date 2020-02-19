@@ -1,0 +1,1 @@
+from https://chromium.googlesource.com/external/github.com/google/protobuf/+/HEAD/examples/README.md
