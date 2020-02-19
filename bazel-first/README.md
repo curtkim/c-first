@@ -1,1 +1,0 @@
-https://shanee.io/blog/2019/05/28/bazel-with-visual-studio-code/
