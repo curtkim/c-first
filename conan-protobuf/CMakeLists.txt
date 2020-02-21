@@ -8,8 +8,10 @@ conan_basic_setup(TARGETS)
 
 find_package(Protobuf REQUIRED)
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS sensor.proto)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS sensor.proto sensor2.proto)
 protobuf_generate_python(PROTO_PYS sensor.proto)
+
+
 
 add_executable(${PROJECT_NAME} main.cc ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC CONAN_PKG::protobuf)
@@ -23,3 +25,9 @@ add_executable(write_real write_real.cpp ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(write_real PUBLIC CONAN_PKG::protobuf)
 target_include_directories(write_real PRIVATE ${CMAKE_BINARY_DIR})
 set_target_properties(write_real PROPERTIES CXX_STANDARD 17)
+
+# read2
+add_executable(read2 read2.cc ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(read2 PUBLIC CONAN_PKG::protobuf)
+target_include_directories(read2 PRIVATE ${CMAKE_BINARY_DIR})
+set_target_properties(read2 PROPERTIES CXX_STANDARD 17)
