@@ -7,6 +7,8 @@
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
 
+#include "linmath.h"
+
 // About Desktop OpenGL function loaders:
 //  Modern desktop OpenGL doesn't have a standard portable header file to load OpenGL function pointers.
 //  Helper libraries are often used for this purpose! Here we are supporting a few common ones (gl3w, glew, glad).
@@ -35,6 +37,37 @@ using namespace gl;
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
+
+
+static struct
+{
+    float x, y;
+    float r, g, b;
+} vertices[3] =
+    {
+        { -0.6f, -0.4f, 1.f, 0.f, 0.f },
+        { 0.6f, -0.4f, 0.f, 1.f, 0.f },
+        { 0.f,  0.6f, 0.f, 0.f, 1.f }
+    };
+
+static const char* vertex_shader_text =
+    "uniform mat4 MVP;\n"
+    "attribute vec3 vCol;\n"
+    "attribute vec2 vPos;\n"
+    "varying vec3 color;\n"
+    "void main()\n"
+    "{\n"
+    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+    "    color = vCol;\n"
+    "}\n";
+
+static const char* fragment_shader_text =
+    "varying vec3 color;\n"
+    "void main()\n"
+    "{\n"
+    "    gl_FragColor = vec4(color, 1.0);\n"
+    "}\n";
+
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -91,6 +124,47 @@ int main(int, char**)
         return 1;
     }
 
+    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLint mvp_location, vpos_location, vcol_location;
+
+    {
+        // Setup Triangle
+        glGenBuffers(1, &vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+        glCompileShader(vertex_shader);
+
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+        glCompileShader(fragment_shader);
+
+        program = glCreateProgram();
+        glAttachShader(program, vertex_shader);
+        glAttachShader(program, fragment_shader);
+        glLinkProgram(program);
+
+        mvp_location = glGetUniformLocation(program, "MVP");
+        vpos_location = glGetAttribLocation(program, "vPos");
+        vcol_location = glGetAttribLocation(program, "vCol");
+
+        glEnableVertexAttribArray(vpos_location);
+        glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void *) 0);
+        glEnableVertexAttribArray(vcol_location);
+        glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void *) (sizeof(float) * 2));
+    }
+
+    // params
+    float param_speed_spin = 1.0f;
+    float param_resize = 1.0f;
+    ImVec4 param_color_clear = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 param_color_vertex_r = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+    ImVec4 param_color_vertex_g = ImVec4(0.00f, 1.00f, 0.00f, 1.00f);
+    ImVec4 param_color_vertex_b = ImVec4(0.00f, 0.00f, 1.00f, 1.00f);
+
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -99,95 +173,90 @@ int main(int, char**)
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
+    //ImGui::StyleColorsDark();
+    ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Read 'docs/FONTS.txt' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != NULL);
-
     // Our state
-    bool show_demo_window = false;
-    bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-        glfwPollEvents();
+        {
+            // Draw Triangle
+            float ratio;
+            int width, height;
+            mat4x4 m, p, mvp;
 
-        // Start the Dear ImGui frame
+            glfwGetFramebufferSize(window, &width, &height);
+            ratio = width / (float) height;
+            glViewport(0, 0, width, height);
+            glClearColor(param_color_clear.x, param_color_clear.y, param_color_clear.z, param_color_clear.w);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            // render Triangle
+            vertices[0].r = param_color_vertex_r.x;
+            vertices[0].g = param_color_vertex_r.y;
+            vertices[0].b = param_color_vertex_r.z;
+            vertices[1].r = param_color_vertex_g.x;
+            vertices[1].g = param_color_vertex_g.y;
+            vertices[1].b = param_color_vertex_g.z;
+            vertices[2].r = param_color_vertex_b.x;
+            vertices[2].g = param_color_vertex_b.y;
+            vertices[2].b = param_color_vertex_b.z;
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+            mat4x4_identity(m);
+            mat4x4_rotate_Z(m, m, (float) glfwGetTime() * -param_speed_spin);
+            mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+            mat4x4_scale_aniso(p, p, param_resize, param_resize, param_resize);
+            mat4x4_mul(mvp, p, m);
+
+            glUseProgram(program);
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *) mvp);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
-
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
+            ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+            ImGui::Begin("example control window");
+            ImGui::Text("Hell world!");
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+            ImGui::SliderFloat("spin", &param_speed_spin, -2.0f, 2.0f);
+            ImGui::SliderFloat("size", &param_resize, 0.0f, 2.0f);
+            ImGui::ColorEdit3("clear color", (float*)&param_color_clear);
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::Spacing();
+            ImGui::ColorEdit3("vertex r", (float*)&param_color_vertex_r);
+            ImGui::ColorEdit3("vertex g", (float*)&param_color_vertex_g);
+            ImGui::ColorEdit3("vertex b", (float*)&param_color_vertex_b);
             ImGui::End();
         }
-
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
-
-        // Rendering
         ImGui::Render();
+
+        /*
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        */
 
         glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
     // Cleanup

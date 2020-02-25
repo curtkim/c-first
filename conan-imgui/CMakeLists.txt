@@ -29,3 +29,13 @@ add_executable(main_glfw_opengl3
 		imgui_impl_opengl3.h
 		)
 target_link_libraries(main_glfw_opengl3 ${CONAN_LIBS} ${OPENGL_LIBRARY})
+
+add_executable(main_glfw_opengl3_opengl
+		main_glfw_opengl3_opengl.cpp
+		imgui_impl_glfw.cpp
+		imgui_impl_glfw.h
+		imgui_impl_opengl3.cpp
+		imgui_impl_opengl3.h
+		linmath.h
+		)
+target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY})
