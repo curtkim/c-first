@@ -144,10 +144,12 @@ int main(int, char**)
     std::cout << "framebuffer=" << framebuffer << " textureColorbuffer= " << textureColorbuffer << std::endl;
     */
 
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLuint program;
+    GLint mvp_location;
 
     {
+        GLuint vertex_buffer, vertex_shader, fragment_shader;
+        GLint vpos_location, vcol_location;
         // Setup Triangle
         glGenBuffers(1, &vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
