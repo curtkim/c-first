@@ -19,6 +19,8 @@ void temp() {
     identity_one_worker i2 = rxcpp::identity_current_thread();
     identity_one_worker i3 = rxcpp::identity_same_worker(w);
 
+    i1.
+
     // use mutex
     serialize_one_worker s1 = rxcpp::serialize_new_thread();
     serialize_one_worker s2 = rxcpp::serialize_event_loop();
@@ -48,6 +50,7 @@ uint64_t get_thread_id()
 */
 
 void test_run_loop() {
+    std::cout << std::this_thread::get_id() << std::endl;
     Rx::schedulers::run_loop runLoop;
     Rx::subject<int> subject;
     auto observable = subject.get_observable();
@@ -59,14 +62,14 @@ void test_run_loop() {
             })
             .observe_on(Rx::observe_on_run_loop(runLoop))
             .subscribe([&](int v) {
-                //console->info("subscriptionThread[{}] - subscription started: {}", getThreadId(), v);
+                std::cout << v << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 //console->info("subscriptionThread[{}] - subscription ended: {}", getThreadId(), v);
             });
 
     bool runLooping = true;
     std::thread runloopThread([&] {
-        std::cout << "start runloop thread" << std::endl;
+        std::cout << "start runloop thread " << std::this_thread::get_id() << std::endl;
         while (runLooping) {
             if (!runLoop.empty())
                 runLoop.dispatch();
@@ -76,6 +79,7 @@ void test_run_loop() {
     auto subscriber = subject.get_subscriber();
     std::cout << "start to publish values" << std::endl;
     subscriber.on_next(1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     subscriber.on_next(2);
     std::cout << "stop publishing" << std::endl;
 
@@ -146,7 +150,8 @@ void test_observe_on_synchronize_new_thread() {
 void test_declarative_schedule() {
 
     identity_one_worker coordinate_function = rxcpp::identity_current_thread();
-    auto worker = coordinate_function.create_coordinator().get_worker();
+    coordinator coordinator = coordinate_function.create_coordinator();
+    auto worker = coordinator.get_worker();
 
     auto start = coordinate_function.now() + std::chrono::milliseconds(1);
     auto period = std::chrono::milliseconds(1);

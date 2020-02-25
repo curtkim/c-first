@@ -16,45 +16,6 @@ auto getThreadId() {
     return std::this_thread::get_id();
 }
 
-void test2() {
-    Rx::schedulers::run_loop runloop;
-    Rx::subject<int> subject;
-    auto observable = subject.get_observable();
-
-    observable
-            .map([&](int v) {
-                std::cout << "thread[" << getThreadId() <<"] - published value: "  << " " << v << std::endl;
-                return v;
-            })
-            .observe_on(Rx::observe_on_run_loop(runloop))
-            .subscribe([&] (int v) {
-                //console->info("subscriptionThread[{}] - subscription started: {}", getThreadId(), v);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                //console->info("subscriptionThread[{}] - subscription ended: {}", getThreadId(), v);
-            });
-
-    bool runlooping = true;
-    std::thread runloopThread([&] {
-        std::cout << "start runloop thread" << std::endl;
-        while (runlooping) {
-            if (!runloop.empty())
-                runloop.dispatch();
-        }
-    });
-
-    auto subscriber = subject.get_subscriber();
-    std::cout << "start to publish values" << std::endl;
-    subscriber.on_next(1);
-    subscriber.on_next(2);
-    std::cout << "stop publishing" << std::endl;
-
-    while (!runloop.empty()) {
-        std::cout << "wait until runloop queue is empty..." << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(400));
-    }
-    runlooping = false;
-    runloopThread.join();
-}
 
 void test1(){
     auto threads = rxcpp::observe_on_event_loop();
@@ -85,27 +46,75 @@ void test1(){
             [](const char* s, int p) {
                 printf("%s %d\n", s, p);
             }));
-
 }
 
-void test3(){
-    auto coordination = rxcpp::serialize_new_thread();
-    auto worker = coordination.create_coordinator().get_worker();
+void test2() {
+    Rx::schedulers::run_loop runloop;
+    Rx::subject<int> subject;
+    auto observable = subject.get_observable();
 
-    auto sub_action = rxcpp::schedulers::make_action(
+    observable
+        .map([&](int v) {
+            std::cout << "thread[" << getThreadId() <<"] - published value: "  << " " << v << std::endl;
+            return v;
+        })
+        .observe_on(Rx::observe_on_run_loop(runloop))
+        .subscribe([&] (int v) {
+            //console->info("subscriptionThread[{}] - subscription started: {}", getThreadId(), v);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //console->info("subscriptionThread[{}] - subscription ended: {}", getThreadId(), v);
+        });
+
+    bool runlooping = true;
+    std::thread runloopThread([&] {
+        std::cout << "start runloop thread" << std::endl;
+        while (runlooping) {
+            if (!runloop.empty())
+                runloop.dispatch();
+        }
+    });
+
+    auto subscriber = subject.get_subscriber();
+    std::cout << "start to publish values" << std::endl;
+    subscriber.on_next(1);
+    subscriber.on_next(2);
+    std::cout << "stop publishing" << std::endl;
+
+    while (!runloop.empty()) {
+        std::cout << "wait until runloop queue is empty..." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(400));
+    }
+    runlooping = false;
+    runloopThread.join();
+}
+
+
+void test_worker_schedule(){
+    rxcpp::serialize_one_worker coordination = rxcpp::serialize_new_thread();
+    auto coordinator = coordination.create_coordinator();
+    rxsc::scheduler scheduler = coordinator.get_scheduler();
+
+
+    auto worker = coordinator.get_worker();
+
+    auto action = rxcpp::schedulers::make_action(
             [](const rxcpp::schedulers::schedulable&){
                 printf("Action Executed in Thread # :%d\n", std::this_thread::get_id());
             });
-    auto scheduled = rxcpp::schedulers::make_schedulable(worker, sub_action);
-    scheduled.schedule();
+
+    auto schedulable = rxcpp::schedulers::make_schedulable(worker, action);
+
+    worker.schedule_periodically(worker.now(), std::chrono::seconds(1), schedulable);
+    //worker.schedule(schedulable);
+    std::cout << "end" << std::endl;
 }
 
 int main() {
 
-//    test1();
+    test1();
 //    test2();
 
-    test3();
+    test_worker_schedule();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     return 0;

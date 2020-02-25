@@ -43,7 +43,7 @@ int main() {
   //rxcpp::serialize_one_worker s1 = rxcpp::serialize_new_thread();
   //rxcpp::observe_on_one_worker o1 = rxcpp::observe_on_new_thread();
 
-  http_client client(U("http://dapi.kakao.com"));
+  http_client client("http://dapi.kakao.com");
 
   rxcpp::sources::range(1, 5)
     .map([client](int v) {

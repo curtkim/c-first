@@ -15,13 +15,13 @@ int main() {
     .map([o1](int v) {
       return rxcpp::sources::just(v * 2)
         .tap([](int v) {
-          cout << v << " " << this_thread::get_id() << endl;
+          cout << v << " " << this_thread::get_id() << endl; // 새로운 thread에서 실행된다.
           this_thread::sleep_for(chrono::milliseconds(300));
         })
         .subscribe_on(o1);
     })
     .flat_map([](auto observable) { return observable; })
-    .observe_on(s1)
+    .observe_on(o1)
     .subscribe(
       [](int v) {
         cout << v << " " << this_thread::get_id() << endl;
