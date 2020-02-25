@@ -109,36 +109,31 @@ int main(int, char**)
     rxcpp::schedulers::run_loop rl;
     auto mainthread = rxcpp::observe_on_run_loop(rl);
 
-    //auto poolthread = rxcpp::observe_on_event_loop();
-
     // model
-    auto period = std::chrono::milliseconds(1000/30);
-    auto interval$ = rxcpp::sources::range(1, 1000);
-
+    auto interval$ = rxcpp::sources::interval(std::chrono::seconds(1));
 
     rxcpp::subjects::subject<int> framebus;
     auto frameout = framebus.get_subscriber();
-    auto sendframe = [frameout]() {
-        frameout.on_next(1);
+    auto sendframe = [frameout](int frame) {
+        frameout.on_next(frame);
     };
-    auto frames = framebus.get_observable();
+    auto frame$ = framebus.get_observable();
 
-    auto draw = frames |
-                rxcpp::operators::tap([](int a){
-                    std::cout << a << std::endl;
-                }) |
-                rxcpp::operators::with_latest_from(interval$);
-
-    draw |
-        rxcpp::operators::tap([](long i){
-            std::cout << i << std::endl;
-            ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::SetWindowFontScale(3);
-            ImGui::Text("counter = %d", i);
-            ImGui::End();
-        });
+    frame$
+    .with_latest_from(interval$)
+    .tap([](std::tuple<int, int> v){
+        int frame = std::get<0>(v);
+        int second = std::get<1>(v);
+        ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::SetWindowFontScale(2);
+        ImGui::Text("frame = %d", frame);
+        ImGui::Text("second = %d", second);
+        ImGui::End();
+    })
+    .subscribe();
 
     // Main loop
+    int frame = 0;
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -148,15 +143,10 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        std::cout << "start ";
+        sendframe(frame++);
         while (!rl.empty() && rl.peek().when < rl.now()) {
             rl.dispatch();
         }
-        sendframe();
-        while (!rl.empty() && rl.peek().when < rl.now()) {
-            rl.dispatch();
-        }
-        std::cout << " end" << std::endl;
 
         // Rendering
         ImGui::Render();
