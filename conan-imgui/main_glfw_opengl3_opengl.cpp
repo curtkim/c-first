@@ -2,6 +2,7 @@
 // If you are new to dear imgui, see examples/README.txt and documentation at the top of imgui.cpp.
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
 
+#include <iostream>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -74,6 +75,9 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
+int WIDTH = 1280;
+int HEIGHT = 720;
+
 int main(int, char**)
 {
     // Setup window
@@ -99,7 +103,7 @@ int main(int, char**)
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -123,6 +127,22 @@ int main(int, char**)
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
         return 1;
     }
+
+    /*
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    // create a color attachment texture
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+    std::cout << "framebuffer=" << framebuffer << " textureColorbuffer= " << textureColorbuffer << std::endl;
+    */
 
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location, vcol_location;
@@ -192,6 +212,11 @@ int main(int, char**)
             int width, height;
             mat4x4 m, p, mvp;
 
+            /*
+            glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+            glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+            */
+
             glfwGetFramebufferSize(window, &width, &height);
             ratio = width / (float) height;
             glViewport(0, 0, width, height);
@@ -219,11 +244,22 @@ int main(int, char**)
             glUseProgram(program);
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *) mvp);
             glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
         }
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        /*
+        {
+            // draw circle in background
+            ImDrawList *drawList = ImGui::GetBackgroundDrawList();
+            drawList->AddImage((void *) (intptr_t) textureColorbuffer, ImVec2(0,0), ImVec2(WIDTH, HEIGHT));
+        }
+        */
 
         {
             ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
@@ -244,6 +280,7 @@ int main(int, char**)
             ImGui::ColorEdit3("vertex b", (float*)&param_color_vertex_b);
             ImGui::End();
         }
+
         ImGui::Render();
 
         /*
