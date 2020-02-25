@@ -167,6 +167,7 @@ int main(int, char**)
     bool show_demo_window = false;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 circle_color = ImVec4(1.0f, 0.0f, 0.0f, 1.00f);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -221,11 +222,18 @@ int main(int, char**)
         }
 
         {
+            // draw image
             ImGui::Begin("OpenGL Texture Text");
             ImGui::Text("pointer = %p", my_image_texture);
             ImGui::Text("size = %d x %d", my_image_width, my_image_height);
             ImGui::Image((void *) (intptr_t) my_image_texture, ImVec2(my_image_width, my_image_height));
             ImGui::End();
+        }
+
+        {
+            // draw circle in background
+            ImDrawList *drawList = ImGui::GetBackgroundDrawList();
+            drawList->AddCircle(ImVec2(100, 100), 100.0f, ImGui::GetColorU32(circle_color), 100, 3.0f);
         }
 
         // Rendering
