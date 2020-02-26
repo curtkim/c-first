@@ -10,3 +10,9 @@ add_executable(dcgan
 		dcgan.cpp
 		)
 target_link_libraries(dcgan ${CONAN_LIBS})
+
+add_executable(torchscript
+		torchscript.cpp
+		)
+target_link_libraries(torchscript ${CONAN_LIBS})
+
