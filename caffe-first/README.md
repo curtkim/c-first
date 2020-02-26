@@ -14,4 +14,7 @@ https://github.com/BVLC/caffe/tree/master/examples/cpp_classification
         models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel \
         data/ilsvrc12/imagenet_mean.binaryproto \
         data/ilsvrc12/synset_words.txt \
-        examples/images/cat.jpg 
+        examples/images/cat.jpg
+        
+## conan
+https://github.com/bincrafters/conan-caffe/blob/testing/1.0/conanfile.py 
