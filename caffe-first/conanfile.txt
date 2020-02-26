@@ -1,0 +1,10 @@
+[requires]
+caffe/1.0@bincrafters/stable
+opencv/4.1.1@conan/stable
+
+[generators]
+cmake
+
+[options]
+opencv:protobuf=False
+caffe:shared=True
