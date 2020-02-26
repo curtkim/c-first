@@ -1,0 +1,5 @@
+[requires]
+libtorch/1.4.0@demo/testing
+
+[generators]
+cmake
