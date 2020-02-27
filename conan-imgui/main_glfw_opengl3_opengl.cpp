@@ -128,7 +128,6 @@ int main(int, char**)
         return 1;
     }
 
-    /*
     unsigned int framebuffer;
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -142,7 +141,17 @@ int main(int, char**)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 
     std::cout << "framebuffer=" << framebuffer << " textureColorbuffer= " << textureColorbuffer << std::endl;
-    */
+
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, WIDTH, HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+    // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    std::cout << "rbo=" << rbo << std::endl;
 
     GLuint program;
     GLint mvp_location;
@@ -209,15 +218,16 @@ int main(int, char**)
     while (!glfwWindowShouldClose(window))
     {
         {
+            int current_framebuffer;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &current_framebuffer);
+
             // Draw Triangle
             float ratio;
             int width, height;
             mat4x4 m, p, mvp;
 
-            /*
             glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
             glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
-            */
 
             glfwGetFramebufferSize(window, &width, &height);
             ratio = width / (float) height;
@@ -247,21 +257,16 @@ int main(int, char**)
             glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *) mvp);
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
-            //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            //glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+            // restore
+            glBindFramebuffer(GL_FRAMEBUFFER, current_framebuffer);
+            glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+            glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // set clear color to white (not really necessery actually, since we won't be able to see behind the quad anyways)
+            glClear(GL_COLOR_BUFFER_BIT);
         }
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        /*
-        {
-            // draw circle in background
-            ImDrawList *drawList = ImGui::GetBackgroundDrawList();
-            drawList->AddImage((void *) (intptr_t) textureColorbuffer, ImVec2(0,0), ImVec2(WIDTH, HEIGHT));
-        }
-        */
 
         {
             ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
@@ -283,16 +288,26 @@ int main(int, char**)
             ImGui::End();
         }
 
+        {
+            // draw image in frame
+            ImGui::Begin("OpenGL Texture Text");
+            ImGui::Image((void *) (intptr_t) textureColorbuffer, ImVec2(WIDTH, HEIGHT));
+            ImGui::End();
+        }
+
+        {
+            // draw circle in background
+            ImDrawList *drawList = ImGui::GetBackgroundDrawList();
+            //ImDrawList *drawList = ImGui::GetWindowDrawList();
+            drawList->AddImage((void *) (intptr_t) textureColorbuffer, ImVec2(0,0), ImVec2(WIDTH, HEIGHT));
+        }
+
         ImGui::Render();
 
-        /*
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, WIDTH, HEIGHT);
+        //glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        //glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        */
 
         glfwSwapBuffers(window);
         glfwPollEvents();
