@@ -49,3 +49,15 @@ add_executable(main_glfw_opengl3_opengl
 		linmath.h
 		)
 target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY})
+
+
+add_executable(main
+		main.cpp
+		bindings/imgui_impl_glfw.cpp
+		bindings/imgui_impl_glfw.h
+		bindings/imgui_impl_opengl3.cpp
+		bindings/imgui_impl_opengl3.h
+		opengl_shader.cpp
+		opengl_shader.h
+		)
+target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY})
