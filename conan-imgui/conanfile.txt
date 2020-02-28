@@ -6,3 +6,11 @@ imgui/1.73@bincrafters/stable
 
 [generators]
 cmake
+
+[imports]
+./misc/bindings, imgui_impl_glfw.h -> ../bindings
+./misc/bindings, imgui_impl_glfw.cpp -> ../bindings
+./misc/bindings, imgui_impl_opengl3.h -> ../bindings
+./misc/bindings, imgui_impl_opengl3.cpp -> ../bindings
+./misc/bindings, imgui_impl_opengl2.h -> ../bindings
+./misc/bindings, imgui_impl_opengl2.cpp -> ../bindings

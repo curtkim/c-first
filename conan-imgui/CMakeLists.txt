@@ -13,39 +13,39 @@ conan_basic_setup()
 
 add_executable(main_glfw_opengl2
 		main_glfw_opengl2.cpp
-	imgui_impl_glfw.cpp
-	imgui_impl_glfw.h
-	imgui_impl_opengl2.cpp
-	imgui_impl_opengl2.h
+		bindings/imgui_impl_glfw.cpp
+		bindings/imgui_impl_glfw.h
+		bindings/imgui_impl_opengl2.cpp
+		bindings/imgui_impl_opengl2.h
   )
 target_link_libraries(main_glfw_opengl2 ${CONAN_LIBS} ${OPENGL_LIBRARY})
 
 
 add_executable(main_glfw_opengl3
 		main_glfw_opengl3.cpp
-		imgui_impl_glfw.cpp
-		imgui_impl_glfw.h
-		imgui_impl_opengl3.cpp
-		imgui_impl_opengl3.h
+		bindings/imgui_impl_glfw.cpp
+		bindings/imgui_impl_glfw.h
+		bindings/imgui_impl_opengl3.cpp
+		bindings/imgui_impl_opengl3.h
 		)
 target_link_libraries(main_glfw_opengl3 ${CONAN_LIBS} ${OPENGL_LIBRARY})
 
 
 add_executable(show_image
 		show_image.cpp
-		imgui_impl_glfw.cpp
-		imgui_impl_glfw.h
-		imgui_impl_opengl3.cpp
-		imgui_impl_opengl3.h
+		bindings/imgui_impl_glfw.cpp
+		bindings/imgui_impl_glfw.h
+		bindings/imgui_impl_opengl3.cpp
+		bindings/imgui_impl_opengl3.h
 		)
 target_link_libraries(show_image ${CONAN_LIBS} ${OPENGL_LIBRARY})
 
 add_executable(main_glfw_opengl3_opengl
 		main_glfw_opengl3_opengl.cpp
-		imgui_impl_glfw.cpp
-		imgui_impl_glfw.h
-		imgui_impl_opengl3.cpp
-		imgui_impl_opengl3.h
+		bindings/imgui_impl_glfw.cpp
+		bindings/imgui_impl_glfw.h
+		bindings/imgui_impl_opengl3.cpp
+		bindings/imgui_impl_opengl3.h
 		linmath.h
 		)
 target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY})

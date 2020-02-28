@@ -7,8 +7,8 @@
 // See imgui_impl_glfw.cpp for details.
 
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl2.h"
+#include "bindings/imgui_impl_glfw.h"
+#include "bindings/imgui_impl_opengl2.h"
 #include <stdio.h>
 #ifdef __APPLE__
 #define GL_SILENCE_DEPRECATION
