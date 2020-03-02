@@ -13,8 +13,6 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 
-
-
 bool SetProtoToASCIIFile(const google::protobuf::Message &message,
                          int file_descriptor) {
     using google::protobuf::TextFormat;
