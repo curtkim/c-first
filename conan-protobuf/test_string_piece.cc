@@ -4,7 +4,7 @@
 
 int main() {
     Info info;
-
+    info.mutable_unknown_fields().
     //info.set_data("0123456789");
 
 
