@@ -1,0 +1,4 @@
+syntax = "proto2";
+message Info {
+  required bytes data = 1 [ctype = STRING_PIECE];
+}

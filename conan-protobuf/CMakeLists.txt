@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1.2)
-project(sensor CXX)
+project(conan_protobuf CXX)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -8,26 +8,17 @@ conan_basic_setup(TARGETS)
 
 find_package(Protobuf REQUIRED)
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS sensor.proto sensor2.proto)
-protobuf_generate_python(PROTO_PYS sensor.proto)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS sensor.proto sensor2.proto info.proto)
+#protobuf_generate_python(PROTO_PYS sensor.proto)
+#add_custom_target(proto_python ALL DEPENDS ${PROTO_PYS})
 
-
-
-add_executable(${PROJECT_NAME} main.cc ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC CONAN_PKG::protobuf)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
-
-add_custom_target(proto_python ALL DEPENDS ${PROTO_PYS})
-
-
-add_executable(write_real write_real.cpp ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(write_real PUBLIC CONAN_PKG::protobuf)
-target_include_directories(write_real PRIVATE ${CMAKE_BINARY_DIR})
-set_target_properties(write_real PROPERTIES CXX_STANDARD 17)
-
-# read2
-add_executable(read2 read2.cc ${PROTO_SRCS} ${PROTO_HDRS})
-target_link_libraries(read2 PUBLIC CONAN_PKG::protobuf)
-target_include_directories(read2 PRIVATE ${CMAKE_BINARY_DIR})
-set_target_properties(read2 PROPERTIES CXX_STANDARD 17)
+foreach(APP
+        write
+        read_by_sensor2
+        write_like_apollo
+        test_string_piece)
+    add_executable(${APP} ${APP}.cc ${PROTO_SRCS} ${PROTO_HDRS})
+    target_link_libraries(${APP} PRIVATE CONAN_PKG::protobuf)
+    target_include_directories(${APP} PRIVATE ${CMAKE_BINARY_DIR})
+    set_target_properties(${APP} PROPERTIES CXX_STANDARD 17)
+endforeach()
