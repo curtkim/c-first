@@ -1,0 +1,5 @@
+[requires]
+doctest/2.3.6
+
+[generators]
+cmake
