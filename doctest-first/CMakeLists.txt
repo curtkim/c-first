@@ -12,3 +12,4 @@ set(TEST_SOURCES
         )
 
 add_executable(test-runner test-runner.cpp ${TEST_SOURCES})
+add_test(all-ests test-runner)

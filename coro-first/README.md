@@ -8,4 +8,4 @@
     ninja
 
     # TODO
-    LD_LIBRARY_PATH=/usr/lib/llvm-9.0/lib ../coroutines 
+    LD_LIBRARY_PATH=/usr/lib/llvm-9.0/lib ./coroutines
