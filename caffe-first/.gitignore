@@ -1,5 +1,6 @@
-models/*
-*.caffemodel
+data/ilsvrc12/*.txt
+data/ilsvrc12/*.pickle
+**/*.caffemodel
 *.caffemodel.h5
 *.solverstate
 *.solverstate.h5
