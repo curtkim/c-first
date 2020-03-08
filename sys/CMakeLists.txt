@@ -14,3 +14,6 @@ add_executable(client client.cpp)
 
 add_executable(namedpipe_write namedpipe_write.cpp)
 add_executable(namedpipe_read namedpipe_read.cpp)
+
+add_executable(memory_mapped_write memory_mapped_write.cpp)
+add_executable(memory_mapped_read memory_mapped_read.cpp)
