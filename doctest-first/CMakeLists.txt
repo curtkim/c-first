@@ -6,8 +6,9 @@ conan_basic_setup()
 
 add_definitions("-std=c++17")
 
-add_executable(test-factorial test-factorial.cpp)
-target_link_libraries(test-factorial)
+set(TEST_SOURCES
+        test-factorial.cpp
+        test-vector.cpp
+        )
 
-add_executable(test-vector test-vector.cpp)
-target_link_libraries(test-vector)
+add_executable(test-runner test-runner.cpp ${TEST_SOURCES})
