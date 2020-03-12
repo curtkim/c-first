@@ -3,3 +3,8 @@ libtorch/1.4.0@demo/testing
 
 [generators]
 cmake
+
+[options]
+#libtorch:use_cuda=True
+#libtorch:use_cudnn=True
+#libtorch:use_static_cudnn=True
