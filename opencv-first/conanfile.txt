@@ -1,5 +1,8 @@
- [requires]
- opencv/4.1.1@conan/stable
+[requires]
+opencv/4.1.1@conan/stable
 
- [generators]
- cmake
+[generators]
+cmake
+
+[options]
+opencv:shared=True
