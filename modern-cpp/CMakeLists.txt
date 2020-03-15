@@ -54,3 +54,10 @@ foreach(APP
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
 endforeach()
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    add_executable(parallel_transform parallel_transform.cpp)
+    set_property(TARGET parallel_transform PROPERTY CXX_STANDARD 17)
+    target_link_libraries(parallel_transform PUBLIC OpenMP::OpenMP_CXX)
+endif()
