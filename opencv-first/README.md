@@ -12,3 +12,7 @@
         libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fd2245b4000)
         librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fd2243ac000)
         /lib64/ld-linux-x86-64.so.2 (0x00007fd226ff8000)
+
+
+## reference
+https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html
