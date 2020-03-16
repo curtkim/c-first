@@ -1,0 +1,7 @@
+[requires]
+BehaviorTree.CPP/3.1.1@demo/stable
+
+[generators]
+cmake
+
+[options]
