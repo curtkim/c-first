@@ -1,0 +1,8 @@
+[requires]
+boost_geometry/1.69.0@bincrafters/stable
+shapelib/1.5.0
+
+[generators]
+cmake
+
+
