@@ -4,11 +4,8 @@
 
 #include "car.hpp"
 namespace transport {
-    /**
-     * 정보를 출력한다.
-     */
-    void Car::Print() {
-        std::cout << name << " " << year;
-    }
-}
-
+/**
+ * 정보를 출력한다.
+ */
+void Car::Print() { std::cout << name << " " << year; }
+} // namespace transport

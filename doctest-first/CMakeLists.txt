@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(conan-gtest)
+project(doctest-first)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -12,4 +12,4 @@ set(TEST_SOURCES
         )
 
 add_executable(test-runner test-runner.cpp ${TEST_SOURCES})
-add_test(all-ests test-runner)
+add_doc_test(all-ests test-runner)
