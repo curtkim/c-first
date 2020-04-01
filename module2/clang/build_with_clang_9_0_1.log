@@ -1,0 +1,10 @@
++ clang++ --version
+clang version 9.0.1 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
++ clang++ -std=c++2a -fmodules-ts --precompile ../math.cppm -o math.pcm
++ clang++ -std=c++2a -fmodules-ts -c math.pcm -o math.o
++ clang++ -std=c++2a -fmodules-ts -fprebuilt-module-path=. math.o ../main.cpp -o math
++ ./math
+Hello World

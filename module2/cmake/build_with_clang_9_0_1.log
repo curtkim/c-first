@@ -1,0 +1,61 @@
+clang version 9.0.1 
+Target: x86_64-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+-- The C compiler identification is Clang 9.0.1
+-- The CXX compiler identification is Clang 9.0.1
+-- Check for working C compiler: /usr/bin/clang
+-- Check for working C compiler: /usr/bin/clang -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/clang++
+-- Check for working CXX compiler: /usr/bin/clang++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CXX_MODULES
+-- Performing Test CXX_MODULES - Success
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/niklas/Documents/github/CppModulesExamples/cmake/build
+/usr/bin/cmake -S/home/niklas/Documents/github/CppModulesExamples/cmake -B/home/niklas/Documents/github/CppModulesExamples/cmake/build --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles/progress.marks
+make -f CMakeFiles/Makefile2 all
+make -f CMakeFiles/hello_world.dir/build.make CMakeFiles/hello_world.dir/depend
+cd /home/niklas/Documents/github/CppModulesExamples/cmake/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles/hello_world.dir/DependInfo.cmake --color=
+Scanning dependencies of target hello_world
+make -f CMakeFiles/hello_world.dir/build.make CMakeFiles/hello_world.dir/build
+/usr/bin/clang++    -fmodules-ts -o CMakeFiles/hello_world.dir/hello.cpp.o -c /home/niklas/Documents/github/CppModulesExamples/cmake/hello.cpp
+/usr/bin/clang++    -fmodules-ts -o CMakeFiles/hello_world.dir/src/world.cpp.o -c /home/niklas/Documents/github/CppModulesExamples/cmake/src/world.cpp
+/usr/bin/cmake -P CMakeFiles/hello_world.dir/cmake_clean_target.cmake
+/usr/bin/cmake -E cmake_link_script CMakeFiles/hello_world.dir/link.txt --verbose=1
+/usr/bin/ar qc libhello_world.a  CMakeFiles/hello_world.dir/hello.cpp.o CMakeFiles/hello_world.dir/src/world.cpp.o
+/usr/bin/ranlib libhello_world.a
+[ 42%] Built target hello_world
+make -f CMakeFiles/module_src__world.cpp.pcm.dir/build.make CMakeFiles/module_src__world.cpp.pcm.dir/depend
+cd /home/niklas/Documents/github/CppModulesExamples/cmake/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles/module_src__world.cpp.pcm.dir/DependInfo.cmake --color=
+Scanning dependencies of target module_src__world.cpp.pcm
+make -f CMakeFiles/module_src__world.cpp.pcm.dir/build.make CMakeFiles/module_src__world.cpp.pcm.dir/build
+/usr/bin/clang++ -fmodules-ts -fmodules-ts -x c++-module --precompile /home/niklas/Documents/github/CppModulesExamples/cmake/src/world.cpp -o src/world.cpp.pcm
+/usr/bin/clang++ -fmodules-ts -fmodules-ts -x c++-module --precompile /home/niklas/Documents/github/CppModulesExamples/cmake/src/world.cpp -o src/world.cpp.pcm
+[ 57%] Built target module_src__world.cpp.pcm
+make -f CMakeFiles/module_hello.cpp.pcm.dir/build.make CMakeFiles/module_hello.cpp.pcm.dir/depend
+cd /home/niklas/Documents/github/CppModulesExamples/cmake/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles/module_hello.cpp.pcm.dir/DependInfo.cmake --color=
+Scanning dependencies of target module_hello.cpp.pcm
+make -f CMakeFiles/module_hello.cpp.pcm.dir/build.make CMakeFiles/module_hello.cpp.pcm.dir/build
+/usr/bin/clang++ -fmodules-ts -fmodules-ts -x c++-module --precompile /home/niklas/Documents/github/CppModulesExamples/cmake/hello.cpp -o hello.cpp.pcm
+/usr/bin/clang++ -fmodules-ts -fmodules-ts -x c++-module --precompile /home/niklas/Documents/github/CppModulesExamples/cmake/hello.cpp -o hello.cpp.pcm
+[ 71%] Built target module_hello.cpp.pcm
+make -f CMakeFiles/cpp_modules_example.dir/build.make CMakeFiles/cpp_modules_example.dir/depend
+cd /home/niklas/Documents/github/CppModulesExamples/cmake/build && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles/cpp_modules_example.dir/DependInfo.cmake --color=
+Scanning dependencies of target cpp_modules_example
+make -f CMakeFiles/cpp_modules_example.dir/build.make CMakeFiles/cpp_modules_example.dir/build
+/usr/bin/clang++    -fmodules-ts -fmodule-file=hello.cpp.pcm -fmodule-file=src/world.cpp.pcm -o CMakeFiles/cpp_modules_example.dir/main.cpp.o -c /home/niklas/Documents/github/CppModulesExamples/cmake/main.cpp
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cpp_modules_example.dir/link.txt --verbose=1
+/usr/bin/clang++     CMakeFiles/cpp_modules_example.dir/main.cpp.o  -o cpp_modules_example  libhello_world.a 
+[100%] Built target cpp_modules_example
+/usr/bin/cmake -E cmake_progress_start /home/niklas/Documents/github/CppModulesExamples/cmake/build/CMakeFiles 0
+Hello World!
