@@ -1,6 +1,8 @@
 #include <vector>
 #include <iostream>
 
+//#define MOVE_ENABLED TRUE
+
 class Container {
     int * m_Data;
 public:
@@ -11,11 +13,13 @@ public:
         std::cout << "Constructor: Allocation 20 int" << std::endl;
     }
     ~Container() {
+        std::cout << "Deconstructor" << std::endl;
         if (m_Data) {
             delete[] m_Data;
             m_Data = NULL;
         }
     }
+
     //Copy Constructor
     Container(const Container & obj) {
         //Allocate an array of 20 int on heap
@@ -44,6 +48,7 @@ public:
         }
     }
 
+    #ifdef MOVE_ENABLED
     // Move Constructor
     Container(Container && obj)
     {
@@ -70,6 +75,7 @@ public:
             std::cout<<"Move Assignment Operator"<<std::endl;
         }
     }
+    #endif
 
 };
 
@@ -84,12 +90,14 @@ int main() {
     // Create a vector of Container Type
     std::vector<Container> vecOfContainers;
 
+    std::cout << "1 ===" << std::endl;
     //Add object returned by function into the vector
     vecOfContainers.push_back(getContainer());
 
-    std::cout << "---" << std::endl;
-
+    std::cout << "2 ===" << std::endl;
     Container obj;
+
+    std::cout << "3 ===" << std::endl;
     obj = getContainer();
 
     return 0;

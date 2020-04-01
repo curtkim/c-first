@@ -47,6 +47,7 @@ foreach(APP
         main
         cpp17
         move_forward
+        move_forward2
         test_string_view
         test_string_view2
         test_string_view3)

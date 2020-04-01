@@ -68,6 +68,6 @@ void test_std_move(){
 
 int main() {
     test_std_move();
-    test_std_forward();
+    //test_std_forward();
 }
 
