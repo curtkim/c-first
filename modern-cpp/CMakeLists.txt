@@ -33,10 +33,6 @@ target_link_libraries( Threadpool_test pthread )
 
 ### 17
 
-add_executable(modern-thread thread_main.cpp)
-set_property(TARGET modern-thread PROPERTY CXX_STANDARD 17)
-target_link_libraries( modern-thread pthread )
-
 foreach(APP
         main
         cpp17
@@ -45,10 +41,14 @@ foreach(APP
         test_string_view
         test_string_view2
         test_string_view3
-        return_value_optimization)
+        return_value_optimization
+        thread_main
+        test_async
+        test_async2)
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    target_link_libraries( ${APP} pthread )
 endforeach()
 
 find_package(OpenMP)
