@@ -5,7 +5,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### 11
 
-foreach(APP array move_semantic)
+foreach(APP array move_semantic debug_release)
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 11)
 endforeach()
