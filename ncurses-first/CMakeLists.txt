@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.15)
-project(main)
+project(ncurse)
 
-add_definitions("-std=c++17")
+foreach(APP hello win win_border tt simple_color simple_key printw_example mouse_menu key_code)
+  add_executable(${APP} ${APP}.cpp)
+  target_compile_features(${APP} PRIVATE cxx_std_11)
+  target_link_libraries(${APP} ncurses)
+endforeach()
 
-add_executable(main main.cpp)
-target_link_libraries(main ncurses)
-
-add_executable(win win.cpp)
-target_link_libraries(win ncurses)
-
-add_executable(win_border win_border.cpp)
-target_link_libraries(win_border ncurses)
-
+foreach(APP form_simple form_win panel_simple menu_simple)
+  add_executable(${APP} ${APP}.cpp)
+  target_compile_features(${APP} PRIVATE cxx_std_11)
+  target_link_libraries(${APP} ncurses form panel menu)
+endforeach()
