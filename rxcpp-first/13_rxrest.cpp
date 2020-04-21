@@ -38,7 +38,7 @@ auto get(http_client client, string url) {
 
 int main() {
 
-  chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+  chrono::steady_clock::time_point start_time = chrono::steady_clock::now();
 
   //rxcpp::serialize_one_worker s1 = rxcpp::serialize_new_thread();
   //rxcpp::observe_on_one_worker o1 = rxcpp::observe_on_new_thread();
@@ -55,10 +55,9 @@ int main() {
       [](string v) {
         cout << v << " " << this_thread::get_id() << endl;
       },
-      [begin]() {
-        chrono::steady_clock::time_point end = chrono::steady_clock::now();
-        cout << "Time difference = " << chrono::duration_cast<chrono::milliseconds>(end - begin).count()
-             << "[ms]" << endl;
+      [start_time]() {
+        long diff = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now() - start_time).count();
+        cout << "Time difference = " << diff << "[ms]" << endl;
       });
 
   this_thread::sleep_for(chrono::seconds(3));

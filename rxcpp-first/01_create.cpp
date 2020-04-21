@@ -25,7 +25,7 @@ int main() {
             [](){printf("OnCompleted\n");});
 
     // iterate
-    std::array< int, 3 > a={{1, 2, 3}};
+    std::array< int, 3 > a={1, 2, 3};
     auto values1 = rxcpp::sources::iterate(a);
     values1.
             subscribe(
@@ -47,4 +47,10 @@ int main() {
             [](const char *s, int p) {
                 printf("%s %d\n", s, p);
             }));
+
+    // from
+    rxcpp::sources::from(1,2,3).subscribe(
+        [](int v){printf("OnNext: %d\n", v);},
+        [](){printf("OnCompleted\n");}
+        );
 }

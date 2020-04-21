@@ -19,20 +19,18 @@ void temp() {
     identity_one_worker i2 = rxcpp::identity_current_thread();
     identity_one_worker i3 = rxcpp::identity_same_worker(w);
 
-    i1.
-
     // use mutex
-    serialize_one_worker s1 = rxcpp::serialize_new_thread();
-    serialize_one_worker s2 = rxcpp::serialize_event_loop();
-    serialize_one_worker s3 = rxcpp::serialize_same_worker(w);
+    //serialize_one_worker s1 = rxcpp::serialize_new_thread();
+    //serialize_one_worker s2 = rxcpp::serialize_event_loop();
+    //serialize_one_worker s3 = rxcpp::serialize_same_worker(w);
 
     // queue-onto-a-worker
-    observe_on_one_worker o1 = rxcpp::observe_on_new_thread();
-    observe_on_one_worker o2 = rxcpp::observe_on_event_loop();
-    observe_on_one_worker o3 = rxcpp::observe_on_run_loop(runLoop);
+    //observe_on_one_worker o1 = rxcpp::observe_on_new_thread();
+    //observe_on_one_worker o2 = rxcpp::observe_on_event_loop();
+    //observe_on_one_worker o3 = rxcpp::observe_on_run_loop(runLoop);
 
-    synchronize_in_one_worker sy1 = rxcpp::synchronize_new_thread();
-    synchronize_in_one_worker sy2 = rxcpp::synchronize_event_loop();
+    //synchronize_in_one_worker sy1 = rxcpp::synchronize_new_thread();
+    //synchronize_in_one_worker sy2 = rxcpp::synchronize_event_loop();
 }
 
 std::thread::id getThreadId() {
@@ -146,7 +144,7 @@ void test_observe_on_synchronize_new_thread() {
 //            });
 }
 
-
+/*
 void test_declarative_schedule() {
 
     identity_one_worker coordinate_function = rxcpp::identity_current_thread();
@@ -183,7 +181,7 @@ void test_declarative_schedule() {
 
     values.as_blocking().subscribe();
 }
-
+*/
 
 int main() {
 

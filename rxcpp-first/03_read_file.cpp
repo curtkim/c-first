@@ -19,7 +19,7 @@ void read_file(){
   // create
   auto lines = rxcpp::observable<>::create<std::string>(
     [](rxcpp::subscriber<std::string> s){
-      std::ifstream file("Makefile");
+      std::ifstream file("../Makefile");
       std::string line;
       while (getline(file, line)) {
         s.on_next(line);

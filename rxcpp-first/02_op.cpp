@@ -11,12 +11,7 @@ using namespace Rx;
 using namespace std;
 #include <chrono>
 
-uint64_t timeSinceEpochMillisec() {
-    //using namespace std::chrono;
-    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-}
-
-void test_with_latest_from2() {
+void test_with_latest_from_and_pairwise() {
   cout << "---" << __FUNCTION__ << endl;
 
   observable<int> a = range(1, 10);
@@ -75,7 +70,7 @@ void test_scan() {
 
 int main() {
 
-  test_with_latest_from2();
+  test_with_latest_from_and_pairwise();
   test_with_latest_from();
   test_concat_map();
   test_scan();
