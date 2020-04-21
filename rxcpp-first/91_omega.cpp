@@ -13,11 +13,7 @@ using namespace Rx;
 
 using namespace std;
 
-std::string join(std::vector<long> v) {
-    std::string s;
-    for (const auto &piece : v) s += piece + ", ";
-    return s;
-}
+
 
 int main() {
     auto lidar_period = std::chrono::milliseconds(50);
@@ -34,16 +30,18 @@ int main() {
     printf("main thread %ld\n", std::this_thread::get_id());
 
     lidar1$
-    .with_latest_from(lidar2$, lidar3$, lidar4$, lidar5$, gps$.buffer_with_time(lidar_period))
-    .subscribe([](std::tuple<long, long, long, long, long, std::vector<long>> v){
-        auto [ lidar1, lidar2, lidar3, lidar4, lidar5, gps_list ] = v;
-        printf("OnNext: %ld %d %d %d %d %d \n",
-                std::this_thread::get_id(), lidar1, lidar2, lidar3, lidar4, lidar5);
+    .with_latest_from(lidar2$, lidar3$, lidar4$, lidar5$, gps$, gps$.pairwise(), gps$.buffer_with_time(lidar_period))
+    .subscribe([](std::tuple<long, long, long, long, long, long, std::tuple<long, long>, std::vector<long>> v){
+        //C++17 structured binding:
+        auto [ lidar1, lidar2, lidar3, lidar4, lidar5, last_gps, gps_pair, gps_list ] = v;
+        printf("OnNext: %ld %d %d %d %d %d last_gps=%d\n",
+                std::this_thread::get_id(), lidar1, lidar2, lidar3, lidar4, lidar5, last_gps);
 
         for( auto i : gps_list ) {
             std::cout << i << " ";
         }
-        std::cout << gps_list.size() << std::endl;
+        std::cout << "pair=" << std::get<0>(gps_pair) << " " << std::get<1>(gps_pair);
+        std::cout << std::endl;
     });
 
     return 0;
