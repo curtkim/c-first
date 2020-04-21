@@ -12,7 +12,7 @@ conan_basic_setup()
 
 foreach(APP 01_create 02_op 03_read_file 09_complex
         11_concurrent 12_rxcurl_ex 13_rxrest
-        21_coordination 22_schedulers
+        20_coordination_list 21_observe 22_synchronize 23_worker_schedule
         91_omega )
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
