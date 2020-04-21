@@ -2,7 +2,7 @@
 #include <iostream>
 #include <asio.hpp>
 
-
+// 그러나 실제로 test.txt에는 데이터가 쓰여 있지 않다.
 int main() {
   asio::io_context io_context;
 
@@ -11,8 +11,8 @@ int main() {
   std::cout << "fd=" << fd << std::endl;
 
   asio::posix::stream_descriptor stream{io_context, fd};
-  std::future<std::size_t> f = asio::async_write(stream, asio::buffer("Hello"), asio::use_future);
 
+  std::future<std::size_t> f = asio::async_write(stream, asio::buffer("Hello"), asio::use_future);
   io_context.run();
 
   try
