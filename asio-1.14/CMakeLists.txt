@@ -13,8 +13,10 @@ conan_basic_setup()
 #target_link_libraries(range_based_for ${CONAN_LIBS})
 
 foreach(APP
-    stdout_write file_write_future file_write_c
-    timer daytime_client)
+    stdout_write stdin_read
+    file_write_future file_write_c file_watch
+    timer_system
+    daytime_client)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
 endforeach()
