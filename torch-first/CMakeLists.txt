@@ -6,13 +6,7 @@ add_definitions("-std=c++17")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(dcgan
-		dcgan.cpp
-		)
-target_link_libraries(dcgan ${CONAN_LIBS})
-
-add_executable(torchscript
-		torchscript.cpp
-		)
-target_link_libraries(torchscript ${CONAN_LIBS})
-
+foreach(APP aten_first autograd_first dcgan torchscript)
+	add_executable(${APP} ${APP}.cpp)
+	target_link_libraries(${APP} ${CONAN_LIBS})
+endforeach()
