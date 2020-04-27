@@ -1,0 +1,7 @@
+sources:
+  "2.2.1":
+    url: https://github.com/rpclib/rpclib/archive/v2.2.1.tar.gz
+patches:
+  "2.2.1":
+    - patch_file: "patches/fix-cmake.patch"
+      base_path: "source_subfolder"
