@@ -5,5 +5,6 @@
     conan package . --source-folder=tmp/source --build-folder=tmp/build --package-folder=tmp/package
 
     conan export-pkg . demo/testing --package-folder=tmp/package
-    conan test test_package avro/1.9.2@demo/testing
+    conan test test_package rpclib/2.2.1@demo/testing
 
+    conan create . 2.2.1@demo/testing
