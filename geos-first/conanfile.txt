@@ -1,0 +1,5 @@
+[requires]
+geos/3.8.1
+
+[generators]
+cmake
