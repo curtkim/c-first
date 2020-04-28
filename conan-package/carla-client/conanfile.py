@@ -28,6 +28,9 @@ class CarlaClient(ConanFile):
         "boost/1.72.0",
         "rpclib/2.2.1@demo/testing",
         "carla-recast/20190509@demo/testing",        
+        "libpng/1.6.37",
+        "libtiff/4.1.0",
+        "libjpeg/9d",
     )    
 
     _cmake = None
