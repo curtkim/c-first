@@ -44,17 +44,13 @@ class CarlaClient(ConanFile):
             del self.options.fPIC
 
     def source(self):
-        #tools.get(**self.conan_data["sources"][self.version])
-
         if os.path.exists(self._source_subfolder) and os.path.isdir(self._source_subfolder):
             shutil.rmtree(self._source_subfolder)
-        tools.unzip("/data/Downloads/carla-0.9.9.tar.gz")
+
+        tools.get(**self.conan_data["sources"][self.version])
+        #tools.unzip("/data/Downloads/carla-0.9.9.tar.gz")
         extracted_name = "carla-" + self.version
         os.rename(extracted_name, self._source_subfolder)
-
-        # patch 
-        #for patch in self.conan_data["patches"][self.version]:
-        #    tools.patch(**patch)
 
     def build(self):
         cmake = self._configure_cmake()

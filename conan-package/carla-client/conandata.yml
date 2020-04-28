@@ -1,7 +1,3 @@
 sources:
   "0.9.9":
-    url: https://carla-releases.s3.eu-west-3.amazonaws.com/Linux/CARLA_0.9.9.tar.gz
-patches:
-  "0.9.9":
-    - patch_file: "patches/fix-cmake.patch"
-      base_path: "source_subfolder"
+    url: https://github.com/carla-simulator/carla/archive/0.9.9.tar.gz
