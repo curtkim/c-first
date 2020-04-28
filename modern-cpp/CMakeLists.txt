@@ -17,7 +17,7 @@ target_link_libraries( thread_pool_executor_example pthread )
 
 ### 14
 
-foreach(APP test_shared_ptr generic rvalue_reference unique)
+foreach(APP test_shared_ptr generic rvalue_reference unique cast)
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 14)
 endforeach()
