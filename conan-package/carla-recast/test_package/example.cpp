@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Recast.h"
+#include "recast/Recast.h"
 
 int main()
 {

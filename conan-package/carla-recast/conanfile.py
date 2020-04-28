@@ -67,8 +67,12 @@ class CarlaRecast(ConanFile):
 
     def package(self):
         self.copy("License.txt", dst="licenses", src=self._source_subfolder)
-        cmake = self._configure_cmake()
-        cmake.install()
-
+        self.copy("*.a", dst="lib", keep_path=False)
+        self.copy("*.h", src=self._source_subfolder + "/Recast/Include", dst="include/recast", keep_path=False) # from source
+        
     def package_info(self):
         self.cpp_info.libs = ["Recast", "DetourTileCache", "DetourCrowd", "Detour", "DebugUtils"]
+
+        #self.copy("License.txt", dst="licenses", src=self._source_subfolder)
+        #self.copy("*.h", src=self._source_subfolder+"/Recast/include", dst="include/recast", keep_path=False) # from source
+        #self.copy("*.a", dst="lib", keep_path=False)        
