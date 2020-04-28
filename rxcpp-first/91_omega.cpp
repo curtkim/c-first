@@ -19,7 +19,7 @@ using namespace std;
 
 
 struct Measure {
-    long frame;
+    long seq;
 };
 
 struct CarState : Measure {
@@ -92,7 +92,7 @@ observable<vector<GPSMeasure>> last_elements(observable<GPSMeasure> source, int 
 
 void print_list(std::vector<Measure> list) {
     for( auto i : list ) {
-        std::cout << i.frame << " ";
+        std::cout << i.seq << " ";
     }
     std::cout << std::endl;
 }
@@ -137,7 +137,7 @@ int main() {
             auto [ lidar1, car_state, gps_list, lidar2, lidar3, lidar4, lidar5, front_radar, rear_radar, camera1, camera2, camera3 ] = v;
 
             //printf("OnNext: %ld %d %d %d %d %d \n",
-            //       std::this_thread::get_id(), lidar1.frame, lidar2.frame, lidar3.frame, lidar4.frame, lidar5.frame);
+            //       std::this_thread::get_id(), lidar1.seq, lidar2.seq, lidar3.seq, lidar4.seq, lidar5.seq);
 
             GPSMeasure last_gps = gps_list.back();
             vector<CameraMeasure> cameras {camera1, camera2, camera3};
@@ -149,13 +149,13 @@ int main() {
             vector<Position> waypoints = plan(route, hdmap, curr_pos, obstacles, traffic_lights);
             Control ctrl = control(waypoints, car_state);
 
-            return make_tuple(lidar1.frame, car_state, curr_pos, obstacles, traffic_lights, waypoints, ctrl);
+            return make_tuple(lidar1.seq, car_state, curr_pos, obstacles, traffic_lights, waypoints, ctrl);
         });
 
     result$
         .subscribe([](std::tuple<long, CarState, Position, vector<Obstacle>, vector<TrafficLight>, vector<Position>, Control> v){
-            auto [ frame, car_state, curr_pos, obstacles, traffic_lights, waypoints, ctrl ] = v;
-            cout << frame << endl;
+            auto [ seq, car_state, curr_pos, obstacles, traffic_lights, waypoints, ctrl ] = v;
+            cout << "publish control lidar_seq:" << seq << " car_state_seq:" << car_state.seq << endl;
             publish(ctrl);
         });
 
