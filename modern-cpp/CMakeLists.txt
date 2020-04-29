@@ -45,7 +45,8 @@ foreach(APP
         thread_main
         test_async
         test_async2
-        variant)
+        variant
+        decltype_first)
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
