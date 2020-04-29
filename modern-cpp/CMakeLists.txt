@@ -44,7 +44,8 @@ foreach(APP
         return_value_optimization
         thread_main
         test_async
-        test_async2)
+        test_async2
+        variant)
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
