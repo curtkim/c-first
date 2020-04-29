@@ -22,6 +22,8 @@
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
 
+#include <boost/optional.hpp>
+
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
@@ -48,6 +50,11 @@ static void SaveSemSegImageToDisk(const csd::Image &image) {
   std::snprintf(buffer, sizeof(buffer), "%08zu", image.GetFrame());
   auto filename = "_images/"s + buffer + ".png";
 
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+  std::cout << std::put_time(&tm, "%F %T") << " " << std::this_thread::get_id() << " frame: " << image.GetFrame();
+  std::cout << filename << " size=" << image.size() << std::endl;
+
   auto view = ImageView::MakeColorConvertedView(
       ImageView::MakeView(image),
       ColorConverter::CityScapesPalette());
@@ -62,6 +69,11 @@ static auto ParseArguments(int argc, const char *argv[]) {
       ResultType{"localhost", 2000u};
 }
 
+void doit(boost::shared_ptr<cc::BlueprintLibrary> blueprint_library, cc::World world, boost::shared_ptr<cc::Actor> actor) {
+
+}
+
+
 int main(int argc, const char *argv[]) {
   try {
 
@@ -75,6 +87,7 @@ int main(int argc, const char *argv[]) {
 
     auto client = cc::Client(host, port, 1);
     client.SetTimeout(10s);
+
 
     std::cout << "Client API version : " << client.GetClientVersion() << '\n';
     std::cout << "Server API version : " << client.GetServerVersion() << '\n';
@@ -120,31 +133,27 @@ int main(int argc, const char *argv[]) {
     transform.rotation.pitch = -15.0f;
     spectator->SetTransform(transform);
 
+
     // Find a camera blueprint.
     auto *camera_bp = blueprint_library->Find("sensor.camera.semantic_segmentation");
     EXPECT_TRUE(camera_bp != nullptr);
-    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.1");
+    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
 
     // Spawn a camera attached to the vehicle.
     auto camera_transform = cg::Transform{
-        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-        cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+      cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+      cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, actor.get());
     auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
 
     // Register a callback to save images to disk.
     camera->Listen([](auto data) {
-      auto image = boost::static_pointer_cast<csd::Image>(data);
-      EXPECT_TRUE(image != nullptr);
-
-      std::time_t t = std::time(nullptr);
-      std::tm tm = *std::localtime(&t);
-      std::cout << std::put_time(&tm, "%F %T") << " " << std::this_thread::get_id() << " frame: " << image->GetFrame() << std::endl;
-
-      //SaveSemSegImageToDisk(*image);
+        auto image = boost::static_pointer_cast<csd::Image>(data);
+        EXPECT_TRUE(image != nullptr);
+        SaveSemSegImageToDisk(*image);
     });
 
-    std::this_thread::sleep_for(5s);
+    std::this_thread::sleep_for(10s);
 
     // Remove actors from the simulation.
     camera->Destroy();
