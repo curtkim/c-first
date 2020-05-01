@@ -133,7 +133,7 @@ int main(int argc, const char *argv[]) {
       auto lidar_data = boost::static_pointer_cast<csd::LidarMeasurement>(data);
       EXPECT_TRUE(lidar_data != nullptr);
 
-      std::cout << lidar_data->GetFrame() << " ch_count:" << lidar_data->GetChannelCount()
+      std::cout << std::this_thread::get_id() << " " << lidar_data->GetFrame() << " ch_count:" << lidar_data->GetChannelCount()
           << " pt_count(0):" << lidar_data->GetPointCount(0)
           << " pt_count(10):" << lidar_data->GetPointCount(10)
           << " pt_count(20):" << lidar_data->GetPointCount(20)
@@ -142,6 +142,13 @@ int main(int argc, const char *argv[]) {
       char buffer[9u];
       std::snprintf(buffer, sizeof(buffer), "%08zu", lidar_data->GetFrame());
       auto filename = "_lidar/"s + buffer + ".ply";
+
+      /*
+      auto begin = lidar_data->begin();
+      auto end = lidar_data->end();
+      for (; begin != end; ++begin)
+        std::cout << begin->x << ' ' << begin->y << ' ' << begin->z << '\n';
+      */
 
       carla::pointcloud::PointCloudIO::SaveToDisk(filename, lidar_data->begin(), lidar_data->end());
     });
