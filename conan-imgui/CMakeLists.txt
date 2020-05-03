@@ -22,34 +22,19 @@ add_executable(main_glfw_opengl2
 target_link_libraries(main_glfw_opengl2 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 
 
-add_executable(main_glfw_opengl3
-		main_glfw_opengl3.cpp
-		bindings/imgui_impl_glfw.cpp
-		bindings/imgui_impl_glfw.h
-		bindings/imgui_impl_opengl3.cpp
-		bindings/imgui_impl_opengl3.h
-		)
-target_link_libraries(main_glfw_opengl3 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-
-
-add_executable(show_image
-		show_image.cpp
-		bindings/imgui_impl_glfw.cpp
-		bindings/imgui_impl_glfw.h
-		bindings/imgui_impl_opengl3.cpp
-		bindings/imgui_impl_opengl3.h
-		)
-target_link_libraries(show_image ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-
-add_executable(main_glfw_opengl3_opengl
-		main_glfw_opengl3_opengl.cpp
-		bindings/imgui_impl_glfw.cpp
-		bindings/imgui_impl_glfw.h
-		bindings/imgui_impl_opengl3.cpp
-		bindings/imgui_impl_opengl3.h
-		linmath.h
-		)
-target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+foreach(APP
+		main_glfw_opengl3
+		main_glfw_opengl3_opengl
+		show_image)
+	add_executable(${APP}
+			${APP}.cpp
+			bindings/imgui_impl_glfw.cpp
+			bindings/imgui_impl_glfw.h
+			bindings/imgui_impl_opengl3.cpp
+			bindings/imgui_impl_opengl3.h
+			)
+	target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+endforeach()
 
 
 add_executable(main
