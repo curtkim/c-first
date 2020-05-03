@@ -1,4 +1,5 @@
 import os
+import shutil
 from conans import ConanFile, CMake, tools
 
 
@@ -25,7 +26,7 @@ class PclConan(ConanFile):
 
     generators = "cmake"
     exports_sources = ["CMakeLists.txt"]
-    source_subfolder = "source_subfolder"
+    _source_subfolder = "source_subfolder"
 
     def requirements(self):
         self.requires("eigen/3.3.7")
@@ -35,8 +36,11 @@ class PclConan(ConanFile):
         self.requires("libpng/1.6.37")
 
     def source(self):
-        tools.get("https://github.com/PointCloudLibrary/pcl/archive/pcl-1.10.1.zip")
-        os.rename("pcl-pcl-1.10.1", self.source_subfolder)
+        tools.get(**self.conan_data["sources"][self.version])
+        extracted_name = "pcl-pcl-" + self.version
+        if os.path.exists(self._source_subfolder) and os.path.isdir(self._source_subfolder):
+            shutil.rmtree(self._source_subfolder)
+        os.rename(extracted_name, self._source_subfolder)
 
 
     def _configure_cmake(self):
@@ -80,21 +84,13 @@ class PclConan(ConanFile):
         cmake = self._configure_cmake()    
         cmake.build()
 
-        # Explicit way:
-        # self.run('cmake %s/hello %s'
-        #          % (self.source_folder, cmake.command_line))
-        # self.run("cmake --build . %s" % cmake.build_config)
-
     def package(self):
         cmake = self._configure_cmake()    
         cmake.install()
 
-        #self.copy("*.h", dst="include", src="hello")
-        #self.copy("*hello.lib", dst="lib", keep_path=False)
-        #self.copy("*.dll", dst="bin", keep_path=False)
-        #self.copy("*.so", dst="lib", keep_path=False)
-        #self.copy("*.dylib", dst="lib", keep_path=False)
-        #self.copy("*.a", dst="lib", keep_path=False)
+        # TODO not good
+        os.rename(self.package_folder + "/include/pcl-1.10/pcl", self.package_folder + "/include/pcl")
+        os.rmdir(self.package_folder + "/include/pcl-1.10") 
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
