@@ -106,31 +106,36 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+
+
     rxcpp::schedulers::run_loop rl;
-    auto mainthread = rxcpp::observe_on_run_loop(rl);
+    //auto mainthread = rxcpp::observe_on_run_loop(rl);
+
 
     // model
     auto interval$ = rxcpp::sources::interval(std::chrono::seconds(1));
 
     rxcpp::subjects::subject<int> framebus;
     auto frameout = framebus.get_subscriber();
-    auto sendframe = [frameout](int frame) {
+    auto sendFrame = [frameout](int frame) {
         frameout.on_next(frame);
     };
     auto frame$ = framebus.get_observable();
 
     frame$
-    .with_latest_from(interval$)
-    .tap([](std::tuple<int, int> v){
-        int frame = std::get<0>(v);
-        int second = std::get<1>(v);
-        ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-        ImGui::SetWindowFontScale(2);
-        ImGui::Text("frame = %d", frame);
-        ImGui::Text("second = %d", second);
-        ImGui::End();
-    })
-    .subscribe();
+      .with_latest_from(interval$)
+      .tap([](std::tuple<int, int> v){
+          int frame = std::get<0>(v);
+          int second = std::get<1>(v);
+          ImGui::Begin("Another Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+          ImGui::SetWindowFontScale(2);
+          ImGui::Text("frame = %d", frame);
+          ImGui::Text("second = %d", second);
+          ImGui::End();
+
+          std::cout << std::this_thread::get_id() << " in tap" << std::endl;
+      })
+      .subscribe();
 
     // Main loop
     int frame = 0;
@@ -143,7 +148,7 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        sendframe(frame++);
+        sendFrame(frame++);
         while (!rl.empty() && rl.peek().when < rl.now()) {
             rl.dispatch();
         }
@@ -151,15 +156,18 @@ int main(int, char**)
         // Rendering
         ImGui::Render();
 
-        int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        {
+          int display_w, display_h;
+          glfwGetFramebufferSize(window, &display_w, &display_h);
+          glViewport(0, 0, display_w, display_h);
+          ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+          glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+          glClear(GL_COLOR_BUFFER_BIT);
+          ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        }
 
         glfwSwapBuffers(window);
+        std::cout << std::this_thread::get_id() << " loop" << std::endl;
     }
 
     // Cleanup
