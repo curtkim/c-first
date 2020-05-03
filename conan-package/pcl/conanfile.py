@@ -17,11 +17,13 @@ class PclConan(ConanFile):
         "shared": [True, False],
         "fPIC": [True, False],
         "with_cuda": [True, False],
+        "with_opengl": [True, False],
     }
     default_options = {
         "shared": True,
         "fPIC": True,
         "with_cuda": False,
+        "with_opengl": False,
     }
 
     generators = "cmake"
@@ -34,6 +36,7 @@ class PclConan(ConanFile):
         self.requires("zlib/1.2.11")
         self.requires("flann/1.9.1")
         self.requires("libpng/1.6.37")
+        #self.requires("freeglut/3.0.0@bincrafters/stable")
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -74,8 +77,8 @@ class PclConan(ConanFile):
         cmake.definitions["BUILD_segmentation"] = "ON"
         cmake.definitions["BUILD_registration"] = "ON"
 
-        cmake.definitions["WITH_CUDA"] = "OFF"
-        cmake.definitions["WITH_OPENGL"] = "OFF"
+        cmake.definitions["WITH_CUDA"] = "ON" if self.options.with_cuda else "OFF"
+        cmake.definitions["WITH_OPENGL"] = "ON" if self.options.with_opengl else "OFF"
         
         cmake.configure()
         return cmake

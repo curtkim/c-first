@@ -7,4 +7,5 @@
     conan export-pkg . demo/testing --package-folder=tmp/package
     conan test test_package pcl/1.10.1@demo/testing
 
-    conan create . 1.10.1@demo/testing
+    conan create . 1.10.1@demo/testing -o pcl:with_cuda=True
+
