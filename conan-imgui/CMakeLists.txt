@@ -11,6 +11,7 @@ include_directories(.)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+
 add_executable(main_glfw_opengl2
 		main_glfw_opengl2.cpp
 		bindings/imgui_impl_glfw.cpp
@@ -18,7 +19,7 @@ add_executable(main_glfw_opengl2
 		bindings/imgui_impl_opengl2.cpp
 		bindings/imgui_impl_opengl2.h
   )
-target_link_libraries(main_glfw_opengl2 ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(main_glfw_opengl2 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 
 
 add_executable(main_glfw_opengl3
@@ -28,7 +29,7 @@ add_executable(main_glfw_opengl3
 		bindings/imgui_impl_opengl3.cpp
 		bindings/imgui_impl_opengl3.h
 		)
-target_link_libraries(main_glfw_opengl3 ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(main_glfw_opengl3 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 
 
 add_executable(show_image
@@ -38,7 +39,7 @@ add_executable(show_image
 		bindings/imgui_impl_opengl3.cpp
 		bindings/imgui_impl_opengl3.h
 		)
-target_link_libraries(show_image ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(show_image ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 
 add_executable(main_glfw_opengl3_opengl
 		main_glfw_opengl3_opengl.cpp
@@ -48,7 +49,7 @@ add_executable(main_glfw_opengl3_opengl
 		bindings/imgui_impl_opengl3.h
 		linmath.h
 		)
-target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(main_glfw_opengl3_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 
 
 add_executable(main
@@ -60,4 +61,4 @@ add_executable(main
 		opengl_shader.cpp
 		opengl_shader.h
 		)
-target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)

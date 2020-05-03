@@ -18,4 +18,4 @@ add_executable(main
 		imgui_impl_opengl3.cpp
 		imgui_impl_opengl3.h
 		)
-target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
