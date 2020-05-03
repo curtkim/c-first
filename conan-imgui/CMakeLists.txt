@@ -26,6 +26,7 @@ foreach(APP
 		main_glfw_opengl3
 		main_glfw_opengl3_opengl
 		show_image)
+
 	add_executable(${APP}
 			${APP}.cpp
 			bindings/imgui_impl_glfw.cpp
@@ -33,6 +34,7 @@ foreach(APP
 			bindings/imgui_impl_opengl3.cpp
 			bindings/imgui_impl_opengl3.h
 			)
+	target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 	target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 endforeach()
 
