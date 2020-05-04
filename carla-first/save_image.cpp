@@ -22,7 +22,7 @@
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
 
-#include <boost/optional.hpp>
+#include "common.hpp"
 
 
 namespace cc = carla::client;
@@ -61,6 +61,26 @@ static void SaveSemSegImageToDisk(const csd::Image &image) {
   ImageIO::WriteView(filename, view);
 }
 
+/// Save a semantic segmentation image to disk converting to CityScapes palette.
+static void SaveImageToDisk(const csd::Image &image) {
+  using namespace carla::image;
+
+  char buffer[9u];
+  std::snprintf(buffer, sizeof(buffer), "%08zu", image.GetFrame());
+  auto filename = "_images/"s + buffer + ".png";
+
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+  std::cout << std::put_time(&tm, "%F %T") << " " << std::this_thread::get_id() << " frame: " << image.GetFrame();
+  std::cout << filename << " size=" << image.size() << std::endl;
+
+  //bgra8c_pixel_t
+  auto data = image.data();
+
+  auto view = ImageView::MakeView(image);
+  ImageIO::WriteView(filename, view);
+}
+
 static auto ParseArguments(int argc, const char *argv[]) {
   EXPECT_TRUE((argc == 1u) || (argc == 3u));
   using ResultType = std::tuple<std::string, uint16_t>;
@@ -69,10 +89,8 @@ static auto ParseArguments(int argc, const char *argv[]) {
       ResultType{"localhost", 2000u};
 }
 
-void doit(boost::shared_ptr<cc::BlueprintLibrary> blueprint_library, cc::World world, boost::shared_ptr<cc::Actor> actor) {
 
-}
-
+static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 int main(int argc, const char *argv[]) {
   try {
@@ -92,28 +110,22 @@ int main(int argc, const char *argv[]) {
     std::cout << "Client API version : " << client.GetClientVersion() << '\n';
     std::cout << "Server API version : " << client.GetServerVersion() << '\n';
 
-    // Load a random town.
-    //auto town_name = RandomChoice(client.GetAvailableMaps(), rng);
-    //std::cout << "Loading world: " << town_name << std::endl;
-    //auto world = client.LoadWorld("/Game/Carla/Maps/Town04");
     auto world = client.GetWorld();
+    if (!ends_with(MAP_NAME, world.GetMap()->GetName())) {
+      std::cout << "load map " << MAP_NAME << std::endl;
+      world = client.LoadWorld(MAP_NAME);
+    }
+    std::cout << "current map name: " << world.GetMap()->GetName() << std::endl;
 
     // Get a random vehicle blueprint.
     auto blueprint_library = world.GetBlueprintLibrary();
     auto vehicles = blueprint_library->Filter("vehicle");
     auto blueprint = RandomChoice(*vehicles, rng);
 
-    // Randomize the blueprint.
-    if (blueprint.ContainsAttribute("color")) {
-      auto &attribute = blueprint.GetAttribute("color");
-      blueprint.SetAttribute(
-          "color",
-          RandomChoice(attribute.GetRecommendedValues(), rng));
-    }
-
     // Find a valid spawn point.
     auto map = world.GetMap();
-    auto transform = RandomChoice(map->GetRecommendedSpawnPoints(), rng);
+    //auto transform = RandomChoice(map->GetRecommendedSpawnPoints(), rng);
+    auto transform = carla::geom::Transform(carla::geom::Location(-36.6, -194.9, 0.27), carla::geom::Rotation(0, 1.4395, 0));
 
     // Spawn the vehicle.
     auto actor = world.SpawnActor(blueprint, transform);
@@ -134,6 +146,7 @@ int main(int argc, const char *argv[]) {
     spectator->SetTransform(transform);
 
 
+    /*
     // Find a camera blueprint.
     auto *camera_bp = blueprint_library->Find("sensor.camera.semantic_segmentation");
     EXPECT_TRUE(camera_bp != nullptr);
@@ -151,6 +164,26 @@ int main(int argc, const char *argv[]) {
         auto image = boost::static_pointer_cast<csd::Image>(data);
         EXPECT_TRUE(image != nullptr);
         SaveSemSegImageToDisk(*image);
+    });
+    */
+
+
+    auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
+    EXPECT_TRUE(camera_bp != nullptr);
+    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
+
+    // Spawn a camera attached to the vehicle.
+    auto camera_transform = cg::Transform{
+        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+        cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+    auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, actor.get());
+    auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
+
+    // Register a callback to save images to disk.
+    camera->Listen([](auto data) {
+      auto image = boost::static_pointer_cast<csd::Image>(data);
+      EXPECT_TRUE(image != nullptr);
+      SaveImageToDisk(*image);
     });
 
     std::this_thread::sleep_for(10s);

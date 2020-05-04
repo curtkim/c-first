@@ -24,6 +24,9 @@
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/pointcloud/PointCloudIO.h>
 
+#include "common.hpp"
+
+
 namespace cc = carla::client;
 namespace cg = carla::geom;
 namespace csd = carla::sensor::data;
@@ -50,11 +53,6 @@ static auto ParseArguments(int argc, const char *argv[]) {
          ResultType{"localhost", 2000u};
 }
 
-inline bool ends_with(std::string const & value, std::string const & ending)
-{
-  if (ending.size() > value.size()) return false;
-  return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
