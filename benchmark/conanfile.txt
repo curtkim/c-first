@@ -1,0 +1,7 @@
+[requires]
+benchmark/1.5.0
+
+[generators]
+cmake
+
+[options]
