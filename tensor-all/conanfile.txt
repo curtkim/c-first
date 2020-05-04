@@ -1,0 +1,9 @@
+[requires]
+eigen/3.3.7
+#xtensor/0.21.4
+#carla-client/0.9.9@demo/testing
+opencv/4.1.1@conan/stable
+protobuf/3.11.4
+
+[generators]
+cmake
