@@ -3,6 +3,7 @@
 #include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/PrecisionModel.h>
+#include <geos/linearref/LengthIndexedLine.h>
 
 #include <iostream>
 
@@ -23,11 +24,19 @@ void operator delete(void* ptr) noexcept
 int main(int argc, char** argv)
 {
   auto fac = GeometryFactory::create();
-  CoordinateArraySequence seq(vector<Coordinate>{
-    Coordinate(0, 0, 0),
-    Coordinate(5, 5, 5),
-    Coordinate(10, 10, 10)
-  });
+
+  vector<Coordinate> coords = {
+    Coordinate(0, 0),
+    Coordinate(5, 5),
+    Coordinate(10, 10)
+  };
+  CoordinateArraySequence seq(std::move(coords), 0);
+
+  /*
+  std::unique_ptr<CoordinateArraySequence> pSeq = make_unique<CoordinateArraySequence>(std::move(seq));
+  std::unique_ptr<LineString> line = fac->createLineString(std::move(pSeq));
+  line->getLength()
+  */
 
   LineString* pLineString = fac->createLineString(seq);
   cout << "length=" << pLineString->getLength() << endl;
@@ -35,8 +44,17 @@ int main(int argc, char** argv)
   Point* pPoint = fac->createPoint(Coordinate(5, 0));
   cout << "distance=" << pLineString->distance((Geometry*)pPoint) << endl;
 
-//  delete pLineString;
-//  delete pPoint;
+  
+  geos::linearref::LengthIndexedLine indexedLine(pLineString);
+
+  double index = indexedLine.project(Coordinate(5, 0, 0));
+  cout << "index= " << index << endl;
+
+  Coordinate coord = indexedLine.extractPoint(index);
+  cout << "coord= " << coord << endl;
+
+  delete pLineString;
+  delete pPoint;
 
   return 0;
 }
