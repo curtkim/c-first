@@ -13,19 +13,37 @@ int main()
 
     avro::ValidSchema cpxSchema;
     avro::compileJsonSchema(ifs, cpxSchema);
+    
 
-    /*
     std::unique_ptr<avro::OutputStream> out = avro::memoryOutputStream();
     avro::EncoderPtr e = avro::binaryEncoder();
     e->init(*out);
+
+    /*
     c::cpx c1;
     c1.re = 100.23;
     c1.im = 105.77;
     avro::encode(*e, c1);
+    */
+
+    avro::GenericDatum da(cpxSchema);    
+    avro::GenericRecord& rec = da.value<avro::GenericRecord>();
+    rec.field("re") = 100.23;
+    rec.field("im") = 105.77;
+
+    //rec.fieldAt(0) = 100.23;
+    //rec.fieldAt(1) = 105.77;
+
+    //rec.setFieldAt(0, avro::GenericDatum {100.23});
+    //rec.setFieldAt(1, avro::GenericDatum {105.77});
+
+    avro::encode(*e, da);
+
 
     std::unique_ptr<avro::InputStream> in = avro::memoryInputStream(*out);
     avro::DecoderPtr d = avro::binaryDecoder();
     d->init(*in);
+    
 
     avro::GenericDatum datum(cpxSchema);
     avro::decode(*d, datum);
@@ -44,6 +62,6 @@ int main()
             }
         }
     }
-    */
+
     return 0;
 }
