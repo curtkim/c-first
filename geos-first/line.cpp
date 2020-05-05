@@ -7,27 +7,36 @@
 #include <iostream>
 
 using namespace std;
+using namespace geos::geom;
 
+// replacement of a minimal set of functions:
+void* operator new(std::size_t sz) {
+  std::printf("global op new called, size = %zu\n",sz);
+  return std::malloc(sz);
+}
+void operator delete(void* ptr) noexcept
+{
+  std::puts("global op delete called");
+  std::free(ptr);
+}
 
 int main(int argc, char** argv)
 {
-  auto fac = geos::geom::GeometryFactory::create();
-  auto pseq = new geos::geom::CoordinateArraySequence();
+  auto fac = GeometryFactory::create();
+  CoordinateArraySequence seq(vector<Coordinate>{
+    Coordinate(0, 0, 0),
+    Coordinate(5, 5, 5),
+    Coordinate(10, 10, 10)
+  });
 
-  using geos::geom::Coordinate;
-
-  pseq->add(Coordinate(0, 0, 0));
-  pseq->add(Coordinate(5, 5, 5));
-  pseq->add(Coordinate(10, 10, 10));
-
-  geos::geom::LineString* pLineString = fac->createLineString(pseq);
+  LineString* pLineString = fac->createLineString(seq);
   cout << "length=" << pLineString->getLength() << endl;
 
-  geos::geom::Point* pPoint = fac->createPoint(Coordinate(5, 0));
-  cout << "distance=" << pLineString->distance((geos::geom::Geometry*)pPoint) << endl;
+  Point* pPoint = fac->createPoint(Coordinate(5, 0));
+  cout << "distance=" << pLineString->distance((Geometry*)pPoint) << endl;
 
-  //delete pLineString;
-  //delete pPoint;
+//  delete pLineString;
+//  delete pPoint;
 
   return 0;
 }
