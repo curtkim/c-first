@@ -6,3 +6,5 @@ cmake
 
 [options]
 opencv:shared=True
+opencv:contrib=True
+opencv:cuda=True
