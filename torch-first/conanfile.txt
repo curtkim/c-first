@@ -1,5 +1,7 @@
 [requires]
-libtorch/1.4.0@demo/testing
+libtorch/1.5.0@demo/testing
+opencv/4.1.1@conan/stable
+boost/1.73.0
 
 [generators]
 cmake

@@ -10,8 +10,9 @@ foreach(APP
 		first
 		aten_first
 		autograd_first
-		dcgan
-		torchscript)
+		torchscript
+		inference2
+		input)
 	add_executable(${APP} ${APP}.cpp)
 	target_link_libraries(${APP} ${CONAN_LIBS})
 endforeach()

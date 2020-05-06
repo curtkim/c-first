@@ -54,10 +54,6 @@ void from_blob() {
 
 }
 
-void cuda() {
-  
-}
-
 int main() {
 
   //create();
