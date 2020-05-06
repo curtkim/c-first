@@ -1,3 +1,4 @@
+// https://gist.github.com/atinfinity/fb3744d581bfd3b578c9a4b01c455615
 #include <opencv2/core.hpp>
 #include <opencv2/cudaarithm.hpp>
 
