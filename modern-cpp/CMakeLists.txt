@@ -46,7 +46,9 @@ foreach(APP
         test_async
         test_async2
         variant
-        decltype_first)
+        decltype_first
+        const
+        promise)
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
