@@ -9,6 +9,7 @@ include_directories(.)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+
 add_executable(conan-opengl
     main.cpp
     common/shader.cpp
@@ -16,12 +17,11 @@ add_executable(conan-opengl
     SimpleFragmentShader.fragmentshader
     SimpleVertexShader.vertexshader
   )
-target_link_libraries(conan-opengl ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_link_libraries(conan-opengl ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SimpleFragmentShader.fragmentshader DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SimpleVertexShader.vertexshader DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-add_executable(point point.cpp)
-target_link_libraries(point ${CONAN_LIBS} ${OPENGL_LIBRARY})
-
-add_executable(mouse mouse.cpp)
-target_link_libraries(mouse ${CONAN_LIBS} ${OPENGL_LIBRARY})
+foreach(APP point mouse test-libigl)
+  add_executable(${APP} ${APP}.cpp)
+  target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+endforeach()

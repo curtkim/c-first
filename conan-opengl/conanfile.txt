@@ -1,7 +1,8 @@
 [requires]
-glew/2.1.0@bincrafters/stable
-glfw/3.3@bincrafters/stable
+glew/2.1.0@curt/testing
+glfw/3.3.2@curt/testing
 glm/0.9.9.5@g-truc/stable
+libigl/2.2.0@demo/testing
 
 [generators]
 cmake
