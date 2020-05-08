@@ -21,15 +21,20 @@ void create() {
 }
 
 void op() {
+  cout << "\n================= op" << endl;
   auto a = torch::eye(3);
   auto b = torch::zeros({3,3});
   auto c = torch::tensor({1, 1, 1});
+  auto d = torch::tensor({1, 2, 3}, at::kDouble);
+
 
   std::cout << a+b << std::endl;
   std::cout << torch::add(a,b) << std::endl;
 
   a.add_(c);
   std::cout << a << std::endl;
+
+  std::cout << c / d << std::endl;
 }
 
 void by_index() {
@@ -51,21 +56,35 @@ void from_blob() {
   int blob[] = {1,2,3,4,5,6,7,8,9};
   auto a = torch::from_blob(&blob, {3,3}, at::kInt);
   cout << a << endl;
+  cout << a.sum() << endl;
 
   auto b = at::zeros({2,2}, at::device(at::kCPU).dtype(at::kLong));
   cout << b << endl;
 
   auto c = at::zeros({2,2}, at::device(at::kCUDA).dtype(at::kLong));
   cout << c << endl;
+}
 
+void broadcast() {
+  cout << "\n================= broadcast" << endl;
+  auto sample = torch::randn({3, 2}, at::kFloat) * torch::tensor({1.0, 3.5}) + torch::tensor({2.0, 20.0});
+  auto mu = sample.mean({0});
+
+  cout << sample << endl;
+  cout << mu << endl;
+  cout << sample - mu << endl;
+
+  auto z_score = (sample - mu) / sample.std({0});
+  cout << z_score << endl;
 }
 
 int main() {
 
-  //create();
-  //op();
+  create();
+  op();
   by_index();
   from_blob();
+  broadcast();
 
   return 0;
 }
