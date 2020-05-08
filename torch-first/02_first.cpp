@@ -33,6 +33,8 @@ void op() {
 }
 
 void by_index() {
+  cout << "\n================= by_index" << endl;
+
   auto a = torch::eye(3);
 
   cout << a[0] << endl;
@@ -44,6 +46,7 @@ void by_index() {
 }
 
 void from_blob() {
+  cout << "\n================= from_blob" << endl;
 
   int blob[] = {1,2,3,4,5,6,7,8,9};
   auto a = torch::from_blob(&blob, {3,3}, at::kInt);
@@ -51,6 +54,9 @@ void from_blob() {
 
   auto b = at::zeros({2,2}, at::device(at::kCPU).dtype(at::kLong));
   cout << b << endl;
+
+  auto c = at::zeros({2,2}, at::device(at::kCUDA).dtype(at::kLong));
+  cout << c << endl;
 
 }
 

@@ -1,7 +1,7 @@
 [requires]
-libtorch/1.5.0@demo/testing
+#libtorch/1.5.0
 opencv/4.1.1@conan/stable
-boost/1.73.0
+#boost/1.73.0
 
 [generators]
 cmake
@@ -10,3 +10,4 @@ cmake
 #libtorch:use_cuda=True
 #libtorch:use_cudnn=True
 #libtorch:use_static_cudnn=True
+libtorch:enable_parallel_build=True

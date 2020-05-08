@@ -8,7 +8,7 @@ int main(int argc, const char* argv[]) {
     torch::jit::script::Module module;
     try {
         // Deserialize the ScriptModule from a file using torch::jit::load().
-        module = torch::jit::load("../../traced_resnet_model.pt");
+        module = torch::jit::load("../traced_resnet_model.pt");
     }
     catch (const c10::Error& e) {
         std::cerr << e.msg() << std::endl;
