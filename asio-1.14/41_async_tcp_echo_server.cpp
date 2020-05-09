@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <thread>
 
 using asio::ip::tcp;
 
@@ -19,6 +20,7 @@ private:
         asio::buffer(data_, max_length),
         [this, self](std::error_code ec, std::size_t length) {
           if (!ec) {
+            std::cout << std::this_thread::get_id() << " " << length << std::endl;
             do_write(length);
           }
         });
@@ -60,15 +62,8 @@ private:
 
 int main(int argc, char *argv[]) {
   try {
-    if (argc != 2) {
-      std::cerr << "Usage: async_tcp_echo_server <port>\n";
-      return 1;
-    }
-
     asio::io_context io_context;
-
-    server s(io_context, std::atoi(argv[1]));
-
+    server s(io_context, 8000);
     io_context.run();
   } catch (std::exception &e) {
     std::cerr << "Exception: " << e.what() << "\n";

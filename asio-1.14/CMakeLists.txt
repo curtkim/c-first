@@ -17,7 +17,8 @@ foreach(APP
     11_daytime_client
     21_stdin_read 22_stdout_write
     31_file_write_c 32_file_write_future 33_file_watch
-    41_async_tcp_echo_server
+    41_async_tcp_echo_server 42_async_tcp_echo_client
+    51_spawn_echo_server
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
