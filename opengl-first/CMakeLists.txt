@@ -21,13 +21,15 @@ set(ALL_LIBS
         GLEW_1130
         )
 
+file(COPY SimpleFragmentShader.fragmentshader DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY SimpleVertexShader.vertexshader DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 # add the executable
 add_executable(opengl-first
         main.cpp
         common/shader.cpp
         common/shader.hpp
-        SimpleFragmentShader.fragmentshader
-        SimpleVertexShader.vertexshader
         )
 set_property(TARGET opengl-first PROPERTY CXX_STANDARD 17)
 target_link_libraries (opengl-first ${ALL_LIBS})
+
