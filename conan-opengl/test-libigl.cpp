@@ -10,6 +10,7 @@
 #include <chrono>
 #include <string>
 #include <thread>
+#include <iostream>
 
 #include "common/shader.hpp"
 
@@ -102,6 +103,10 @@ int main(int argc, char *argv[]) {
 
   // 3.5 Read input mesh from file
   igl::read_triangle_mesh("bunny.off", V, F);
+
+  std::cout << "V " << V.rows() << " " << V.cols() << std::endl;
+  std::cout << "F " << F.rows() << " " << F.cols() << std::endl;
+
   V.rowwise() -= V.colwise().mean();
   V /= (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
   V /= 1.2;
@@ -115,6 +120,7 @@ int main(int argc, char *argv[]) {
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
   glBindVertexArray(VAO);
+
   // Vertex
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * V.size(), V.data(), GL_STATIC_DRAW);
@@ -137,7 +143,7 @@ int main(int argc, char *argv[]) {
   float top = tan(35. / 360. * M_PI) * near;
   float right = top * (double)::w / (double)::h;
   igl::frustum(-right, right, -top, top, near, far, proj);
-
+  std::cout << proj << std::endl;
 
   while (!glfwWindowShouldClose(window)) {
 
@@ -151,6 +157,7 @@ int main(int argc, char *argv[]) {
     Eigen::Affine3f model = Eigen::Affine3f::Identity();
     model.translate(Eigen::Vector3f(0, 0, -1.5));
     model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
+    //std::cout << model.matrix() << std::endl;
 
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
