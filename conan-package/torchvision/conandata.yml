@@ -1,0 +1,7 @@
+sources:
+  "0.6.0":
+    url: https://github.com/pytorch/vision/archive/v0.6.0.tar.gz
+patches:
+  "0.6.0":
+    - patch_file: "patches/fix-cmake.patch"
+      base_path: "source_subfolder"
