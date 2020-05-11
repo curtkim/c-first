@@ -1,5 +1,5 @@
 [requires]
-#libtorch/1.5.0
+torch/1.5.0@curt/prebuilt
 opencv/4.1.1@conan/stable
 #boost/1.73.0
 
@@ -11,3 +11,4 @@ cmake
 #libtorch:use_cudnn=True
 #libtorch:use_static_cudnn=True
 libtorch:enable_parallel_build=True
+torch:cuda=10.1
