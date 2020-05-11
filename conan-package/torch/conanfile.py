@@ -9,7 +9,13 @@ class TorchConan(ConanFile):
     default_options = {"cuda": "10.2"}
 
     def build(self):
-        url = f"https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-{self.version}.zip"
+        cuda_version = "102"
+        if self.options.cuda == "10.1":
+            cuda_version = "101"
+        elif self.options.cuda == '9.2':        
+            cuda_version = "92"
+
+        url = f"https://download.pytorch.org/libtorch/cu{cuda_version}/libtorch-cxx11-abi-shared-with-deps-{self.version}.zip"
         tools.get(url)
 
     def package(self):
