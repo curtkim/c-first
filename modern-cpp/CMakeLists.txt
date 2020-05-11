@@ -46,6 +46,7 @@ foreach(APP
         test_async
         test_async2
         variant
+        variant_polymorphism
         decltype_first
         const
         promise)
