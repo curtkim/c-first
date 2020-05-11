@@ -21,8 +21,8 @@ pybind11_add_module(numpy2d numpy2d.cpp)
 pybind11_add_module(numpy2d_eigin numpy2d_eigen.cpp)
 
 
-#pybind11_add_module(curt curt/value.hpp)
-#pybind11_add_module(curt.math curt/math/add.cpp)
-
-pybind11_add_module(oop oop/person.cpp)
+pybind11_add_module(oop oop/oop_pybind.cpp oop/person.cpp)
 target_include_directories(oop PRIVATE .)
+
+pybind11_add_module(nested nested/nested_pybind.cpp nested/util/format.cpp)
+target_include_directories(nested PRIVATE .)
