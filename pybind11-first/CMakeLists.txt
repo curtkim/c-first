@@ -26,3 +26,4 @@ target_include_directories(oop PRIVATE .)
 
 pybind11_add_module(nested nested/nested_pybind.cpp nested/util/format.cpp)
 target_include_directories(nested PRIVATE .)
+#set_property(TARGET nested PROPERTY POSITION_INDEPENDENT_CODE ON) # -fPIC

@@ -1,6 +1,7 @@
 import nested
 import nested.util
 
+
 a = nested.Person()
 a.name = "curt"
 a.age = 40
