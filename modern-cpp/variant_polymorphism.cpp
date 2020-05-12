@@ -17,13 +17,15 @@ struct VIconLabel {
 };
 
 struct HTMLLabelBuilder {
-    [[nodiscard]] std::string operator()(const VSimpleLabel& label) {
+    [[nodiscard]] std::string operator()(const VSimpleLabel &label) {
       return "<p>" + label._str + "</p>";
     }
-    [[nodiscard]] std::string operator()(const VDateLabel& label) {
+
+    [[nodiscard]] std::string operator()(const VDateLabel &label) {
       return "<p class=\"date\">Date: " + label._str + "</p>";
     }
-    [[nodiscard]] std::string operator()(const VIconLabel& label) {
+
+    [[nodiscard]] std::string operator()(const VIconLabel &label) {
       return "<p><img src=\"" +
              label._iconSrc + "\"/>" + label._str + "</p>";
     }
@@ -33,9 +35,9 @@ int main() {
   using LabelVariant = std::variant<VSimpleLabel, VDateLabel, VIconLabel>;
 
   std::vector<LabelVariant> vecLabels;
-  vecLabels.emplace_back(VSimpleLabel { "Hello World"});
-  vecLabels.emplace_back(VDateLabel { "10th August 2020"});
-  vecLabels.emplace_back(VIconLabel { "Error", "error.png"});
+  vecLabels.emplace_back(VSimpleLabel{"Hello World"});
+  vecLabels.emplace_back(VDateLabel{"10th August 2020"});
+  vecLabels.emplace_back(VIconLabel{"Error", "error.png"});
 
   std::string finalHTML;
   for (auto &label : vecLabels)
