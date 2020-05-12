@@ -15,8 +15,10 @@ int main() {
                          1.0, 1.0, 1.0,
                          -1.0, 1.0, 1.0};
 
+  // Map
   MatrixXf mVertices = Map<Matrix<float, 3, 8> >(arrVertices);
 
+  // U = TRSI
   Transform<float, 3, Affine> t = Transform<float, 3, Affine>::Identity();
   t.scale(0.8f);
   t.rotate(AngleAxisf(0.25f * M_PI, Vector3f::UnitX()));
