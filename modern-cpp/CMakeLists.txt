@@ -49,7 +49,9 @@ foreach(APP
         variant_polymorphism
         decltype_first
         const
-        promise)
+        promise
+        clock_steady
+        )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
