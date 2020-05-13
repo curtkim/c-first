@@ -48,6 +48,22 @@ class TorchVisionConan(ConanFile):
             shutil.rmtree(self._source_subfolder)
         os.rename(extracted_name, self._source_subfolder)
 
+        tools.replace_in_file("source_subfolder/CMakeLists.txt", 
+'''project(torchvision)''', 
+'''project(torchvision)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()''')
+
+        tools.replace_in_file("source_subfolder/CMakeLists.txt", 
+'''find_package(Torch REQUIRED)''', 
+'''find_package(Torch REQUIRED)
+
+set_property(TARGET torch_cuda PROPERTY INTERFACE_COMPILE_OPTIONS "")
+set_property(TARGET torch_cpu PROPERTY INTERFACE_COMPILE_OPTIONS "")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+''')
+
         # patch 
         #for patch in self.conan_data["patches"][self.version]:
         #    tools.patch(**patch)
@@ -61,7 +77,7 @@ class TorchVisionConan(ConanFile):
             return self._cmake
         self._cmake = CMake(self)
         self._cmake.definitions["WITH_CUDA"] = "ON" if self.options.with_cuda else "OFF"
-        self._cmake.configure()
+        self._cmake.configure(source_folder=self._source_subfolder)
         return self._cmake
 
     def package(self):

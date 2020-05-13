@@ -5,7 +5,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 add_executable(example example.cpp)
-target_link_libraries(example ${CONAN_LIBS})
+target_link_libraries(example ${CONAN_LIBS} ${TORCH_LIBRARIES})
 
 
 # CTest is a testing tool that can be used to test your project.
