@@ -1,0 +1,5 @@
+[requires]
+proj/7.0.0
+
+[generators]
+cmake
