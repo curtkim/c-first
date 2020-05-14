@@ -3,3 +3,7 @@ proj/7.0.0
 
 [generators]
 cmake
+
+[options]
+proj:with_tiff=False
+proj:with_curl=False
