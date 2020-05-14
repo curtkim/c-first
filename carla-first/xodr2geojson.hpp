@@ -17,28 +17,21 @@
 
 #include <nlohmann/json.hpp>
 
+using namespace std;
+using namespace nlohmann;
+using point_3d_t = boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian>;
 
 class XodrGeojsonConverter {
 public:
-  static std::string Convert(std::string xodr);
-  static std::string GetGeoJsonFromCarlaMap(
-      boost::shared_ptr<carla::client::Map> map_ptr);
-  static boost::geometry::model::point<double, 3,
-      boost::geometry::cs::cartesian>
-  LateralShift(carla::geom::Transform transform, double shift);
-
-  static std::vector<double> LateralShiftGetVector(carla::geom::Transform transform, double shift);
+  static string Convert(std::string xodr);
+  static string GetGeoJsonFromCarlaMap(boost::shared_ptr<carla::client::Map> map_ptr);
+  static point_3d_t LateralShift(carla::geom::Transform transform, double shift);
+  static vector<double> LateralShiftGetVector(carla::geom::Transform transform, double shift);
 
 private:
-  static nlohmann::json InitGeoJson();
-  static void AddOneLine(
-      const std::vector<boost::geometry::model::point<
-          double, 3, boost::geometry::cs::cartesian>>& points,
-      const uint32_t& road_id, nlohmann::json& json, const uint32_t& index);
-  static void AddOneSide(
-      const carla::SharedPtr<carla::client::Waypoint>& waypoint,
-      nlohmann::json& json, const uint32_t& index);
-
+  static json InitGeoJson();
+  static void AddOneLine(const vector<point_3d_t>& points, const uint32_t& road_id, json& json, const uint32_t& index);
+  static void AddOneSide(const carla::SharedPtr<carla::client::Waypoint>& waypoint, json& json, const uint32_t& index);
   constexpr static const double precision_{0.5};
 };
 
