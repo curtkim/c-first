@@ -34,19 +34,17 @@ namespace csd = carla::sensor::data;
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 
-#define EXPECT_TRUE(pred) if (!(pred)) { throw std::runtime_error(#pred); }
-
 /// Pick a random element from @a range.
 template <typename RangeT, typename RNG>
 static auto &RandomChoice(const RangeT &range, RNG &&generator) {
-  EXPECT_TRUE(range.size() > 0u);
+  assert(range.size() > 0u);
   std::uniform_int_distribution<size_t> dist{0u, range.size() - 1u};
   return range[dist(std::forward<RNG>(generator))];
 }
 
 
 static auto ParseArguments(int argc, const char *argv[]) {
-  EXPECT_TRUE((argc == 1u) || (argc == 3u));
+  assert((argc == 1u) || (argc == 3u));
   using ResultType = std::tuple<std::string, uint16_t>;
   return argc == 3u ?
          ResultType{argv[1u], std::stoi(argv[2u])} :
@@ -115,7 +113,7 @@ int main(int argc, const char *argv[]) {
 
     // Find a camera blueprint.
     auto *lidar_bp = blueprint_library->Find("sensor.lidar.ray_cast");
-    EXPECT_TRUE(lidar_bp != nullptr);
+    assert(lidar_bp != nullptr);
     //const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
 
 
@@ -129,7 +127,7 @@ int main(int argc, const char *argv[]) {
     // Register a callback to save images to disk.
     lidar->Listen([](auto data) {
       auto lidar_data = boost::static_pointer_cast<csd::LidarMeasurement>(data);
-      EXPECT_TRUE(lidar_data != nullptr);
+      assert(lidar_data != nullptr);
 
       std::cout << std::this_thread::get_id() << " " << lidar_data->GetFrame() << " ch_count:" << lidar_data->GetChannelCount()
           << " pt_count(0):" << lidar_data->GetPointCount(0)

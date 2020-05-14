@@ -32,12 +32,10 @@ namespace csd = carla::sensor::data;
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 
-#define EXPECT_TRUE(pred) if (!(pred)) { throw std::runtime_error(#pred); }
-
 /// Pick a random element from @a range.
 template <typename RangeT, typename RNG>
 static auto &RandomChoice(const RangeT &range, RNG &&generator) {
-  EXPECT_TRUE(range.size() > 0u);
+  assert(range.size() > 0u);
   std::uniform_int_distribution<size_t> dist{0u, range.size() - 1u};
   return range[dist(std::forward<RNG>(generator))];
 }
@@ -82,7 +80,7 @@ static void SaveImageToDisk(const csd::Image &image) {
 }
 
 static auto ParseArguments(int argc, const char *argv[]) {
-  EXPECT_TRUE((argc == 1u) || (argc == 3u));
+  assert((argc == 1u) || (argc == 3u));
   using ResultType = std::tuple<std::string, uint16_t>;
   return argc == 3u ?
       ResultType{argv[1u], std::stoi(argv[2u])} :
@@ -169,7 +167,7 @@ int main(int argc, const char *argv[]) {
 
 
     auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
-    EXPECT_TRUE(camera_bp != nullptr);
+    assert(camera_bp != nullptr);
     const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
 
     // Spawn a camera attached to the vehicle.
@@ -182,11 +180,11 @@ int main(int argc, const char *argv[]) {
     // Register a callback to save images to disk.
     camera->Listen([](auto data) {
       auto image = boost::static_pointer_cast<csd::Image>(data);
-      EXPECT_TRUE(image != nullptr);
+      assert(image != nullptr);
       SaveImageToDisk(*image);
     });
 
-    std::this_thread::sleep_for(10s);
+    std::this_thread::sleep_for(5s);
 
     // Remove actors from the simulation.
     camera->Destroy();
