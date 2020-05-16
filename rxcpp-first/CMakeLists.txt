@@ -10,7 +10,7 @@ conan_basic_setup()
 #    message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
 
-foreach(APP 01_create 02_op 03_read_file 04_last_five 09_complex
+foreach(APP 01_create 02_op 03_read_file 04_last_five 05_create_thread 09_complex
         11_concurrent 12_rxcurl_ex 13_rxrest
         20_coordination_list 21_observe_on 22_synchronize_in 23_worker_schedule
         31_multi_subscribe
