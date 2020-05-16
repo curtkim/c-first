@@ -6,7 +6,7 @@ class TorchConan(ConanFile):
     version = "1.5.0"
     settings = "os", "compiler", "build_type", "arch"
     options = {"cuda": ["9.2", "10.1", "10.2"]}
-    default_options = {"cuda": "10.2"}
+    default_options = {"cuda": "10.1"}
 
     def build(self):
         cuda_version = "102"
