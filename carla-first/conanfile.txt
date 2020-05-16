@@ -1,6 +1,7 @@
 [requires]
 carla-client/0.9.9@demo/testing
 nlohmann_json/3.7.3
+rxcpp/4.1.0
 
 [generators]
 cmake

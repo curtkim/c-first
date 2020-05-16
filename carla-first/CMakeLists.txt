@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP save_image save_lidar )
+foreach(APP save_image save_lidar rxcpp_sensor_create)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
     target_compile_features(${APP} PRIVATE cxx_std_17)

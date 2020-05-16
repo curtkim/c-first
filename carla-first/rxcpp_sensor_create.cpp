@@ -22,6 +22,8 @@
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
 
+#include <rxcpp/rx.hpp>
+
 #include "common.hpp"
 
 
@@ -31,33 +33,6 @@ namespace csd = carla::sensor::data;
 
 using namespace std::chrono_literals;
 using namespace std::string_literals;
-
-/// Pick a random element from @a range.
-template <typename RangeT, typename RNG>
-static auto &RandomChoice(const RangeT &range, RNG &&generator) {
-  assert(range.size() > 0u);
-  std::uniform_int_distribution<size_t> dist{0u, range.size() - 1u};
-  return range[dist(std::forward<RNG>(generator))];
-}
-
-/// Save a semantic segmentation image to disk converting to CityScapes palette.
-static void SaveSemSegImageToDisk(const csd::Image &image) {
-  using namespace carla::image;
-
-  char buffer[9u];
-  std::snprintf(buffer, sizeof(buffer), "%08zu", image.GetFrame());
-  auto filename = "_images/"s + buffer + ".png";
-
-  std::time_t t = std::time(nullptr);
-  std::tm tm = *std::localtime(&t);
-  std::cout << std::put_time(&tm, "%F %T") << " " << std::this_thread::get_id() << " frame: " << image.GetFrame();
-  std::cout << filename << " size=" << image.size() << std::endl;
-
-  auto view = ImageView::MakeColorConvertedView(
-      ImageView::MakeView(image),
-      ColorConverter::CityScapesPalette());
-  ImageIO::WriteView(filename, view);
-}
 
 static void SaveImageToDisk(const csd::Image &image) {
   using namespace carla::image;
@@ -78,14 +53,6 @@ static void SaveImageToDisk(const csd::Image &image) {
   ImageIO::WriteView(filename, view);
 }
 
-static auto ParseArguments(int argc, const char *argv[]) {
-  assert((argc == 1u) || (argc == 3u));
-  using ResultType = std::tuple<std::string, uint16_t>;
-  return argc == 3u ?
-      ResultType{argv[1u], std::stoi(argv[2u])} :
-      ResultType{"localhost", 2000u};
-}
-
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
@@ -94,15 +61,8 @@ int main(int argc, const char *argv[]) {
 
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    std::string host;
-    uint16_t port;
-    std::tie(host, port) = ParseArguments(argc, argv);
-
-    std::mt19937_64 rng((std::random_device())());
-
-    auto client = cc::Client(host, port, 1);
+    auto client = cc::Client("localhost", 2000, 1);
     client.SetTimeout(10s);
-
 
     std::cout << "Client API version : " << client.GetClientVersion() << '\n';
     std::cout << "Server API version : " << client.GetServerVersion() << '\n';
@@ -117,7 +77,7 @@ int main(int argc, const char *argv[]) {
     // Get a random vehicle blueprint.
     auto blueprint_library = world.GetBlueprintLibrary();
     auto vehicles = blueprint_library->Filter("vehicle");
-    auto blueprint = RandomChoice(*vehicles, rng);
+    auto blueprint = (*vehicles)[0];
 
     // Find a valid spawn point.
     auto map = world.GetMap();
@@ -134,19 +94,8 @@ int main(int argc, const char *argv[]) {
     control.throttle = 1.0f;
     vehicle->ApplyControl(control);
 
-    // Move spectator so we can see the vehicle from the simulator window.
-    auto spectator = world.GetSpectator();
-    transform.location += 32.0f * transform.GetForwardVector();
-    transform.location.z += 2.0f;
-    transform.rotation.yaw += 180.0f;
-    transform.rotation.pitch = -15.0f;
-    spectator->SetTransform(transform);
-
-
-    /*
-    // Find a camera blueprint.
-    auto *camera_bp = blueprint_library->Find("sensor.camera.semantic_segmentation");
-    EXPECT_TRUE(camera_bp != nullptr);
+    auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
+    assert(camera_bp != nullptr);
     const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
 
     // Spawn a camera attached to the vehicle.
@@ -156,39 +105,52 @@ int main(int argc, const char *argv[]) {
     auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, actor.get());
     auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
 
+
     // Register a callback to save images to disk.
+    /*
     camera->Listen([](auto data) {
         auto image = boost::static_pointer_cast<csd::Image>(data);
-        EXPECT_TRUE(image != nullptr);
-        SaveSemSegImageToDisk(*image);
+        assert(image != nullptr);
+        SaveImageToDisk(*image);
     });
     */
 
+    //typedef boost::shared_ptr<csd::Image> imagePtr;
 
-    auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
-    assert(camera_bp != nullptr);
-    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
+    auto image$ = rxcpp::sources::create<size_t>(
+      [&camera](rxcpp::subscriber<size_t> s){
+        std::cout << std::this_thread::get_id() << " before listen " << std::endl;
 
-    // Spawn a camera attached to the vehicle.
-    auto camera_transform = cg::Transform{
-        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-        cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
-    auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, actor.get());
-    auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
+        camera->Listen([&s](auto data){
+          boost::shared_ptr<csd::Image> image = boost::static_pointer_cast<csd::Image>(data);
+          assert(image != nullptr);
+          std::cout << std::this_thread::get_id() << " in callback " << image->GetFrame() << std::endl;
+          s.on_next(image->GetFrame());
+        });
+        //s.on_completed();
+      });;//.subscribe_on(rxcpp::synchronize_new_thread());
 
-    // Register a callback to save images to disk.
-    camera->Listen([](auto data) {
-      auto image = boost::static_pointer_cast<csd::Image>(data);
-      assert(image != nullptr);
-      SaveImageToDisk(*image);
-    });
 
-    std::this_thread::sleep_for(5s);
+    std::cout << 2 << std::endl;
+    image$
+      //.observe_on(rxcpp::serialize_new_thread())
+      .subscribe(
+        [](auto v){
+          std::cout << "onNext " << v << std::endl;
+        },
+        [](){
+          std::cout << "OnCompleted" << std::endl;
+        }
+      );
+
+
+    std::cout << std::this_thread::get_id() << " sleep" << std::endl;
+    std::this_thread::sleep_for(1s);
 
     // Remove actors from the simulation.
     camera->Destroy();
     vehicle->Destroy();
-    std::cout << "Actors destroyed." << std::endl;
+    std::cout << std::this_thread::get_id() << " Actors destroyed." << std::endl;
 
   } catch (const cc::TimeoutException &e) {
     std::cout << '\n' << e.what() << std::endl;
