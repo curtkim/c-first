@@ -11,4 +11,4 @@ cmake
 #libtorch:use_cudnn=True
 #libtorch:use_static_cudnn=True
 libtorch:enable_parallel_build=True
-torch:cuda=10.2
+torch:cuda=10.1

@@ -21,6 +21,7 @@ foreach(APP
 		21_torchscript
 		31_input
 		41_inference
+		42_inference
 		51_TwoLayerNetwork 52_dcgan
 		)
 	add_executable(${APP} ${APP}.cpp)
