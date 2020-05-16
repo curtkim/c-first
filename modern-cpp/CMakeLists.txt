@@ -51,6 +51,7 @@ foreach(APP
         const
         promise
         clock_steady
+        utf8
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
