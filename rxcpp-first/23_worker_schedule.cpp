@@ -14,20 +14,24 @@ using namespace Rx;
 void test_worker_schedule(){
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    rxcpp::serialize_one_worker coordination = rxcpp::serialize_new_thread();
+    //rxcpp::serialize_one_worker coordination = rxcpp::serialize_new_thread();
+    //rxcpp::identity_one_worker coordination = rxcpp::identity_current_thread();
+    rxcpp::identity_one_worker coordination = rxcpp::identity_immediate();
+
     auto coordinator = coordination.create_coordinator();
     //rxsc::scheduler scheduler = coordinator.get_scheduler();
 
     auto worker = coordinator.get_worker();
     auto action = rxcpp::schedulers::make_action(
         [](const rxcpp::schedulers::schedulable&){
-            printf("Action Executed in Thread # :%d\n", std::this_thread::get_id());
+          std::cout << "Action Executed in Thread # : " << std::this_thread::get_id() << std::endl;
         });
 
     auto schedulable = rxcpp::schedulers::make_schedulable(worker, action);
     worker.schedule_periodically(worker.now(), std::chrono::seconds(1), schedulable);
     //worker.schedule(schedulable);
     std::cout << "end" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 
@@ -70,7 +74,7 @@ void test_declarative_schedule_by_identity_current_thread() {
 int main() {
 
     test_worker_schedule();
-    test_declarative_schedule_by_identity_current_thread();
+    //test_declarative_schedule_by_identity_current_thread();
 
     return 0;
 }
