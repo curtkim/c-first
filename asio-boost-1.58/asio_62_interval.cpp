@@ -60,7 +60,7 @@ void TimerHandler(
                   << "] TimerHandler " << std::endl;
         global_stream_lock.unlock();
 
-        timer->expires_from_now( boost::posix_time::seconds( 5 ) );
+        timer->expires_from_now( boost::posix_time::seconds( 2 ) );
         timer->async_wait( boost::bind( &TimerHandler, _1, timer ) );
     }
 }
@@ -88,7 +88,7 @@ int main( int argc, char * argv[] )
     boost::shared_ptr< boost::asio::deadline_timer > timer(
         new boost::asio::deadline_timer( *io_service )
     );
-    timer->expires_from_now( boost::posix_time::seconds( 5 ) );
+    timer->expires_from_now( boost::posix_time::seconds( 2 ) );
     timer->async_wait( boost::bind( &TimerHandler, _1, timer ) );
 
     std::cin.get();

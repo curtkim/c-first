@@ -2,6 +2,8 @@
 #include <boost/thread.hpp>
 #include <iostream>
 
+// dispatch는 바로 실행되고
+// post는 dispatch된 handler가 끝나고 실행된다.
 boost::mutex global_stream_lock;
 
 void WorkerThread( boost::shared_ptr< boost::asio::io_service > io_service )

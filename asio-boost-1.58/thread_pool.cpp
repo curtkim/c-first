@@ -1,13 +1,15 @@
+#include <iostream>
 #include <memory>
 #include <chrono>
 #include <thread>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
+
 struct thread_pool {
     typedef std::unique_ptr<boost::asio::io_service::work> asio_worker;
 
-    thread_pool(int threads) :service(), service_worker(new asio_worker::element_type(service)) {
+    thread_pool(int threads) :service(), service_worker(new boost::asio::io_service::work(service)) {
         for (int i = 0; i < threads; ++i) {
             auto worker = [this] { return service.run(); };
             grp.add_thread(new boost::thread(worker));

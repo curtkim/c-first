@@ -60,8 +60,7 @@ void TimerHandler(
                   << "] TimerHandler " << std::endl;
 
         timer->expires_from_now( boost::posix_time::seconds( 1 ) );
-        timer->async_wait(
-            strand->wrap( boost::bind( &TimerHandler, _1, timer, strand ) )
+        timer->async_wait(strand->wrap( boost::bind( &TimerHandler, _1, timer, strand ) )
         );
     }
 }
@@ -96,14 +95,7 @@ int main( int argc, char * argv[] )
         worker_threads.create_thread( boost::bind( &WorkerThread, io_service ) );
     }
 
-    boost::this_thread::sleep( boost::posix_time::seconds( 1 ) );
-
-    strand->post( boost::bind( &PrintNum, 1 ) );
-    strand->post( boost::bind( &PrintNum, 2 ) );
-    strand->post( boost::bind( &PrintNum, 3 ) );
-    strand->post( boost::bind( &PrintNum, 4 ) );
-    strand->post( boost::bind( &PrintNum, 5 ) );
-
+    // timer
     boost::shared_ptr< boost::asio::deadline_timer > timer(
         new boost::asio::deadline_timer( *io_service )
     );
@@ -111,6 +103,15 @@ int main( int argc, char * argv[] )
     timer->async_wait(
         strand->wrap( boost::bind( &TimerHandler, _1, timer, strand ) )
     );
+
+    // strand->post
+    boost::this_thread::sleep( boost::posix_time::seconds( 5 ) );
+
+    strand->post( boost::bind( &PrintNum, 1 ) );
+    strand->post( boost::bind( &PrintNum, 2 ) );
+    strand->post( boost::bind( &PrintNum, 3 ) );
+    strand->post( boost::bind( &PrintNum, 4 ) );
+    strand->post( boost::bind( &PrintNum, 5 ) );
 
     std::cin.get();
     io_service->stop();

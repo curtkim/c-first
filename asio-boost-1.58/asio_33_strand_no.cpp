@@ -50,17 +50,17 @@ int main( int argc, char * argv[] )
     boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );
 
     // the strand object is correctly serializing the event processing to only one thread at a time
-    strand.post( boost::bind( &PrintNum, 1 ) );
-    strand.post( boost::bind( &PrintNum, 2 ) );
-    strand.post( boost::bind( &PrintNum, 3 ) );
-    strand.post( boost::bind( &PrintNum, 4 ) );
-    strand.post( boost::bind( &PrintNum, 5 ) );
+//    strand.post( boost::bind( &PrintNum, 1 ) );
+//    strand.post( boost::bind( &PrintNum, 2 ) );
+//    strand.post( boost::bind( &PrintNum, 3 ) );
+//    strand.post( boost::bind( &PrintNum, 4 ) );
+//    strand.post( boost::bind( &PrintNum, 5 ) );
 
-//    io_service->post( boost::bind( &PrintNum, 1 ) );
-//    io_service->post( boost::bind( &PrintNum, 2 ) );
-//    io_service->post( boost::bind( &PrintNum, 3 ) );
-//    io_service->post( boost::bind( &PrintNum, 4 ) );
-//    io_service->post( boost::bind( &PrintNum, 5 ) );
+    io_service->post( boost::bind( &PrintNum, 1 ) );
+    io_service->post( boost::bind( &PrintNum, 2 ) );
+    io_service->post( boost::bind( &PrintNum, 3 ) );
+    io_service->post( boost::bind( &PrintNum, 4 ) );
+    io_service->post( boost::bind( &PrintNum, 5 ) );
 
     work.reset();
 

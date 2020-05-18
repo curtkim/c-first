@@ -14,7 +14,7 @@ int main()
     posix::stream_descriptor stream{ioservice, STDOUT_FILENO};
     auto handler = [](const boost::system::error_code&, std::size_t size) {
         std::cout << ", world!\n";
-        std::cout << size << std::endl;
+        std::cout << size << " printed" << std::endl;
     };
     async_write(stream, buffer("Hello"), handler);
     async_write(stream, buffer("Hi"), handler);
