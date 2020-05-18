@@ -26,3 +26,4 @@
 
 ## reference
 https://corecppil.github.io/Meetups/2018-05-28_Practical-C++Asio-Variant/Asynchronous_IO_with_boost.asio.pdf
+https://github.com/franktea/network
