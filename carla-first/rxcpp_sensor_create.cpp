@@ -29,6 +29,7 @@
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
+namespace cs = carla::sensor;
 namespace csd = carla::sensor::data;
 
 using namespace std::chrono_literals;
@@ -51,6 +52,21 @@ static void SaveImageToDisk(const csd::Image &image) {
 
   auto view = ImageView::MakeView(image);
   ImageIO::WriteView(filename, view);
+}
+
+auto from_sensor(boost::shared_ptr<cc::Sensor> pSensor) {
+  auto data$ = rxcpp::sources::create<boost::shared_ptr<cs::SensorData>>(
+      [pSensor](rxcpp::subscriber<boost::shared_ptr<cs::SensorData>> s){
+        std::cout << std::this_thread::get_id() << " before listen " << std::endl;
+        pSensor->Listen([s](auto data){
+          assert(data != nullptr);
+          //boost::shared_ptr<csd::Image> image = boost::static_pointer_cast<csd::Image>(data);
+          //std::cout << std::this_thread::get_id() << " in callback " << image->GetFrame() << std::endl;
+          s.on_next(data);
+        });
+        //s.on_completed();
+      });;//.subscribe_on(rxcpp::synchronize_new_thread());
+  return data$;
 }
 
 
@@ -117,6 +133,7 @@ int main(int argc, const char *argv[]) {
 
     //typedef boost::shared_ptr<csd::Image> imagePtr;
 
+    /*
     auto image$ = rxcpp::sources::create<boost::shared_ptr<csd::Image>>(
       [&camera](rxcpp::subscriber<boost::shared_ptr<csd::Image>> s){
         std::cout << std::this_thread::get_id() << " before listen " << std::endl;
@@ -129,7 +146,10 @@ int main(int argc, const char *argv[]) {
         });
         //s.on_completed();
       });;//.subscribe_on(rxcpp::synchronize_new_thread());
-
+    */
+    auto image$ = from_sensor(camera).map([](boost::shared_ptr<cs::SensorData> data){
+      return boost::static_pointer_cast<csd::Image>(data);
+    });
 
     image$
       .map([](auto v){
@@ -151,7 +171,7 @@ int main(int argc, const char *argv[]) {
 
 
     std::cout << std::this_thread::get_id() << " sleep" << std::endl;
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for(5s);
 
     // Remove actors from the simulation.
     camera->Destroy();
