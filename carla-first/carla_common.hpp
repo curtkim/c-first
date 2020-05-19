@@ -19,10 +19,11 @@ auto from_sensor(boost::shared_ptr<cc::Sensor> pSensor) {
   return data$;
 }
 
+
 template <class DataType>
 auto from_sensor2(boost::shared_ptr<cc::Sensor> pSensor) {
-  auto data$ = rxcpp::sources::create<boost::shared_ptr<cs::SensorData>>(
-      [pSensor](rxcpp::subscriber<boost::shared_ptr<cs::SensorData>> s){
+  auto data$ = rxcpp::sources::create<boost::shared_ptr<DataType>>(
+      [pSensor](rxcpp::subscriber<boost::shared_ptr<DataType>> s){
         std::cout << std::this_thread::get_id() << " before listen " << std::endl;
         pSensor->Listen([s](auto data){
           assert(data != nullptr);

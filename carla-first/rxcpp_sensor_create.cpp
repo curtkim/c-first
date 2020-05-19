@@ -121,9 +121,13 @@ int main(int argc, const char *argv[]) {
         //s.on_completed();
       });;//.subscribe_on(rxcpp::synchronize_new_thread());
     */
+    /*
     auto image$ = from_sensor(camera).map([](boost::shared_ptr<cs::SensorData> data){
       return boost::static_pointer_cast<csd::Image>(data);
     });
+    */
+
+    auto image$ = from_sensor2<csd::Image>(camera);
 
     image$
       .map([](auto v){
