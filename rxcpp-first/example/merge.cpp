@@ -16,6 +16,7 @@ int main()
 
   auto keys = rx::observable<>::create<int>(
       [](rx::subscriber<int> dest){
+        std::cout << "dest.is_subscribed() " << dest.is_subscribed() << std::endl;
         for (;;) {
           int key = std::cin.get();
           dest.on_next(key);

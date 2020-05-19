@@ -50,6 +50,7 @@ class asio : public scheduler_interface
         auto keep_alive = shared_from_this();
         ios.post([=]() {
           (void)(keep_alive);
+          //std::cout << "schedule\n";
           // allow recursion
           scbl(recursion(true).get_recurse());
         });
@@ -61,7 +62,7 @@ class asio : public scheduler_interface
       if (scbl.is_subscribed()) {
 
         //std::chrono::duration<double> duration = std::chrono::duration_cast<std::chrono::duration<double>>(when - now());
-        //std::cout << "--> when " << duration.count() << " sec\n";
+        //std::cout << "schedule --> when " << duration.count() << " sec\n";
 
         //std::time_t now_c = std::chrono::steady_clock::to_time_t(when);
         //printf("scheduled on %p with timeout\n", this);
