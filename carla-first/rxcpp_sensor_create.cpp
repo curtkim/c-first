@@ -117,29 +117,35 @@ int main(int argc, const char *argv[]) {
 
     //typedef boost::shared_ptr<csd::Image> imagePtr;
 
-    auto image$ = rxcpp::sources::create<size_t>(
-      [&camera](rxcpp::subscriber<size_t> s){
+    auto image$ = rxcpp::sources::create<boost::shared_ptr<csd::Image>>(
+      [&camera](rxcpp::subscriber<boost::shared_ptr<csd::Image>> s){
         std::cout << std::this_thread::get_id() << " before listen " << std::endl;
 
-        camera->Listen([&s](auto data){
+        camera->Listen([s](auto data){
           boost::shared_ptr<csd::Image> image = boost::static_pointer_cast<csd::Image>(data);
           assert(image != nullptr);
           std::cout << std::this_thread::get_id() << " in callback " << image->GetFrame() << std::endl;
-          s.on_next(image->GetFrame());
+          s.on_next(image);
         });
         //s.on_completed();
       });;//.subscribe_on(rxcpp::synchronize_new_thread());
 
 
-    std::cout << 2 << std::endl;
     image$
-      //.observe_on(rxcpp::serialize_new_thread())
+      .map([](auto v){
+        return rxcpp::sources::just(v)
+                .tap([](boost::shared_ptr<csd::Image> v){
+                  SaveImageToDisk(*v);
+                })
+                .subscribe_on(rxcpp::observe_on_new_thread());
+        })
+      .flat_map([](auto observable) { return observable; })
       .subscribe(
         [](auto v){
-          std::cout << "onNext " << v << std::endl;
+          std::cout << std::this_thread::get_id() << " onNext " << v->GetFrame() << std::endl;
         },
         [](){
-          std::cout << "OnCompleted" << std::endl;
+          std::cout << std::this_thread::get_id() << " OnCompleted" << std::endl;
         }
       );
 
