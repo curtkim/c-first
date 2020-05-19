@@ -59,7 +59,12 @@ class asio : public scheduler_interface
     virtual void schedule(clock_type::time_point when, const schedulable& scbl) const override
     {
       if (scbl.is_subscribed()) {
-        // printf("scheduled on %p with timeout\n", this);
+
+        //std::chrono::duration<double> duration = std::chrono::duration_cast<std::chrono::duration<double>>(when - now());
+        //std::cout << "--> when " << duration.count() << " sec\n";
+
+        //std::time_t now_c = std::chrono::steady_clock::to_time_t(when);
+        //printf("scheduled on %p with timeout\n", this);
         auto keep_alive = shared_from_this();
         auto timer = std::make_shared<asio_ns::basic_waitable_timer<clock_type>>(ios, when);
         timer->async_wait([=](const system_ns::error_code&) {

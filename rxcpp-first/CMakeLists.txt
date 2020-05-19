@@ -25,7 +25,7 @@ foreach(APP 01_create 02_op 03_read_file 04_last_five
 endforeach()
 
 # example
-foreach(APP cep cep0 publish op_timer ref_count)
+foreach(APP merge merge_without_publish publish op_timer op_timeout ref_count)
     add_executable(${APP} example/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries (${APP} ${CONAN_LIBS} pthread)

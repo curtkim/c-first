@@ -29,12 +29,13 @@ int main() {
   values.connect();
 
   // Wait before subscribing
-  rxcpp::observable<>::timer(std::chrono::milliseconds(75)).subscribe([&](long){
-    std::cout << std::this_thread::get_id() << " in timer" << std::endl;
-    values.subscribe(
-        [](long v){ std::cout << std::this_thread::get_id() << " [3] OnNext: " << v << std::endl;},
-        [](){std::cout << std::this_thread::get_id() << "[3] OnCompleted\n";});
-  });
+  rxcpp::observable<>::timer(std::chrono::milliseconds(75))
+      .subscribe([&](long){
+        std::cout << std::this_thread::get_id() << " in timer" << std::endl;
+        values.subscribe(
+            [](long v){ std::cout << std::this_thread::get_id() << " [3] OnNext: " << v << std::endl;},
+            [](){std::cout << std::this_thread::get_id() << "[3] OnCompleted\n";});
+      });
 
   // Add blocking subscription to see results
   // blocking_observable은 또 무엇인가??

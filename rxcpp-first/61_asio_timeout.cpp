@@ -10,6 +10,7 @@ struct IoServiceContext
     static auto TheContext = std::make_shared<IoServiceContext>();
     return TheContext;
   };
+
   asio::io_service m_ios;
   std::vector<std::thread> m_threads;
   asio::io_service::work m_work;
@@ -36,29 +37,30 @@ struct IoServiceContext
       th.detach();
       m_threads.push_back(std::move(th));
     }
-
   };
+
   //~IoServiceContext(); // default dtor() good enough
 
 };
 
-#define DEFAULT
-//#define ASIO
+//#define DEFAULT
+#define ASIO
 //#define NEW_THREAD
 
 int main(int argc, const char *const argv[]) {
 
   // avoid subjects and prefer operators to subscribe
-  //
-
   //static rxcpp::subjects::subject<int> m_picture_processed, m_picture;
+
+  std::cout << std::this_thread::get_id() << " main thread" << "\n";
 
   auto start = std::chrono::system_clock::now();
   IoServiceContext::GetContext();
   std::this_thread::sleep_for(std::chrono::milliseconds (500));
+
   auto asio_coordination = rxcpp::synchronize_in_asio(IoServiceContext::GetContext()->m_ios);
 
-  rxcpp::observable<>::range(1,10)
+  rxcpp::observable<>::range(1,5)
       .observe_on(asio_coordination)
       .flat_map([&asio_coordination](int i) {
         return rxcpp::observable<>::just(i)
@@ -74,7 +76,7 @@ int main(int argc, const char *const argv[]) {
 
       })
       .tap([](int i) {
-        std::cout << i << "\n";
+        std::cout << std::this_thread::get_id() << " " << i << "\n";
       })
       .as_blocking()
       .count();

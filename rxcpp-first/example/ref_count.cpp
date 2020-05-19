@@ -1,6 +1,7 @@
 #include "rxcpp/rx.hpp"
 
 int main() {
+  std::cout << std::this_thread::get_id() << " main thread" << std::endl;
 
   /*
     * Implements the following diamond graph chain with publish+ref_count without using threads.
@@ -24,8 +25,12 @@ int main() {
   auto merged = left.merge(right);
 
   merged.subscribe(
-      [](long v) { printf("[3] OnNext: %ld\n", v); },
-      [&]() { printf("[3] OnCompleted:\n"); });
+      [](long v) {
+        std::cout << std::this_thread::get_id() << " OnNext " << v << std::endl;
+      },
+      []() {
+        std::cout << std::this_thread::get_id() << " OnCompleted" << std::endl;
+      });
 
   return 0;
 }
