@@ -17,23 +17,21 @@
 #include "common/shader.hpp"
 
 std::string vertex_shader = R"(
-#version 330
-uniform mat4 Mvp;
-in vec3 in_vert;
-out vec4 frag_color;
-void main() {
-  frag_color = mix(vec4(0.0, 0.0, 1.0, 1.0), vec4(0.0, 1.0, 0.0, 1.0), abs(sin(in_vert.z)));
-  gl_Position = Mvp * vec4(in_vert, 1.0);
+#version 330 core
+uniform mat4 proj;
+uniform mat4 model;
+layout (location = 0) in vec3 position;
+void main()
+{
+  gl_Position = proj * model * vec4(position,1.);
 }
 )";
 
 std::string fragment_shader = R"(
 #version 330
-in vec4 frag_color;
 out vec4 f_color;
 void main() {
-    f_color = frag_color;
-    //f_color = vec4(0.1, 0.1, 0.1, 1.0);
+  f_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 )";
 
@@ -100,6 +98,36 @@ int main(int argc, char *argv[]) {
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
   // 3. model
+  /*
+  // set up vertex data (and buffer(s)) and configure vertex attributes
+  // ------------------------------------------------------------------
+  float vertices[] = {
+      -0.7f, -0.7f, 0.0f, // left
+      0.7f, -0.7f, 0.0f, // right
+      0.0f,  0.7f, 0.0f  // top
+  };
+
+  unsigned int VBO, VAO;
+  glGenVertexArrays(1, &VAO);
+  glGenBuffers(1, &VBO);
+  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+  glBindVertexArray(VAO);
+
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+  // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+  glBindVertexArray(0);
+  */
+
+
   using PointT = pcl::PointXYZ;
   pcl::PointCloud<PointT> point_cloud;
   pcl::io::loadPLYFile("lidar.ply", point_cloud);
@@ -123,6 +151,7 @@ int main(int argc, char *argv[]) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
+
   // 5. data
   size_t count = 0;
 
@@ -136,17 +165,18 @@ int main(int argc, char *argv[]) {
   std::cout << proj << std::endl;
 
   while (!glfwWindowShouldClose(window)) {
+    std::cout << count << std::endl;
 
     double tic = igl::get_seconds();
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, w, h);
+    //glViewport(0, 0, w, h);
 
     // 7. model
     Eigen::Affine3f model = Eigen::Affine3f::Identity();
-    model.translate(Eigen::Vector3f(0, 0, -1.5));
-    model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
+    //model.translate(Eigen::Vector3f(0, 0, -1.5));
+    //model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
     //std::cout << model.matrix() << std::endl;
 
     // 8. select program and attach uniforms
@@ -155,8 +185,13 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
     // 9. Draw mesh as wireframe
+    glEnable(GL_POINT_SMOOTH); // make the point circular
+    glPointSize(5);      // must be added before glDrawArrays is called
+
     glBindVertexArray(VAO);
     glDrawArrays(GL_POINTS, 0, point_cloud.size());
+    glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
+
     //glDrawElements(GL_POINTS, point_cloud.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
