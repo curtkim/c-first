@@ -4,6 +4,7 @@ namespace cc = carla::client;
 namespace cs = carla::sensor;
 namespace cg = carla::geom;
 
+/*
 auto from_sensor(boost::shared_ptr<cc::Sensor> pSensor) {
   auto data$ = rxcpp::sources::create<boost::shared_ptr<cs::SensorData>>(
       [pSensor](rxcpp::subscriber<boost::shared_ptr<cs::SensorData>> s){
@@ -18,7 +19,7 @@ auto from_sensor(boost::shared_ptr<cc::Sensor> pSensor) {
       });//.subscribe_on(rxcpp::synchronize_new_thread());
   return data$;
 }
-
+*/
 
 template <class DataType>
 auto from_sensor2(boost::shared_ptr<cc::Sensor> pSensor) {
@@ -34,8 +35,9 @@ auto from_sensor2(boost::shared_ptr<cc::Sensor> pSensor) {
 }
 
 template <class DataType>
-auto from_sensor_listen(cc::World world, boost::shared_ptr<cc::BlueprintLibrary> blueprint_library, std::string sensor_type, std::map<std::string, std::string> attributes, cg::Transform tf, boost::shared_ptr<cc::Vehicle> vehicle) {
-  const cc::ActorBlueprint *sensor_bp = blueprint_library->Find("sensor.camera.rgb");
+auto from_sensor_data(cc::World world, std::string sensor_type, std::map<std::string, std::string> attributes, cg::Transform tf, boost::shared_ptr<cc::Vehicle> vehicle) {
+  auto blueprint_library = world.GetBlueprintLibrary();
+  const cc::ActorBlueprint *sensor_bp = blueprint_library->Find(sensor_type);
   assert(sensor_bp != nullptr);
   for( auto const& [key, val] : attributes )
     const_cast<cc::ActorBlueprint *>(sensor_bp)->SetAttribute(key, val);

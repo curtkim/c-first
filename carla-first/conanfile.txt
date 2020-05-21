@@ -2,6 +2,9 @@
 carla-client/0.9.9@demo/testing
 nlohmann_json/3.7.3
 rxcpp/4.1.0
+glfw/3.3.2@demo/testing
+glad/0.1.29@bincrafters/stable
+glm/0.9.9.7
 
 [generators]
 cmake

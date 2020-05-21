@@ -80,7 +80,9 @@ int main(int argc, const char *argv[]) {
         cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
         cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> caemra_attributes = {{"sensor_tick", "0.033"}};
-    auto [camera, image$] = from_sensor_listen<csd::Image>(world, blueprint_library, "sensor.camera.rgb", caemra_attributes, camera_transform, vehicle);
+    auto [camera, image$] = from_sensor_data<csd::Image>(
+        world, "sensor.camera.rgb", caemra_attributes, camera_transform,
+        vehicle);
 
     image$
         .subscribe(
@@ -96,7 +98,9 @@ int main(int argc, const char *argv[]) {
         cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
         cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> lidar_attributes = {{"sensor_tick", "0.1"}};
-    auto [lidar, lidar$] = from_sensor_listen<csd::LidarMeasurement>(world, blueprint_library, "sensor.lidar.ray_cast", lidar_attributes, lidar_transform, vehicle);
+    auto [lidar, lidar$] = from_sensor_data<csd::LidarMeasurement>(
+        world, "sensor.lidar.ray_cast", lidar_attributes, lidar_transform,
+        vehicle);
     lidar$
         .subscribe(
             [](auto v){
@@ -111,7 +115,8 @@ int main(int argc, const char *argv[]) {
         cg::Location{0.0f, 0.0f, 0.0f}, // x, y, z.
         cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> gnss_attributes = {};
-    auto [gnss, gnss$] = from_sensor_listen<csd::LidarMeasurement>(world, blueprint_library, "sensor.other.gnss", gnss_attributes, gnss_transform, vehicle);
+    auto [gnss, gnss$] = from_sensor_data<csd::LidarMeasurement>(
+        world, "sensor.other.gnss", gnss_attributes, gnss_transform, vehicle);
     gnss$
         .subscribe(
             [](auto v){
@@ -126,7 +131,8 @@ int main(int argc, const char *argv[]) {
         cg::Location{0.0f, 0.0f, 0.0f}, // x, y, z.
         cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> imu_attributes = {};
-    auto [imu, imu$] = from_sensor_listen<csd::LidarMeasurement>(world, blueprint_library, "sensor.other.imu", imu_attributes, imu_transform, vehicle);
+    auto [imu, imu$] = from_sensor_data<csd::LidarMeasurement>(
+        world, "sensor.other.imu", imu_attributes, imu_transform, vehicle);
     imu$
         .subscribe(
             [](auto v){
@@ -139,6 +145,7 @@ int main(int argc, const char *argv[]) {
 
     std::cout << std::this_thread::get_id() << " sleep" << std::endl;
     std::this_thread::sleep_for(5s);
+
 
     // Remove actors from the simulation.
     imu->Destroy();
