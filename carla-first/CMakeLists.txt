@@ -24,6 +24,6 @@ target_link_libraries(xodr2geojson_convert ${CONAN_LIBS})
 target_compile_features(xodr2geojson_convert PRIVATE cxx_std_17)
 
 
-add_executable(camera_opengl camera_opengl)
-target_link_libraries(camera_opengl ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(camera_opengl PRIVATE cxx_std_17)
+add_executable(opengl_camera opengl_camera)
+target_link_libraries(opengl_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(opengl_camera PRIVATE cxx_std_17)
