@@ -1,10 +1,16 @@
-cmake_minimum_required(VERSION 3.10)
-project(conan-imgui)
+cmake_minimum_required(VERSION 3.15)
+project(torch-first LANGUAGES CUDA CXX)
 
 add_definitions("-std=c++17")
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
+#target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
+
+include_directories(/usr/local/cuda-10.1/include)
 
 find_package(Torch REQUIRED)
 
@@ -26,4 +32,5 @@ foreach(APP
 		)
 	add_executable(${APP} ${APP}.cpp)
 	target_link_libraries(${APP} ${TORCH_LIBRARIES} ${CONAN_LIBS})
+	target_compile_definitions(${APP} PUBLIC WITH_CUDA)
 endforeach()
