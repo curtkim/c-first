@@ -11,6 +11,7 @@ int main() {
 
   q.normalize();
   std::cout << "To represent rotation, we need to normalize it such that its length is " << q.norm() << std::endl;
+  std::cout << "This quaternion consists of a scalar " << q.w() << " and a vector " << std::endl << q.vec() << std::endl;
 
   Eigen::Vector3d v(1, 2, -1);
   Eigen::Quaterniond p;
