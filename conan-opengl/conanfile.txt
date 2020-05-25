@@ -4,6 +4,7 @@ glfw/3.3.2@curt/testing
 glm/0.9.9.5@g-truc/stable
 libigl/2.2.0@demo/testing
 pcl/1.10.1@demo/testing
+libigl/2.2.0@demo/testing
 
 [generators]
 cmake
