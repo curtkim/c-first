@@ -23,6 +23,7 @@ foreach(APP
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
+  target_compile_definitions(${APP} PUBLIC BOOST_ASIO_DISABLE_EPOLL)
 endforeach()
 
 ## fixed_size_header

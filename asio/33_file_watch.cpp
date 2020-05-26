@@ -26,12 +26,13 @@ int main() {
 
     asio::posix::stream_descriptor stream{io_context, fd};
     asio::async_read(stream, asio::buffer(recv_buf), [recv_buf](const std::error_code ec, std::size_t length) {
+        std::cout << "error " << ec << std::endl;
         std::cout << "read " << length <<  std::endl;
         int i = 0;
         while (i < length) {
             struct inotify_event *event =(struct inotify_event *) &recv_buf[i];
             //const inotify_event *event = reinterpret_cast<const inotify_event*>(&recv_buf[i]);
-            std::cout << "wd=" << event->wd << " mask=" << event->mask << " name=" << event->name << std::endl;
+            std::cout << "wd=" << event->wd << " mask=" << event->mask << " name=" << event->name << " len=" << event->len << std::endl;
             if (event->len) {
                 if (event->mask & IN_CREATE) {
                     printf("The file %s was created.\n", event->name);
