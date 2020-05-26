@@ -7,8 +7,4 @@ opencv/4.1.1@conan/stable
 cmake
 
 [options]
-#libtorch:use_cuda=True
-#libtorch:use_cudnn=True
-#libtorch:use_static_cudnn=True
-libtorch:enable_parallel_build=True
 torch:cuda=10.1
