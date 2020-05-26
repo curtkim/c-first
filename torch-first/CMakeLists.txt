@@ -6,13 +6,13 @@ add_definitions("-std=c++17")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+#find_package(PythonLibs REQUIRED)
+#include_directories(${PYTHON_INCLUDE_DIRS})
 #target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
 
 include_directories(/usr/local/cuda-10.1/include)
 
-find_package(Torch REQUIRED)
+#find_package(Torch REQUIRED)
 
 #link_directories( /home/curt/.pyenv/versions/3.7.5/lib/python3.7/site-packages/torch/lib)
 #include_directories( /home/curt/.pyenv/versions/3.7.5/lib/python3.7/site-packages/torch/include)
@@ -20,10 +20,16 @@ find_package(Torch REQUIRED)
 #link_directories( /opt/conda/lib/python3.7/site-packages/torch/lib)
 #include_directories( /opt/conda/lib/python3.7/site-packages/torch/include)
 
+message(STATUS "------------------")
+foreach(A ${CONAN_LIBS})
+	message(STATUS ${A})
+endforeach()
+
 foreach(APP
 		01_aten_first
 		02_first
 		03_autograd_first
+		04_cuda_detect
 		21_torchscript
 		31_input
 		41_inference
