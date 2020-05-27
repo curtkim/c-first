@@ -1,4 +1,6 @@
-https://github.com/tobiascz/MNIST_Pytorch_python_and_capi
+## reference
+- https://github.com/tobiascz/MNIST_Pytorch_python_and_capi
+- https://github.com/IlyaOvodov/TorchScriptTutorial
 
 ## TODO
 - 현재 cpu를 사용함. GPU를 사용하도록 변경
@@ -10,3 +12,6 @@ https://github.com/forwardmeasure/conan/tree/master/recipes/conan-libtorch
 https://pytorch.org/cppdocs/installing.html
 
     -DCMAKE_PREFIX_PATH=/home/curt/projects/c/libtorch
+    
+    
+   

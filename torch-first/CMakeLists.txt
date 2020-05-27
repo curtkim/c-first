@@ -12,7 +12,7 @@ conan_basic_setup()
 
 include_directories(/usr/local/cuda-10.1/include)
 
-#find_package(Torch REQUIRED)
+find_package(Torch REQUIRED)
 
 #link_directories( /home/curt/.pyenv/versions/3.7.5/lib/python3.7/site-packages/torch/lib)
 #include_directories( /home/curt/.pyenv/versions/3.7.5/lib/python3.7/site-packages/torch/include)
@@ -34,6 +34,7 @@ foreach(APP
 		31_input
 		41_inference
 		42_inference
+		43_inference
 		51_TwoLayerNetwork 52_dcgan
 		)
 	add_executable(${APP} ${APP}.cpp)
