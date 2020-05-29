@@ -27,6 +27,8 @@ from torchvision.models import resnet50
 import torchvision.transforms as T
 torch.set_grad_enabled(False);
 
+from datetime import datetime
+
 """## DETR
 Here is a minimal implementation of DETR:
 """
@@ -117,6 +119,8 @@ state_dict = torch.hub.load_state_dict_from_url(
 detr.load_state_dict(state_dict)
 detr.eval();
 
+detr.to('cuda:0')
+
 """## Computing predictions with DETR
 
 The pre-trained DETR model that we have just loaded has been trained on the 80 COCO classes, with class indices ranging from 1 to 90 (that's why we considered 91 classes in the model construction).
@@ -172,9 +176,16 @@ def rescale_bboxes(out_bbox, size):
 def detect(im, model, transform):
     # mean-std normalize the input image (batch-size: 1)
     img = transform(im).unsqueeze(0)
-
+        
+    img = img.to('cuda:0')
+    
+    start_time = datetime.now()
     # propagate through the model
     outputs = model(img)
+    print(datetime.now() - start_time)    
+
+    outputs['pred_logits'] = outputs['pred_logits'].to('cpu')
+    outputs['pred_boxes'] = outputs['pred_boxes'].to('cpu')
 
     # keep only predictions with 0.7+ confidence
     probas = outputs['pred_logits'].softmax(-1)[0, :, :-1]
@@ -188,10 +199,13 @@ def detect(im, model, transform):
 To try DETRdemo model on your own image just change the URL below.
 """
 
-url = 'https://cdn2.unrealengine.com/Unreal+Engine%2Fspotlights%2Fcarla-democratizes-autonomous-vehicle-r-d-with-free-open-source-simulator%2FSpotlight_CARLA_blog_body_img1-1640x1000-48298612e23d2bab3b06294cbc8de3cba0b442e2.jpg'
-im = Image.open(requests.get(url, stream=True).raw)
+#url = 'https://cdn2.unrealengine.com/Unreal+Engine%2Fspotlights%2Fcarla-democratizes-autonomous-vehicle-r-d-with-free-open-source-simulator%2FSpotlight_CARLA_blog_body_img1-1640x1000-48298612e23d2bab3b06294cbc8de3cba0b442e2.jpg'
+#im = Image.open(requests.get(url, stream=True).raw)
+im = Image.open("frame0245.jpg")
 
+start_time = datetime.now()
 scores, boxes = detect(im, detr, transform)
+print(datetime.now() - start_time)
 
 """Let's now visualize the model predictions"""
 
