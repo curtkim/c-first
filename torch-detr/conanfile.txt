@@ -1,0 +1,10 @@
+[requires]
+torch/1.5.0@curt/prebuilt
+opencv/4.1.1@conan/stable
+#boost/1.73.0
+
+[generators]
+cmake
+
+[options]
+torch:cuda=10.1
