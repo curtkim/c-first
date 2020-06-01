@@ -4,6 +4,11 @@
 
 // 그러나 실제로 test.txt에는 데이터가 쓰여 있지 않다.
 int main() {
+  if( ASIO_HAS_POSIX_STREAM_DESCRIPTOR )
+    std::cout << "ASIO_HAS_POSIX_STREAM_DESCRIPTOR ON" << std::endl;
+  else
+    std::cout << "ASIO_HAS_POSIX_STREAM_DESCRIPTOR OFF" << std::endl;
+
   asio::io_context io_context;
 
   int fd;
