@@ -17,7 +17,9 @@ foreach(APP
         02_read_by_sensor2
         03_write_like_apollo
         11_write_bytes
-        12_read_bytes)
+        12_read_bytes
+        21_coded_output_stream
+        22_coded_input_stream)
     add_executable(${APP} ${APP}.cc ${PROTO_SRCS} ${PROTO_HDRS})
     target_link_libraries(${APP} PRIVATE CONAN_PKG::protobuf)
     target_include_directories(${APP} PRIVATE ${CMAKE_BINARY_DIR})
