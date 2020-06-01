@@ -1,0 +1,11 @@
+syntax = "proto2";
+message Image {
+  enum PixelFormat {
+    RGB8 = 1001;
+  }
+
+  required PixelFormat format = 1;
+  required uint32 height = 2;
+  required uint32 width = 3;
+  required bytes bytes = 4;
+}

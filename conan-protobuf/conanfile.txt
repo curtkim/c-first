@@ -3,6 +3,7 @@ protoc_installer/3.9.1@bincrafters/stable
 
 [requires]
 protobuf/3.9.1@bincrafters/stable
+opencv/4.1.1@conan/stable
 
 [generators]
 cmake
