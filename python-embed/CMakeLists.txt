@@ -20,7 +20,7 @@ include_directories(${PYTHON_INCLUDE_DIR})
 file(COPY calc.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY calc_global.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-foreach(APP 01_execute_script 02_module 03_embeded_module)
+foreach(APP 01_execute_script 02_module 03_embeded_module 04_mat_to_python)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${Python3_LIBRARY} ${CONAN_LIBS} pthread dl util)
 endforeach()

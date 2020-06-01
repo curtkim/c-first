@@ -11,6 +11,10 @@ using namespace py::literals;
 void test_system_module() {
   py::module sys = py::module::import("sys");
   py::print(sys.attr("path"));
+
+  std::vector<std::string> path_list = sys.attr("path").cast<std::vector<std::string>>();
+  for(auto path : path_list)
+    std::cout << "\t" << path << std::endl;
 }
 
 void test_custom_module() {
