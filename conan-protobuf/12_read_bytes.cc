@@ -13,8 +13,8 @@ int main() {
   info.PrintDebugString();
   std::cout << info.ByteSize() << std::endl;
 
-  std::cout << info.data().length() << std::endl;
-  std::cout << info.data() << std::endl;
+  std::cout << info.bytes().length() << std::endl;
+  std::cout << info.bytes() << std::endl;
 
   return 0;
 }
