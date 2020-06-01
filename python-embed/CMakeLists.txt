@@ -17,10 +17,12 @@ find_package (Python3 COMPONENTS Interpreter Development)
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
-file(COPY calc.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
-file(COPY calc_global.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+foreach(FILE calc.py calc_global.py img.py exec_numpy.py)
+    file(COPY ${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+endforeach()
 
-foreach(APP 01_execute_script 02_module 03_embeded_module 04_mat_to_python)
+
+foreach(APP 01_execute_script 02_module 03_embeded_module 04_mat_to_python 05_min_rosen)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${Python3_LIBRARY} ${CONAN_LIBS} pthread dl util)
 endforeach()
