@@ -19,3 +19,4 @@ add_executable(memory_mapped_write memory_mapped_write.cpp)
 add_executable(memory_mapped_read memory_mapped_read.cpp)
 
 add_executable(inotify_first inotify_first.cpp)
+add_executable(write_direct write_direct.cpp)
