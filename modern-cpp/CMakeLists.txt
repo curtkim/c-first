@@ -52,6 +52,7 @@ foreach(APP
         promise
         clock_steady
         utf8
+        producer_consumer
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
