@@ -1,0 +1,44 @@
+FROM ubuntu:18.04
+
+RUN apt-get update
+RUN apt-get install -y wget git
+
+# install recent cmake
+ENV CMAKE_VERSION 3.17.3
+RUN cd / && \
+    wget --quiet https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
+    sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr/local && \
+    cmake --version
+
+
+ENV PYENV_ROOT /root/.pyenv
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+RUN apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN cd /root && git clone git://github.com/yyuu/pyenv.git .pyenv
+
+RUN PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.6.10
+RUN pyenv global 3.6.10
+RUN pyenv rehash
+
+RUN pip install pytest
+RUN pip install numpy
+
+# install pybind11
+ENV PYBIND_VERSION 2.5.0
+RUN cd / && \
+    wget --quiet https://github.com/pybind/pybind11/archive/v${PYBIND_VERSION}.tar.gz && \
+    tar -xvzf v${PYBIND_VERSION}.tar.gz && \
+    cd pybind11-${PYBIND_VERSION} && \
+    cmake -S . -B build && \
+    cmake --build build -j40 && \
+    cmake --install build
+
+# build
+WORKDIR /data
+COPY . .
+RUN cmake -S . -B build && \
+    cmake --build build -j40
+RUN build/test

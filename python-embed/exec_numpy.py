@@ -1,4 +1,9 @@
-#import numpy as np
+import traceback
+try:
+    import numpy as np
+except:
+    traceback.print_exc()
+
 from scipy.optimize import minimize, rosen, rosen_der
 
 def min_rosen(x0):
