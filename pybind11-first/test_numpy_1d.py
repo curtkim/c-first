@@ -6,6 +6,7 @@ B = numpy1d.multiply(A)
 
 print('input list = ',A)
 print('output     = ',B)
+print(type(B))
 
 A = np.arange(10)
 B = numpy1d.multiply(A)
