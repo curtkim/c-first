@@ -5,9 +5,9 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 # Using the pybind cmake helpers:
-find_package(pybind11 REQUIRED)
+#find_package(pybind11 REQUIRED)
 
-set(PYBIND11_PYTHON_VERSION 3.7)
+set(PYBIND11_PYTHON_VERSION 3.8)
 set(PYBIND11_CPP_STANDARD -std=c++17)
 
 add_library(vector_inner vector_inner.cpp)
@@ -19,6 +19,9 @@ target_link_libraries (vector PRIVATE vector_inner)
 pybind11_add_module(numpy1d numpy1d.cpp)
 pybind11_add_module(numpy2d numpy2d.cpp)
 pybind11_add_module(numpy2d_eigin numpy2d_eigen.cpp)
+
+pybind11_add_module(myopencv myopencv.cpp)
+target_link_libraries(myopencv PUBLIC ${CONAN_LIBS})
 
 ### oop
 pybind11_add_module(oop oop/oop_pybind.cpp oop/person.cpp)
@@ -38,7 +41,5 @@ target_include_directories(nested2_format1 PRIVATE .)
 
 pybind11_add_module(nested2_format2 nested2/format2/nested2_format2_pybind.cpp)
 target_include_directories(nested2_format2 PRIVATE .)
-
-
 
 

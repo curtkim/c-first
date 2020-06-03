@@ -10,6 +10,7 @@
     PYTHONPATH=lib python ../test_numpy_2d_eigen.py
     PYTHONPATH=lib python ../test_oop.py 
     PYTHONPATH=lib python ../test_nested.py
+    PYTHONPATH=lib python ../myopencv.py
 
 
 ## reference
