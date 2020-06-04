@@ -10,6 +10,7 @@ int main() {
 
   //rxcpp::identity_one_worker i1 = rxcpp::identity_current_thread();
   rxcpp::serialize_one_worker s1 = rxcpp::serialize_new_thread();
+  rxcpp::serialize_one_worker s2 = rxcpp::serialize_new_thread();
   rxcpp::observe_on_one_worker o1 = rxcpp::observe_on_new_thread();
 
   rxcpp::sources::range(1, 5)
@@ -23,6 +24,9 @@ int main() {
     })
     .flat_map([](auto observable) { return observable; })
     .observe_on(s1)
+    .tap([](int v){
+      cout << "tap " << v << " " << this_thread::get_id() << endl;
+    })
     .subscribe(
       [](int v) {
         cout << "sub " << v << " " << this_thread::get_id() << endl;
@@ -32,7 +36,7 @@ int main() {
         cout << "Time difference = " << diff << "[ms]" << endl;
       });
 
-  this_thread::sleep_for(chrono::seconds(2));
+  this_thread::sleep_for(chrono::seconds(1));
 
   return 0;
 }
