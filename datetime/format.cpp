@@ -6,20 +6,34 @@
 #include <iomanip> // put_time
 #include <string>  // string
 
-using namespace std::chrono;
+#include <fmt/chrono.h>
 
-std::string return_current_time_and_date()
-{
-  auto now = std::chrono::system_clock::now();
-  auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-  std::stringstream ss;
-  ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
-  return ss.str();
+long getEpochMillisecond() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
 int main()
 {
-  std::cout << return_current_time_and_date() << std::endl;
+  // 1. std::time_t : epoch time second
+  std::time_t t = std::time(nullptr);
+  std::cout << t << " seconds since the Epoch\n";
+
+  // 2. time_t -> tm(localtime)
+  std::tm localtime = *std::localtime(&t);
+  fmt::print("The date is {:%Y-%m-%d %H:%M:%S}", localtime);
+  std::cout << std::endl;
+
+  // 3. epoch milli second
+  long epochMillisecond = getEpochMillisecond();
+  std::cout << epochMillisecond << " seconds since the Epoch\n";
+  std::cout << "millisecond only = " << epochMillisecond % 1000 << std::endl;
+  // padded with zero
+  fmt::print("{:#03}\n", epochMillisecond % 1000);
+
+  // 4. format put_time
+  std::cout << std::put_time(&localtime, "%Y-%m-%d %X") << std::endl;
+
   return 0;
 }
