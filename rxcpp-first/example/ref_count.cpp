@@ -1,5 +1,6 @@
 #include "rxcpp/rx.hpp"
 
+// http://reactivex.io/documentation/operators/refcount.html
 int main() {
   std::cout << std::this_thread::get_id() << " main thread" << std::endl;
 

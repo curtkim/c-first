@@ -11,7 +11,7 @@ namespace Rx {
 using namespace Rx;
 
 void test_synchronize_new_thread() {
-    auto synchronize_new_thread = rxcpp::synchronize_new_thread();
+    auto coordination = rxcpp::synchronize_new_thread();
     //rxcpp::observe_on_one_worker threads = rxcpp::observe_on_event_loop();
 
     printf("main thread %ld\n", std::this_thread::get_id());
@@ -21,7 +21,7 @@ void test_synchronize_new_thread() {
                 printf("Map %ld : %d\n", std::this_thread::get_id(), i);
                 return i;
             })
-            .observe_on(synchronize_new_thread)
+            .observe_on(coordination)
             .subscribe([&](int i) {
                 printf("Subs %ld : %d\n", std::this_thread::get_id(), i);
             });

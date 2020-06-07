@@ -14,7 +14,7 @@ foreach(APP 01_create 02_op 03_read_file 04_last_five
         05_create_thread 06_create_thread_interval
         09_complex
         11_concurrent 12_rxcurl_ex 13_rxrest
-        20_coordination_list 21_observe_on 22_synchronize_in 23_worker_schedule
+        20_coordination_list 21_observe_on 22_observe_on_runloop 25_synchronize_in 28_worker_schedule
         31_multi_subscribe
         51_value_move
         61_create_asio_timer

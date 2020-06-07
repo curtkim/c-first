@@ -21,7 +21,9 @@ using namespace std::chrono_literals;
 int main() {
   std::cout << "main thread " << std::this_thread::get_id() << endl;
 
-  auto values = rxcpp::observable<>::interval(std::chrono::milliseconds(50), rxcpp::observe_on_new_thread())
+  auto coordination = rxcpp::observe_on_new_thread();
+
+  auto values = rxcpp::observable<>::interval(std::chrono::milliseconds(50), coordination)
     .take(5)
     .publish();
 
