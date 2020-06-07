@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(carla-frist)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -26,6 +27,6 @@ foreach(APP
   target_compile_features(${APP} PRIVATE cxx_std_17)
 endforeach()
 
-add_executable(91_opengl_camera 91_opengl_camera)
+add_executable(91_opengl_camera 91_opengl_camera.cpp)
 target_link_libraries(91_opengl_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(91_opengl_camera PRIVATE cxx_std_17)

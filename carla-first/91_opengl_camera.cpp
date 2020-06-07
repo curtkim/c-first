@@ -44,8 +44,6 @@ using namespace std::string_literals;
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 auto init_carla() {
-  std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
-
   auto client = cc::Client("localhost", 2000, 1);
   client.SetTimeout(10s);
 
@@ -235,10 +233,25 @@ void loadTexture(boost::shared_ptr<csd::Image> image){
   glGenerateMipmap(GL_TEXTURE_2D);
 }
 
+long getEpochMillisecond() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
 
 int main(int argc, const char *argv[]) {
 
-  auto [vehicle, camera, image$] = init_carla();
+  std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
+
+  rxcpp::observe_on_one_worker threads = rxcpp::observe_on_event_loop();
+
+
+  auto [vehicle, camera, _image$] = init_carla();
+
+  auto image$ = _image$.tap([](boost::shared_ptr<csd::Image> image){
+    std::cout << "image: " << std::this_thread::get_id() << " time=" << getEpochMillisecond() << " frame=" << image->GetFrame() << " in tap" << std::endl;
+  }).subscribe_on(threads);
+
 
   auto [window, VBO, VAO, EBO] = init_opengl();
   unsigned int texture = GL_TEXTURE0;
@@ -258,7 +271,7 @@ int main(int argc, const char *argv[]) {
         int frame = std::get<0>(v);
         boost::shared_ptr<csd::Image> image = std::get<1>(v);
         loadTexture(image);
-        std::cout << std::this_thread::get_id() << " frame=" << image->GetFrame() << " in tap" << std::endl;
+        std::cout << "render: " << std::this_thread::get_id() << " time=" << getEpochMillisecond() << " frame=" << image->GetFrame() << " in tap" << std::endl;
       })
       .subscribe();
 
