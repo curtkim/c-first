@@ -13,11 +13,12 @@ conan_basic_setup()
 foreach(APP 01_create 02_op 03_read_file 04_last_five
         05_create_thread 06_create_thread_interval
         09_complex
-        11_concurrent 12_rxcurl_ex 13_rxrest
+        11_parallel 12_rxcurl_ex 13_rxrest
         20_coordination_list 21_observe_on 22_observe_on_runloop 25_synchronize_in 28_worker_schedule
         31_multi_subscribe
         51_value_move
         61_create_asio_timer
+        62_asio_stdin
         66_asio_timeout
         91_omega )
     add_executable(${APP} ${APP}.cpp)
@@ -26,7 +27,7 @@ foreach(APP 01_create 02_op 03_read_file 04_last_five
 endforeach()
 
 # example
-foreach(APP merge merge_without_publish publish op_timer op_timeout ref_count)
+foreach(APP merge merge_without_publish publish op_timer op_timeout ref_count defer)
     add_executable(${APP} example/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries (${APP} ${CONAN_LIBS} pthread)

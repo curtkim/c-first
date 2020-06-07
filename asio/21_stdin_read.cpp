@@ -27,11 +27,11 @@ int main() {
       io_context.run();
   });
 
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < 5; i++){
     std::cout << std::this_thread::get_id() << " loop" << std::endl;
     std::future<size_t> length_future = async_read_until(stream, buffer, "\n", asio::use_future);
     length_future.get();
-    std::cout << std::this_thread::get_id() << " futre after" << std::endl;
+    std::cout << std::this_thread::get_id() << " future after" << std::endl;
 
     std::istream is(&buffer);
     std::string result_line;
