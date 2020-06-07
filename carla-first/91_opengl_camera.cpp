@@ -284,6 +284,8 @@ int main(int argc, const char *argv[]) {
 
   while (!glfwWindowShouldClose(window))
   {
+    auto start_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
     sendFrame(frame++);
     while (!rl.empty() && rl.peek().when < rl.now()) {
       rl.dispatch();
@@ -314,6 +316,15 @@ int main(int argc, const char *argv[]) {
     // -------------------------------------------------------------------------------
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
+    long diff = (end_time - start_time).count();
+    long duration = 1000/30;
+    if (diff < duration) {
+      std::cout << "sleep " << duration -diff << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(duration -diff ));
+    }
   }
 
 
