@@ -258,7 +258,7 @@ int main(int argc, const char *argv[]) {
         int frame = std::get<0>(v);
         boost::shared_ptr<csd::Image> image = std::get<1>(v);
         loadTexture(image);
-        std::cout << std::this_thread::get_id() << " in tap" << std::endl;
+        std::cout << std::this_thread::get_id() << " frame=" << image->GetFrame() << " in tap" << std::endl;
       })
       .subscribe();
 

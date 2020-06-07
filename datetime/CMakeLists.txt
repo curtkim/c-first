@@ -3,6 +3,8 @@ project (datetime)
 
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(main main.cpp)
-set_property(TARGET main PROPERTY CXX_STANDARD 17)
-#target_link_libraries( modern-thread pthread )
+foreach(APP main format)
+    add_executable(${APP} ${APP}.cpp)
+    set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    #target_link_libraries( modern-thread pthread )
+endforeach()
