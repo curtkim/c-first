@@ -53,6 +53,7 @@ foreach(APP
         clock_steady
         utf8
         producer_consumer
+        function
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
