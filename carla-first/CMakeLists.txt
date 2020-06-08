@@ -10,8 +10,10 @@ conan_basic_setup()
 foreach(APP
     01_save_image
     02_save_lidar
+    03_multi_camera_performance
     11_rxcpp_sensor_create
-    12_rxcpp_sensor_all)
+    12_rxcpp_sensor_all
+    31_rxcpp_image_one_file)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
   target_compile_features(${APP} PRIVATE cxx_std_17)

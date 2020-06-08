@@ -33,6 +33,12 @@ namespace csd = carla::sensor::data;
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 
+long getEpochMillisecond() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 int main(int argc, const char *argv[]) {
@@ -40,7 +46,7 @@ int main(int argc, const char *argv[]) {
 
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    auto client = cc::Client("localhost", 2000, 2);
+    auto client = cc::Client("localhost", 2000, 10);
     client.SetTimeout(10s);
 
     std::cout << "Client API version : " << client.GetClientVersion() << '\n';
@@ -87,12 +93,30 @@ int main(int argc, const char *argv[]) {
     image$
         .subscribe(
             [](auto v){
-              std::cout << std::this_thread::get_id() << " camera onNext " << v->GetFrame() << std::endl;
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() <<" camera onNext " << v->GetFrame() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " camera OnCompleted" << std::endl;
             }
         );
+
+    auto camera_transform2 = cg::Transform{
+      cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+      cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+    std::map<std::string, std::string> caemra_attributes2 = {{"sensor_tick", "0.033"}};
+    auto [camera2, image2$] = from_sensor_data<csd::Image>(
+      world, "sensor.camera.rgb", caemra_attributes2, camera_transform2,
+      vehicle);
+
+    image2$
+      .subscribe(
+        [](auto v){
+            std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " camera2 onNext " << v->GetFrame() << std::endl;
+        },
+        [](){
+            std::cout << std::this_thread::get_id() << " camera2 OnCompleted" << std::endl;
+        }
+      );
 
     auto lidar_transform = cg::Transform{
         cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
@@ -104,7 +128,7 @@ int main(int argc, const char *argv[]) {
     lidar$
         .subscribe(
             [](auto v){
-              std::cout << std::this_thread::get_id() << " lidar onNext " << v->GetFrame() << std::endl;
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " lidar onNext " << v->GetFrame() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " lidar OnCompleted" << std::endl;
@@ -120,7 +144,7 @@ int main(int argc, const char *argv[]) {
     gnss$
         .subscribe(
             [](auto v){
-              std::cout << std::this_thread::get_id() << " gnss onNext " << v->GetFrame() << std::endl;
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " gnss onNext " << v->GetFrame() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " gnss OnCompleted" << std::endl;
@@ -136,7 +160,7 @@ int main(int argc, const char *argv[]) {
     imu$
         .subscribe(
             [](auto v){
-              std::cout << std::this_thread::get_id() << " imu onNext " << v->GetFrame() << std::endl;
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " imu onNext " << v->GetFrame() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " imu OnCompleted" << std::endl;
@@ -152,6 +176,7 @@ int main(int argc, const char *argv[]) {
     gnss->Destroy();
     lidar->Destroy();
     camera->Destroy();
+    camera2->Destroy();
     vehicle->Destroy();
     std::cout << std::this_thread::get_id() << " Actors destroyed." << std::endl;
 
