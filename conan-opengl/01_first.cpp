@@ -8,11 +8,8 @@
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
 
-// Include GLM
-//#include <glm/glm.hpp>
-//using namespace glm;
-
 #include <common/shader.hpp>
+
 
 int main( void )
 {
@@ -62,7 +59,6 @@ int main( void )
     // Create and compile our GLSL program from the shaders
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader" );
 
-
     static const GLfloat g_vertex_buffer_data[] = {
             -1.0f, -1.0f, 0.0f,
             1.0f, -1.0f, 0.0f,
@@ -104,8 +100,7 @@ int main( void )
         glfwPollEvents();
 
     } // Check if the ESC key was pressed or the window was closed
-    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0 );
+    while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO
     glDeleteBuffers(1, &vertexbuffer);
@@ -117,4 +112,3 @@ int main( void )
 
     return 0;
 }
-
