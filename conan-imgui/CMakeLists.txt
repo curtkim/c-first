@@ -12,17 +12,8 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 
-add_executable(main_glfw_opengl2
-		main_glfw_opengl2.cpp
-		bindings/imgui_impl_glfw.cpp
-		bindings/imgui_impl_glfw.h
-		bindings/imgui_impl_opengl2.cpp
-		bindings/imgui_impl_opengl2.h
-  )
-target_link_libraries(main_glfw_opengl2 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-
-
 foreach(APP
+		main
 		main_glfw_opengl3
 		main_glfw_opengl3_opengl
 		show_image)
@@ -33,19 +24,9 @@ foreach(APP
 			bindings/imgui_impl_glfw.h
 			bindings/imgui_impl_opengl3.cpp
 			bindings/imgui_impl_opengl3.h
+			opengl_shader.cpp
+			opengl_shader.h
 			)
 	target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 	target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 endforeach()
-
-
-add_executable(main
-		main.cpp
-		bindings/imgui_impl_glfw.cpp
-		bindings/imgui_impl_glfw.h
-		bindings/imgui_impl_opengl3.cpp
-		bindings/imgui_impl_opengl3.h
-		opengl_shader.cpp
-		opengl_shader.h
-		)
-target_link_libraries(main ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
