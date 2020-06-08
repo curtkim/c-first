@@ -22,3 +22,6 @@ target_link_libraries(program_options ${CONAN_LIBS})
 
 add_executable(date_time date_time.cpp)
 target_link_libraries(date_time ${CONAN_LIBS})
+
+add_executable(test_fiber test_fiber.cpp)
+target_link_libraries(test_fiber ${CONAN_LIBS})
