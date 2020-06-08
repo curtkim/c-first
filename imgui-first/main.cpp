@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include <tuple>
 
 #include <glad/glad.h> // Initialize with gladLoadGL()
 
@@ -86,7 +87,11 @@ void render_conan_logo() {
       ImColor(col4), 10, 18);
 }
 
-void create_triangle(unsigned int &vbo, unsigned int &vao, unsigned int &ebo) {
+std::tuple<unsigned int,unsigned int,unsigned int> create_triangle() {
+
+  unsigned int vbo;
+  unsigned int vao;
+  unsigned int ebo;
 
   // create the triangle
   float triangle_vertices[] = {
@@ -115,6 +120,8 @@ void create_triangle(unsigned int &vbo, unsigned int &vao, unsigned int &ebo) {
   glEnableVertexAttribArray(1);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
+
+  return std::make_tuple(vbo, vao, ebo);
 }
 
 int main(int, char **) {
@@ -161,8 +168,7 @@ int main(int, char **) {
   glViewport(0, 0, screen_width, screen_height);
 
   // create our geometries
-  unsigned int vbo, vao, ebo;
-  create_triangle(vbo, vao, ebo);
+  auto [vbo, vao, ebo] = create_triangle();
 
   // init shader
   Shader triangle_shader;

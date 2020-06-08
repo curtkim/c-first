@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(conan-imgui)
 
-add_definitions("-std=c++11")
 # opengl loader를 GLAD로 설정한다.
 add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD)
 
 find_package(OpenGL REQUIRED)
-include_directories(.)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -29,4 +27,5 @@ foreach(APP
 			)
 	target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 	target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+	target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
