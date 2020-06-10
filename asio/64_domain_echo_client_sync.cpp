@@ -3,19 +3,6 @@
 #include <thread>
 #include "asio.hpp"
 
-enum { max_length = 1024 };
-
-void get(asio::io_context& io_context)
-{
-  try
-  {
-  }
-  catch (std::system_error& e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
-}
-
 int main(int argc, char* argv[])
 {
   std::cout << std::this_thread::get_id() << " main thread" << std::endl;
