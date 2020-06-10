@@ -3,9 +3,7 @@
 #include "bindings/imgui_impl_opengl3.h"
 
 #include "opengl_shader.h"
-#include <iostream>
 #include <stdio.h>
-#include <vector>
 #include <tuple>
 
 #include <glad/glad.h> // Initialize with gladLoadGL()

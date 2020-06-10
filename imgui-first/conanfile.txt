@@ -2,15 +2,13 @@
 glfw/3.3.2@curt/testing
 glad/0.1.29@bincrafters/stable
 stb/20190512@conan/stable
-imgui/1.73@bincrafters/stable
+imgui/1.76
 
 [generators]
 cmake
 
 [imports]
-./misc/bindings, imgui_impl_glfw.h -> ../bindings
-./misc/bindings, imgui_impl_glfw.cpp -> ../bindings
-./misc/bindings, imgui_impl_opengl3.h -> ../bindings
-./misc/bindings, imgui_impl_opengl3.cpp -> ../bindings
-./misc/bindings, imgui_impl_opengl2.h -> ../bindings
-./misc/bindings, imgui_impl_opengl2.cpp -> ../bindings
+./res/bindings, imgui_impl_glfw.h -> ../bindings
+./res/bindings, imgui_impl_glfw.cpp -> ../bindings
+./res/bindings, imgui_impl_opengl3.h -> ../bindings
+./res/bindings, imgui_impl_opengl3.cpp -> ../bindings
