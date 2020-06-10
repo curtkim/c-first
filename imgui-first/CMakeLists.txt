@@ -14,6 +14,7 @@ foreach(APP
 		main
 		main_glfw_opengl3
 		main_glfw_opengl3_opengl
+		main_glfw_opengl3_thread
 		show_image)
 
 	add_executable(${APP}
