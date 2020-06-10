@@ -20,7 +20,8 @@ foreach(APP
     31_file_write_c 32_file_write_future 33_file_watch
     41_async_tcp_echo_server 42_tcp_echo_client
     51_spawn_echo_server
-    61_domain_echo_server 62_domain_echo_client
+    61_domain_echo_server 62_domain_echo_client 63_domain_echo_server_sync 64_domain_echo_client_sync
+
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
