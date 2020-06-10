@@ -52,13 +52,8 @@ void init_imgui(GLFWwindow *window) {
   ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void do_loop(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, rxcpp::subjects::subject<int> &framebus) {
-  auto frameout = framebus.get_subscriber();
-  auto sendFrame = [frameout](int frame) {
-      frameout.on_next(frame);
-  };
+void do_loop(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
 
-  // Main loop
   int frame = 0;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -103,6 +98,10 @@ int main(int, char **) {
 
   rxcpp::subjects::subject<int> framebus;
   auto frame$ = framebus.get_observable();
+  auto frameout = framebus.get_subscriber();
+  auto sendFrame = [frameout](int frame) {
+      frameout.on_next(frame);
+  };
 
   frame$
     .with_latest_from(interval$)
@@ -119,7 +118,7 @@ int main(int, char **) {
     })
     .subscribe();
 
-  do_loop(window, rl, framebus);
+  do_loop(window, rl, sendFrame);
 
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
