@@ -8,6 +8,7 @@ conan_basic_setup()
 
 add_executable(main
 		main.cpp
+		gui.cpp
 		bindings/imgui_impl_glfw.cpp
 		bindings/imgui_impl_opengl3.cpp
 		)
