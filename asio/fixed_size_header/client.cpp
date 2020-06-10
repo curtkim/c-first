@@ -160,16 +160,14 @@ private:
 
 int main() {
   asio::io_context io(1);
-  asio::ip::tcp::endpoint ep(asio::ip::address::from_string("127.0.0.1"),
-                             12345);
+  asio::ip::tcp::endpoint ep(asio::ip::address::from_string("127.0.0.1"),12345);
 
   // all live clients, save them in a map
   std::map<int, std::shared_ptr<Session>> clients;
 
   // close callback
   std::function<void(std::shared_ptr<Session>, const asio::error_code &)> f;
-  f = [&f, &io, &ep, &clients](std::shared_ptr<Session> p,
-                               const asio::error_code &err) {
+  f = [&f, &io, &ep, &clients](std::shared_ptr<Session> p,const asio::error_code &err) {
     // some client is closed. get the id and create a new one.
     int id = p->ID();
     clients.erase(id); // erase the old one

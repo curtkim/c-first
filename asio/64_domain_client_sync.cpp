@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 
   std::array<char, 128> recv_buf;
   std::size_t recv_length = socket.receive(asio::buffer(recv_buf));
+
   std::cout << recv_length << std::endl;
   std::cout.write(recv_buf.data(), recv_length);
 

@@ -20,8 +20,8 @@ foreach(APP
     31_file_write_c 32_file_write_future 33_file_watch
     41_async_tcp_echo_server 42_tcp_echo_client
     51_spawn_echo_server
-    61_domain_echo_server 62_domain_echo_client 63_domain_echo_server_sync 64_domain_echo_client_sync
-
+    61_domain_echo_server 62_domain_echo_client
+    63_domain_server_sync 64_domain_client_sync
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} stdc++fs)
@@ -40,3 +40,10 @@ target_link_libraries(fixed_size_header_server ${CONAN_LIBS})
 add_executable(http_client http_client/http_client.cpp http_client/AsyncHttpClient.cpp)
 target_link_libraries(http_client ${CONAN_LIBS})
 target_compile_features(http_client PRIVATE cxx_std_17)
+
+## protobuf
+
+#  ~/.conan/data/protoc_installer/3.9.1/bincrafters/stable/package/c0c1ef10e3d0ded44179e28b669d6aed0277ca6a/bin/protoc --cpp_out=. stringdb.proto
+add_executable(protobuf_server protobuf/server_main.cpp protobuf/db_server.cpp protobuf/stringdb.pb.cc)
+target_link_libraries(protobuf_server ${CONAN_LIBS})
+target_compile_features(protobuf_server PRIVATE cxx_std_17)

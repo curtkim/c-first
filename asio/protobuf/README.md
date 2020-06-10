@@ -1,0 +1,1 @@
+https://github.com/eliben/code-for-blog/tree/master/2011/asio_protobuf_sample

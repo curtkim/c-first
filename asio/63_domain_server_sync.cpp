@@ -17,8 +17,9 @@ int main(int argc, char *argv[]) {
     asio::local::stream_protocol::acceptor acceptor(io_context, ep);
     asio::local::stream_protocol::socket socket = acceptor.accept();
 
-    socket.send(asio::buffer("hello"));
-    socket.send(asio::buffer("world"));
+    auto SPLITTER = asio::buffer(":");
+    std::vector buffers {SPLITTER, asio::buffer("hello"), SPLITTER, asio::buffer("world"), SPLITTER};
+    socket.send(buffers);
 
     io_context.run();
 
