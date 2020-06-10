@@ -72,6 +72,8 @@ void cleanup_imgui(GLFWwindow *window) {
 
 void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
 
+  ImGuiIO &io = ImGui::GetIO();
+
   int frame = 0;
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -99,6 +101,6 @@ void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::functi
     }
 
     glfwSwapBuffers(window);
-    std::cout << std::this_thread::get_id() << " loop" << std::endl;
+    std::cout << std::this_thread::get_id() << " in loop" << " frame rate: " << io.Framerate << std::endl;
   }
 }
