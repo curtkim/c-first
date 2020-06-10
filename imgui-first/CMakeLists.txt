@@ -11,10 +11,10 @@ conan_basic_setup()
 
 
 foreach(APP
-		main
-		main_glfw_opengl3
-		main_glfw_opengl3_opengl
-		show_image)
+		01_first
+		02_binding_glfw_opengl3
+		03_show_image
+		04_with_opengl)
 
 	add_executable(${APP}
 			${APP}.cpp
@@ -30,13 +30,13 @@ foreach(APP
 	target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
-add_executable(main_glfw_opengl3_module
-		main_glfw_opengl3_module.cpp
-		main_glfw_opengl3_module_ui.cpp
+add_executable(21_moduled
+		21_moduled.cpp
+		21_moduled_ui.cpp
 		bindings/imgui_impl_glfw.cpp
 		bindings/imgui_impl_opengl3.cpp
 		)
-target_compile_definitions(main_glfw_opengl3_module PUBLIC STB_IMAGE_IMPLEMENTATION)
-target_link_libraries(main_glfw_opengl3_module ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(main_glfw_opengl3_module PUBLIC cxx_std_17)
+target_compile_definitions(21_moduled PUBLIC STB_IMAGE_IMPLEMENTATION)
+target_link_libraries(21_moduled ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(21_moduled PUBLIC cxx_std_17)
 
