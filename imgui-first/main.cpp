@@ -174,7 +174,8 @@ int main(int, char **) {
   Shader triangle_shader;
   triangle_shader.init(vertex_shader_text, fragment_shader_text);
 
-  // Setup Dear ImGui context
+
+  // 1. Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
@@ -185,16 +186,18 @@ int main(int, char **) {
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
+  // 1. Setup Dear ImGui context
 
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // feed inputs to dear imgui, start new frame
+    // 2. feed inputs to dear imgui, start new frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    // 2. feed inputs to dear imgui, start new frame
 
     {
       // rendering our geometries
@@ -240,10 +243,11 @@ int main(int, char **) {
     glfwSwapBuffers(window);
   }
 
-  // Cleanup
+  // 3. Cleanup
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
+  // 3. Cleanup
 
   glfwDestroyWindow(window);
   glfwTerminate();
