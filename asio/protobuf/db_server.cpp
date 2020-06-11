@@ -3,7 +3,6 @@
 #include "stringdb.pb.h"
 #include <cassert>
 #include <iostream>
-#include <map>
 #include <string>
 #include <vector>
 #include <asio.hpp>
@@ -11,11 +10,8 @@
 #include <functional>
 
 using namespace std;
-using asio::ip::tcp;
 
 #define DEBUG true
-
-typedef map<string, string> StringDatabase;
 
 
 // Database connection - handles a connection with a single client.
@@ -139,32 +135,18 @@ private:
   }
 };
 
-struct DbServer::DbServerImpl {
-  tcp::acceptor acceptor;
-  StringDatabase db;
-  asio::io_context io_context;
-
-  DbServerImpl(asio::io_context &io_context, unsigned port)
-      : acceptor(io_context, tcp::endpoint(tcp::v4(), port)) {
-    start_accept();
-  }
-
-  void start_accept() {
-    acceptor.async_accept([this](std::error_code ec, tcp::socket socket) {
-      if (!ec) {
-        std::make_shared<DbConnection>(std::move(socket), db)->start();
-      }
-      start_accept();
-    });
-  }
-};
 
 DbServer::DbServer(asio::io_context& io_context, unsigned port)
-  : d(new DbServerImpl(io_context, port))
+  : acceptor(io_context, tcp::endpoint(tcp::v4(), port))
 {
+  start_accept();
 }
 
-
-DbServer::~DbServer()
-{
+void DbServer::start_accept() {
+  acceptor.async_accept([this](std::error_code ec, tcp::socket socket) {
+    if (!ec) {
+      std::make_shared<DbConnection>(std::move(socket), db)->start();
+    }
+    start_accept();
+  });
 }

@@ -2,17 +2,21 @@
 
 #include <asio.hpp>
 #include <memory>
+#include <string>
+#include <map>
 
-// Database server. The constructor starts it listening on the given
-// port with the given io_service.
+typedef std::map<std::string, std::string> StringDatabase;
+
+using asio::ip::tcp;
+
 class DbServer {
 public:
   DbServer(asio::io_context &io_context, unsigned port);
-  ~DbServer();
+  ~DbServer() {};
 
 private:
-  DbServer();
+  void start_accept();
 
-  struct DbServerImpl;
-  std::shared_ptr<DbServerImpl> d;
+  tcp::acceptor acceptor;
+  StringDatabase db;
 };
