@@ -9,11 +9,9 @@
 #include <cassert>
 #include <vector>
 #include <cstdio>
-#include <boost/shared_ptr.hpp>
-#include <boost/cstdint.hpp>
 
 
-typedef std::vector<boost::uint8_t> data_buffer;
+typedef std::vector<std::uint8_t> data_buffer;
 
 
 // A generic function to show contents of a container holding byte data
@@ -46,7 +44,7 @@ template <class MessageType>
 class PackedMessage
 {
 public:
-    typedef boost::shared_ptr<MessageType> MessagePointer;
+    typedef std::shared_ptr<MessageType> MessagePointer;
 
     PackedMessage(MessagePointer msg = MessagePointer())
       : m_msg(msg)
@@ -104,10 +102,10 @@ private:
     void encode_header(data_buffer& buf, unsigned size) const
     {
       assert(buf.size() >= HEADER_SIZE);
-      buf[0] = static_cast<boost::uint8_t>((size >> 24) & 0xFF);
-      buf[1] = static_cast<boost::uint8_t>((size >> 16) & 0xFF);
-      buf[2] = static_cast<boost::uint8_t>((size >> 8) & 0xFF);
-      buf[3] = static_cast<boost::uint8_t>(size & 0xFF);
+      buf[0] = static_cast<std::uint8_t>((size >> 24) & 0xFF);
+      buf[1] = static_cast<std::uint8_t>((size >> 16) & 0xFF);
+      buf[2] = static_cast<std::uint8_t>((size >> 8) & 0xFF);
+      buf[3] = static_cast<std::uint8_t>(size & 0xFF);
     }
 
     MessagePointer m_msg;

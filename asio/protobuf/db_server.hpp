@@ -1,23 +1,18 @@
 #pragma once
 
-
 #include <asio.hpp>
 #include <memory>
 
-
 // Database server. The constructor starts it listening on the given
 // port with the given io_service.
-//
-class DbServer
-{
+class DbServer {
 public:
-    DbServer(asio::io_context& io_service, unsigned port);
-    ~DbServer();
+  DbServer(asio::io_context &io_context, unsigned port);
+  ~DbServer();
 
 private:
-    DbServer();
-    void start_accept();
+  DbServer();
 
-    struct DbServerImpl;
-    std::shared_ptr<DbServerImpl> d;
+  struct DbServerImpl;
+  std::shared_ptr<DbServerImpl> d;
 };
