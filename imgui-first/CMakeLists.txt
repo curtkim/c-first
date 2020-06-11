@@ -6,11 +6,17 @@ find_package(OpenGL REQUIRED)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+foreach(FILE
+		bunny.off)
+	file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+endforeach()
+
 foreach(APP
 		01_first
 		02_binding_glfw_opengl3
 		03_show_image
 		04_with_opengl
+		31_model
 		99_test
 		)
 
