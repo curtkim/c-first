@@ -8,7 +8,7 @@ void create() {
   // eye
   torch::Tensor tensor = torch::eye(3);
   std::cout << tensor << std::endl;
-  std::cout << tensor.type() << " " << tensor.size(0) << " " << tensor.size(1) << std::endl;
+  std::cout << tensor.options().dtype() << " " << tensor.size(0) << " " << tensor.size(1) << std::endl;
 
   // rand
   std::cout << torch::rand({3,2}) << std::endl;
@@ -42,12 +42,12 @@ void by_index() {
 
   auto a = torch::eye(3);
 
-  cout << a[0] << endl;
-  cout << a[0][0] << endl;
-  cout << a[0][0].item() << endl;
-  cout << a.view({9}) << endl;
-  cout << a.view({-1, 9}) << endl;
-  cout << a.reshape({-1, 9}) << endl;
+  cout << "a[0]=" << a[0] << endl;
+  cout << "a[0][0]=" << a[0][0] << endl;
+  cout << "a[0][0].item()=" << a[0][0].item() << endl;
+  cout << "a.view({9})=" << a.view({9}) << endl;
+  cout << "a.view({-1, 9})=" << a.view({-1, 9}) << endl;
+  cout << "a.reshape({-1, 9})=" << a.reshape({-1, 9}) << endl;
 }
 
 void from_blob() {
