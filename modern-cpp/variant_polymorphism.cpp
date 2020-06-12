@@ -34,6 +34,16 @@ struct HTMLLabelBuilder {
 int main() {
   using LabelVariant = std::variant<VSimpleLabel, VDateLabel, VIconLabel>;
 
+  std::cout << "sizeof(int) : " << sizeof(int) << std::endl;
+  std::cout << "sizeof(int*) : " << sizeof(int*) << std::endl;
+  std::cout << "sizeof(char*) : " << sizeof(char*) << std::endl;
+  std::cout << "sizeof(void*) : " << sizeof(void*) << std::endl;
+  std::cout << "sizeof(std::string) : " << sizeof(std::string) << std::endl;
+  std::cout << "sizeof(VDateLabel) : " << sizeof(VDateLabel) << std::endl;
+  std::cout << "sizeof(VIconLabel) : " << sizeof(VIconLabel) << std::endl;
+  std::cout << "sizeof(VSimpleLabel) : " << sizeof(VSimpleLabel) << std::endl;
+  std::cout << "sizeof(std::variant<VSimpleLabel, VDateLabel, VIconLabel>) : " << sizeof(LabelVariant) << std::endl;
+
   std::vector<LabelVariant> vecLabels;
   vecLabels.emplace_back(VSimpleLabel{"Hello World"});
   vecLabels.emplace_back(VDateLabel{"10th August 2020"});
