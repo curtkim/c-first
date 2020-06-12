@@ -3,14 +3,22 @@
 
 using namespace std;
 
-const c10::ArrayRef RC{
-  at::Dimname::fromSymbol(c10::Symbol::dimname("R")),
-  at::Dimname::fromSymbol(c10::Symbol::dimname("C"))
-};
-
-
 int main() {
-  at::Tensor a = at::ones({2, 2}, RC, at::kInt);
+  /*
+  const at::ArrayRef NCHW{
+    at::Dimname::fromSymbol(c10::Symbol::dimname("N")), // batch
+    at::Dimname::fromSymbol(c10::Symbol::dimname("C")), // channel
+    at::Dimname::fromSymbol(c10::Symbol::dimname("H")), // hegith
+    at::Dimname::fromSymbol(c10::Symbol::dimname("W"))  // width
+  };
+  */
+  
+  at::ArrayRef HW{
+    at::Dimname::fromSymbol(c10::Symbol::dimname("H")),
+    at::Dimname::fromSymbol(c10::Symbol::dimname("W"))
+  };
+
+  at::Tensor a = at::ones({2, 2}, HW, at::kInt);
   cout << a.get_named_tensor_meta()->names() << endl;
 
   at::Tensor b = at::randn({2, 2}); // float type
