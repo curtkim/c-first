@@ -8,7 +8,7 @@ int main() {
   const at::ArrayRef NCHW{
     at::Dimname::fromSymbol(c10::Symbol::dimname("N")), // batch
     at::Dimname::fromSymbol(c10::Symbol::dimname("C")), // channel
-    at::Dimname::fromSymbol(c10::Symbol::dimname("H")), // hegith
+    at::Dimname::fromSymbol(c10::Symbol::dimname("H")), // height
     at::Dimname::fromSymbol(c10::Symbol::dimname("W"))  // width
   };
   */
