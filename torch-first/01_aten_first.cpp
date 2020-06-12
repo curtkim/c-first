@@ -12,18 +12,25 @@ int main() {
     at::Dimname::fromSymbol(c10::Symbol::dimname("W"))  // width
   };
   */
-  
+
   at::ArrayRef HW{
     at::Dimname::fromSymbol(c10::Symbol::dimname("H")),
     at::Dimname::fromSymbol(c10::Symbol::dimname("W"))
   };
 
   at::Tensor a = at::ones({2, 2}, HW, at::kInt);
+  cout << "sizeof(a)=" << sizeof(a) << endl;
+  cout << "byteof(a) = " << a.nbytes() << endl;
+
   cout << a.get_named_tensor_meta()->names() << endl;
 
   at::Tensor b = at::randn({2, 2}); // float type
-  auto c = a + b.to(at::kInt);
+  cout << "sizeof(b)=" << sizeof(b) << endl;
+  cout << "byteof(b) = " << b.nbytes() << endl;
 
+  auto c = a + b.to(at::kInt);
+  cout << "sizeof(c)=" << sizeof(c) << endl;
+  cout << "byteof(c)=" << c.nbytes() << endl;
   cout << "c.has_names(): " << c.has_names() << endl;
 
   cout << a << endl;
