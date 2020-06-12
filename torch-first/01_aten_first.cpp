@@ -24,7 +24,7 @@ int main() {
 
   cout << a.get_named_tensor_meta()->names() << endl;
 
-  at::Tensor b = at::randn({2, 2}); // float type
+  at::Tensor b = at::randn({2, 2}).mul(2); // float type
   cout << "sizeof(b)=" << sizeof(b) << endl;
   cout << "byteof(b) = " << b.nbytes() << endl;
 
