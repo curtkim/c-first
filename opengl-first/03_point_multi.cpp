@@ -15,15 +15,20 @@
 #include <iostream>
 
 #include "common/shader.hpp"
+#include "camera.hpp"
+
 
 std::string vertex_shader = R"(
 #version 330 core
 uniform mat4 proj;
+uniform mat4 view;
 uniform mat4 model;
+
 layout (location = 0) in vec3 position;
+
 void main()
 {
-  gl_Position = proj * model * vec4(position,1.);
+  gl_Position = proj * view * model * vec4(position,1.);
 }
 )";
 
@@ -40,16 +45,13 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-int main(int argc, char *argv[]) {
-
-  // 1. init
-  GLFWwindow *window;
-
+GLFWwindow * make_window() {
+  GLFWwindow * window;
   // Initialise GLFW
   if (!glfwInit()) {
     fprintf(stderr, "Failed to initialize GLFW\n");
     getchar();
-    return -1;
+    throw "Failed to initialize GLFW";
   }
 
   glfwWindowHint(GLFW_SAMPLES, 4);
@@ -67,7 +69,7 @@ int main(int argc, char *argv[]) {
             "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
     getchar();
     glfwTerminate();
-    return -1;
+    throw "Failed to open GLFW window";
   }
   glfwMakeContextCurrent(window);
 
@@ -77,12 +79,12 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Failed to initialize GLEW\n");
     getchar();
     glfwTerminate();
-    return -1;
+    throw "Failed to initialize GLEW";
   }
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   const auto &reshape = [](GLFWwindow *window, int w, int h) {
-    ::w = w, ::h = h;
+      ::w = w, ::h = h;
   };
   glfwSetWindowSizeCallback(window, reshape);
 
@@ -93,12 +95,37 @@ int main(int argc, char *argv[]) {
     glfwGetWindowSize(window, &width_window, &height_window);
     reshape(window, width_window, height_window);
   }
+  return window;
+}
 
-  // 2. shader
-  GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
+auto load_model() {
+  using PointT = pcl::PointXYZ;
+  pcl::PointCloud<PointT> point_cloud;
+  pcl::io::loadPLYFile("lidar.ply", point_cloud);
+  std::cout << "point_cloud.size() " << point_cloud.size() << std::endl;
 
-  // 3. model
-  /*
+  // 4. Vertex Array
+  // Generate and attach buffers to vertex array
+  GLuint VAO;
+  glGenVertexArrays(1, &VAO);
+
+  GLuint VBO;
+  glGenBuffers(1, &VBO);
+  glBindVertexArray(VAO);
+
+  // Vertex
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * point_cloud.size(), &point_cloud.points[0], GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+
+  return std::make_tuple(VAO, VBO, point_cloud.size());
+}
+
+auto load_simple_model() {
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
   float vertices[] = {
@@ -125,35 +152,39 @@ int main(int argc, char *argv[]) {
   // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
   // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
   glBindVertexArray(0);
-  */
+  return std::make_tuple(VAO, VBO, 3);
+}
 
 
-  using PointT = pcl::PointXYZ;
-  pcl::PointCloud<PointT> point_cloud;
-  pcl::io::loadPLYFile("lidar.ply", point_cloud);
-  std::cout << "point_cloud.size() " << point_cloud.size() << std::endl;
+Camera camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-  // 4. Vertex Array
-  // Generate and attach buffers to vertex array
-  GLuint VAO;
-  glGenVertexArrays(1, &VAO);
+void processInput(GLFWwindow *window) {
+  float deltaTime = 0.1;
 
-  GLuint VBO;
-  glGenBuffers(1, &VBO);
-  glBindVertexArray(VAO);
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window, true);
 
-  // Vertex
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * point_cloud.size(), &point_cloud.points[0], GL_STATIC_DRAW);
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    camera.ProcessKeyboard(FORWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    camera.ProcessKeyboard(BACKWARD, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    camera.ProcessKeyboard(LEFT, deltaTime);
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    camera.ProcessKeyboard(RIGHT, deltaTime);
+}
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+int main(int argc, char *argv[]) {
 
+  // 1. init
+  GLFWwindow * window = make_window();
 
-  // 5. data
-  size_t count = 0;
+  // 2. shader
+  GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
+
+  // 3. model
+  auto [VAO, VBO, point_length] = load_model();
+  //auto [VAO, VBO, point_length] = load_simple_model();
 
   // 6. projection
   Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
@@ -165,7 +196,8 @@ int main(int argc, char *argv[]) {
   std::cout << proj << std::endl;
 
   while (!glfwWindowShouldClose(window)) {
-    std::cout << count << std::endl;
+
+    processInput(window);
 
     double tic = igl::get_seconds();
     // clear screen and set viewport
@@ -179,9 +211,12 @@ int main(int argc, char *argv[]) {
     //model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
     //std::cout << model.matrix() << std::endl;
 
+    glm::mat4 view = camera.GetViewMatrix();
+
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
     // 9. Draw mesh as wireframe
@@ -189,7 +224,7 @@ int main(int argc, char *argv[]) {
     glPointSize(5);      // must be added before glDrawArrays is called
 
     glBindVertexArray(VAO);
-    glDrawArrays(GL_POINTS, 0, point_cloud.size());
+    glDrawArrays(GL_POINTS, 0, point_length);
     glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
 
     //glDrawElements(GL_POINTS, point_cloud.size(), GL_UNSIGNED_INT, 0);
