@@ -16,7 +16,7 @@
 
 #include "common/shader.hpp"
 #include "camera.hpp"
-
+#include "common/utils.hpp"
 
 std::string vertex_shader = R"(
 #version 330 core
@@ -45,58 +45,6 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-GLFWwindow * make_window() {
-  GLFWwindow * window;
-  // Initialise GLFW
-  if (!glfwInit()) {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
-    throw "Failed to initialize GLFW";
-  }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                 GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(w, h, "model viewer", NULL, NULL);
-  if (window == NULL) {
-    fprintf(stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are "
-            "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to open GLFW window";
-  }
-  glfwMakeContextCurrent(window);
-
-  // Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to initialize GLEW";
-  }
-
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  const auto &reshape = [](GLFWwindow *window, int w, int h) {
-      ::w = w, ::h = h;
-  };
-  glfwSetWindowSizeCallback(window, reshape);
-
-  {
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
-    reshape(window, width_window, height_window);
-  }
-  return window;
-}
 
 auto load_model() {
   using PointT = pcl::PointXYZ;
@@ -202,7 +150,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 int main(int argc, char *argv[]) {
 
   // 1. init
-  GLFWwindow * window = make_window();
+  GLFWwindow * window = make_window(w, h);
   glfwSetCursorPosCallback(window, mouse_callback);
 
   // 2. shader
@@ -246,13 +194,13 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
     // 9. Draw mesh as wireframe
-    glEnable(GL_POINT_SMOOTH); // make the point circular
-    glPointSize(5);      // must be added before glDrawArrays is called
-
+    glEnable(GL_POINT_SMOOTH); // not working
+    glPointSize(25);      // must be added before glDrawArrays is called
     glBindVertexArray(VAO);
     glDrawArrays(GL_POINTS, 0, point_length);
-    glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
 
+    //
+    glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
     //glDrawElements(GL_POINTS, point_cloud.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
