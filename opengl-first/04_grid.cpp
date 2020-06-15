@@ -236,7 +236,7 @@ auto load_static_model_counter_clock_wise() {
     -2.0f,  -1.0f, 0.0f,
   };
 
-  const unsigned int indices[] = {
+  static const unsigned int indices[] = {
     // horizontal
     0, 4,
     15, 5,
@@ -275,6 +275,75 @@ auto load_static_model_counter_clock_wise() {
 
   int length = 10*2;
   return std::make_tuple(vao, vbo, ebo, length);
+}
+
+auto load_static_model_counter_clock_wise_by_vector() {
+
+  static const std::vector<float> g_vertex_buffer_data = {
+    // bottom
+    -2.0f, -2.0f, 0.0f,
+    -1.0f, -2.0f, 0.0f,
+    0.0f,  -2.0f, 0.0f,
+    1.0f,  -2.0f, 0.0f,
+    2.0f,  -2.0f, 0.0f,
+
+    // right
+    2.0f,  -1.0f, 0.0f,
+    2.0f,  0.0f, 0.0f,
+    2.0f,  1.0f, 0.0f,
+
+    // top
+    2.0f, 2.0f, 0.0f,
+    1.0f, 2.0f, 0.0f,
+    0.0f,  2.0f, 0.0f,
+    -1.0f,  2.0f, 0.0f,
+    -2.0f,  2.0f, 0.0f,
+
+    // left
+    -2.0f,  1.0f, 0.0f,
+    -2.0f,  0.0f, 0.0f,
+    -2.0f,  -1.0f, 0.0f,
+  };
+
+  static const std::vector<unsigned int> indices = {
+    // horizontal
+    0, 4,
+    15, 5,
+    14, 6,
+    13, 7,
+    12, 8,
+
+    // vertical
+    0, 12,
+    1, 11,
+    2, 10,
+    3, 9,
+    4, 8,
+  };
+
+  GLuint vao;
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
+
+  GLuint vbo;
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData(GL_ARRAY_BUFFER, g_vertex_buffer_data.size()*sizeof(float), g_vertex_buffer_data.data(), GL_STATIC_DRAW);
+  std::cout << "sizeof(g_vertex_buffer_data)=" << sizeof(g_vertex_buffer_data) << std::endl;
+
+  glEnableVertexAttribArray( 0 );
+  glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
+
+  GLuint ebo;
+  glGenBuffers( 1, &ebo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo );
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  return std::make_tuple(vao, vbo, ebo, indices.size());
 }
 
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
@@ -364,6 +433,7 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
+
 
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO);

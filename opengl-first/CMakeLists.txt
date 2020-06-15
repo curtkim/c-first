@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 project(conan-opengl)
 
 find_package(OpenGL REQUIRED)
-#include_directories(.)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -18,9 +17,10 @@ endforeach()
 
 foreach(APP
         01_first 02_point 03_point_multi 04_grid
-        11_mouse
-        21_test-libigl
-        31_map_control)
+        11_renderable
+        21_mouse
+        31_map_control
+        41_test-libigl)
   add_executable(${APP} ${APP}.cpp common/shader.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
