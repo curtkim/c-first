@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtx/string_cast.hpp>
 
 #include <Eigen/Core>
 
@@ -16,7 +17,9 @@
 
 #include "common/shader.hpp"
 #include "camera.hpp"
+#include "common/utils.hpp"
 
+#include "10_grid_renderable.hpp"
 
 std::string vertex_shader = R"(
 #version 330 core
@@ -45,99 +48,14 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-GLFWwindow * make_window() {
-  GLFWwindow * window;
-  // Initialise GLFW
-  if (!glfwInit()) {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
-    throw "Failed to initialize GLFW";
-  }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                 GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(w, h, "model viewer", NULL, NULL);
-  if (window == NULL) {
-    fprintf(stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are "
-            "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to open GLFW window";
-  }
-  glfwMakeContextCurrent(window);
-
-  // Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to initialize GLEW";
-  }
-
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  const auto &reshape = [](GLFWwindow *window, int w, int h) {
-      ::w = w, ::h = h;
-  };
-  glfwSetWindowSizeCallback(window, reshape);
-
-  {
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
-    reshape(window, width_window, height_window);
-  }
-  return window;
-}
-
-
-auto load_simple_model() {
-  // set up vertex data (and buffer(s)) and configure vertex attributes
-  // ------------------------------------------------------------------
-  float vertices[] = {
-      -0.7f, -0.7f, 0.0f, // left
-      0.7f, -0.7f, 0.0f, // right
-      0.0f,  0.7f, 0.0f  // top
-  };
-
-  unsigned int VBO, VAO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-  glBindVertexArray(VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-  // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-  glBindVertexArray(0);
-  return std::make_tuple(VAO, VBO, 3);
-}
-
-
-Camera camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;
 bool firstMouse = true;
 
 
-void processInput(GLFWwindow *window) {
+void processKeyboardInput(GLFWwindow *window) {
   float deltaTime = 0.1;
 
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -176,15 +94,58 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 int main(int argc, char *argv[]) {
 
   // 1. init
-  GLFWwindow * window = make_window();
+  GLFWwindow * window = make_window(w, h);
   glfwSetCursorPosCallback(window, mouse_callback);
 
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
   // 3. model
-  //auto [VAO, VBO, point_length] = load_model();
-  auto [VAO, VBO, point_length] = load_simple_model();
+  static const std::vector<float> g_vertex_buffer_data = {
+    // bottom
+    -2.0f, -2.0f, 0.0f,
+    -1.0f, -2.0f, 0.0f,
+    0.0f,  -2.0f, 0.0f,
+    1.0f,  -2.0f, 0.0f,
+    2.0f,  -2.0f, 0.0f,
+
+    // right
+    2.0f,  -1.0f, 0.0f,
+    2.0f,  0.0f, 0.0f,
+    2.0f,  1.0f, 0.0f,
+
+    // top
+    2.0f, 2.0f, 0.0f,
+    1.0f, 2.0f, 0.0f,
+    0.0f,  2.0f, 0.0f,
+    -1.0f,  2.0f, 0.0f,
+    -2.0f,  2.0f, 0.0f,
+
+    // left
+    -2.0f,  1.0f, 0.0f,
+    -2.0f,  0.0f, 0.0f,
+    -2.0f,  -1.0f, 0.0f,
+  };
+
+  static const std::vector<unsigned int> indices = {
+    // horizontal
+    0, 4,
+    15, 5,
+    14, 6,
+    13, 7,
+    12, 8,
+
+    // vertical
+    0, 12,
+    1, 11,
+    2, 10,
+    3, 9,
+    4, 8,
+  };
+
+  auto grid = GridRenderable(g_vertex_buffer_data, indices);
+  grid.init();
+
 
   // 6. projection
   Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
@@ -197,21 +158,19 @@ int main(int argc, char *argv[]) {
 
   while (!glfwWindowShouldClose(window)) {
 
-    processInput(window);
+    processKeyboardInput(window);
 
     double tic = igl::get_seconds();
+
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glViewport(0, 0, w, h);
 
     // 7. model
     Eigen::Affine3f model = Eigen::Affine3f::Identity();
-    //model.translate(Eigen::Vector3f(0, 0, -1.5));
-    //model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
-    //std::cout << model.matrix() << std::endl;
-
-    glm::mat4 view = camera.GetViewMatrix();
+    //glm::mat4 view = camera.GetViewMatrix();
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -5.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //std::cout << "view " << glm::to_string(view) << std::endl;
 
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
@@ -219,16 +178,7 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
-    // 9. Draw mesh as wireframe
-    glEnable(GL_POINT_SMOOTH); // make the point circular
-    glPointSize(5);      // must be added before glDrawArrays is called
-
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_POINTS, 0, point_length);
-    glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
-
-    //glDrawElements(GL_POINTS, point_cloud.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    grid.render();
 
     glfwSwapBuffers(window);
 
