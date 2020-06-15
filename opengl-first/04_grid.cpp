@@ -142,9 +142,9 @@ auto load_model() {
   glEnableVertexAttribArray( 0 );
   glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
-  GLuint ibo;
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  GLuint ebo;
+  glGenBuffers( 1, &ebo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo );
   glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(glm::uvec4), glm::value_ptr(indices[0]), GL_STATIC_DRAW);
 
   glBindVertexArray(0);
@@ -152,24 +152,24 @@ auto load_model() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   int length = (GLuint)indices.size()*4;
-  return std::make_tuple(vao, length);
+  return std::make_tuple(vao, vbo, ebo, length);
 }
 
 auto load_static_model() {
 
   static const GLfloat g_vertex_buffer_data[] = {
     // row1
-    -1.0f, -1.0f, 0.0f,
-    0.0f,  -1.0f, 0.0f,
-    1.0f,  -1.0f, 0.0f,
+    -1.0f, -1.0f, 0.0f, // 0
+    0.0f,  -1.0f, 0.0f, // 1
+    1.0f,  -1.0f, 0.0f, // 2
     // row2
-    -1.0f, 0.0f, 0.0f,
-    0.0f,  0.0f, 0.0f,
-    1.0f,  0.0f, 0.0f,
+    -1.0f, 0.0f, 0.0f,  // 3
+    0.0f,  0.0f, 0.0f,  // 4
+    1.0f,  0.0f, 0.0f,  // 5
     // row3
-    -1.0f, 1.0f, 0.0f,
-    0.0f,  1.0f, 0.0f,
-    1.0f,  1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f,  // 6
+    0.0f,  1.0f, 0.0f,  // 7
+    1.0f,  1.0f, 0.0f,  // 8
   };
 
   const unsigned int indices[] = {
@@ -191,12 +191,13 @@ auto load_static_model() {
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
   glEnableVertexAttribArray( 0 );
   glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
-  GLuint ibo;
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  GLuint ebo;
+  glGenBuffers( 1, &ebo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo );
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   glBindVertexArray(0);
@@ -204,17 +205,14 @@ auto load_static_model() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   int length = 6*2;
-  return std::make_tuple(vao, length);
-
+  return std::make_tuple(vao, vbo, ebo, length);
 }
 
-auto load_static_model2() {
-
-  static int SLICES = 5;
+auto load_static_model_counter_clock_wise() {
 
   static const GLfloat g_vertex_buffer_data[] = {
     // bottom
-    -2.0f, -2.0f, 0.0f
+    -2.0f, -2.0f, 0.0f,
     -1.0f, -2.0f, 0.0f,
     0.0f,  -2.0f, 0.0f,
     1.0f,  -2.0f, 0.0f,
@@ -238,13 +236,14 @@ auto load_static_model2() {
     -2.0f,  -1.0f, 0.0f,
   };
 
-  const std::vector<unsigned int> indices = {
+  const unsigned int indices[] = {
     // horizontal
     0, 4,
     15, 5,
     14, 6,
     13, 7,
     12, 8,
+
     // vertical
     0, 12,
     1, 11,
@@ -261,21 +260,21 @@ auto load_static_model2() {
   glGenBuffers( 1, &vbo );
   glBindBuffer( GL_ARRAY_BUFFER, vbo );
   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
   glEnableVertexAttribArray( 0 );
   glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
-  GLuint ibo;
-  glGenBuffers( 1, &ibo );
-  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  GLuint ebo;
+  glGenBuffers( 1, &ebo );
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo );
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  int length = indices.;
-  return std::make_tuple(vao, length);
-
+  int length = 10*2;
+  return std::make_tuple(vao, vbo, ebo, length);
 }
 
 Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
@@ -331,7 +330,7 @@ int main(int argc, char *argv[]) {
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
   // 3. model
-  auto [VAO, length] = load_static_model2();
+  auto [VAO, VBO, EBO, length] = load_static_model_counter_clock_wise();
 
   // 6. projection
   Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
@@ -368,6 +367,7 @@ int main(int argc, char *argv[]) {
 
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO);
+    // 연결되지 않은 선분을 그린다. 총 length/2개의 선분을 그린다.
     glDrawElements(GL_LINES, length, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
     glDisable(GL_DEPTH_TEST);
@@ -385,6 +385,10 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  glDeleteBuffers(1, &EBO);
 
   glfwDestroyWindow(window);
   glfwTerminate();
