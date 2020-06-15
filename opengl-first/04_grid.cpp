@@ -1,13 +1,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <Eigen/Core>
 
 #include <igl/frustum.h>
 #include <igl/get_seconds.h>
-
-#include <pcl/point_types.h>
-#include <pcl/io/ply_io.h>
 
 #include <chrono>
 #include <string>
@@ -99,64 +99,186 @@ GLFWwindow * make_window() {
 }
 
 auto load_model() {
-  using PointT = pcl::PointXYZ;
-  pcl::PointCloud<PointT> point_cloud;
-  pcl::io::loadPLYFile("lidar.ply", point_cloud);
-  std::cout << "point_cloud.size() " << point_cloud.size() << std::endl;
+  int slices = 2;
 
-  // 4. Vertex Array
-  // Generate and attach buffers to vertex array
-  GLuint VAO;
-  glGenVertexArrays(1, &VAO);
+  std::vector<glm::vec3> vertices;
+  std::vector<glm::uvec4> indices;
 
-  GLuint VBO;
-  glGenBuffers(1, &VBO);
-  glBindVertexArray(VAO);
+  for(int j=0; j<=slices; ++j) {
+    for(int i=0; i<=slices; ++i) {
+      float x = (float)i/(float)slices;
+      float y = (float)j/(float)slices;
+      float z = 0;
+      std::cout << x << " " << y << std::endl;
+      vertices.push_back(glm::vec3(x, y, z));
+    }
+  }
+  std::cout << vertices.size() << std::endl;
+  std::cout << "---------------------------" << std::endl;
 
-  // Vertex
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * point_cloud.size(), &point_cloud.points[0], GL_STATIC_DRAW);
+  for(int j=0; j<slices; ++j) {
+    for(int i=0; i<slices; ++i) {
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+      int row1 =  j    * (slices+1);
+      int row2 = (j+1) * (slices+1);
+
+      indices.push_back(glm::uvec4(row1+i, row1+i+1, row1+i+1, row2+i+1));
+      indices.push_back(glm::uvec4(row2+i+1, row2+i, row2+i, row1+i));
+      std::cout << row1+i << " " << row1+i+1 << " " << row1+i+1 << " " << row2+i+1 << std::endl;
+      std::cout << row2+i+1 << " " << row2+i << " " << row2+i << " " << row1+i << std::endl;
+    }
+  }
+  std::cout << indices.size() << std::endl;
+  std::cout << "---------------------------" << std::endl;
+
+  GLuint vao;
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
+
+  GLuint vbo;
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData( GL_ARRAY_BUFFER, vertices.size()*sizeof(glm::vec3), glm::value_ptr(vertices[0]), GL_STATIC_DRAW );
+  glEnableVertexAttribArray( 0 );
+  glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
+
+  GLuint ibo;
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(glm::uvec4), glm::value_ptr(indices[0]), GL_STATIC_DRAW);
+
   glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  return std::make_tuple(VAO, VBO, point_cloud.size());
+  int length = (GLuint)indices.size()*4;
+  return std::make_tuple(vao, length);
 }
 
-auto load_simple_model() {
-  // set up vertex data (and buffer(s)) and configure vertex attributes
-  // ------------------------------------------------------------------
-  float vertices[] = {
-      -0.7f, -0.7f, 0.0f, // left
-      0.7f, -0.7f, 0.0f, // right
-      0.0f,  0.7f, 0.0f  // top
+auto load_static_model() {
+
+  static const GLfloat g_vertex_buffer_data[] = {
+    // row1
+    -1.0f, -1.0f, 0.0f,
+    0.0f,  -1.0f, 0.0f,
+    1.0f,  -1.0f, 0.0f,
+    // row2
+    -1.0f, 0.0f, 0.0f,
+    0.0f,  0.0f, 0.0f,
+    1.0f,  0.0f, 0.0f,
+    // row3
+    -1.0f, 1.0f, 0.0f,
+    0.0f,  1.0f, 0.0f,
+    1.0f,  1.0f, 0.0f,
   };
 
-  unsigned int VBO, VAO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-  glBindVertexArray(VAO);
+  const unsigned int indices[] = {
+    // horizontal
+    0, 2,
+    3, 5,
+    6, 8,
+    // vertical
+    0, 6,
+    1, 7,
+    2, 8,
+  };
 
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  GLuint vao;
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
+  GLuint vbo;
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+  glEnableVertexAttribArray( 0 );
+  glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+  GLuint ibo;
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-  // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-  glBindVertexArray(0);
-  return std::make_tuple(VAO, VBO, 3);
+  int length = 6*2;
+  return std::make_tuple(vao, length);
+
 }
 
+auto load_static_model2() {
 
-Camera camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+  static int SLICES = 5;
+
+  static const GLfloat g_vertex_buffer_data[] = {
+    // bottom
+    -2.0f, -2.0f, 0.0f
+    -1.0f, -2.0f, 0.0f,
+    0.0f,  -2.0f, 0.0f,
+    1.0f,  -2.0f, 0.0f,
+    2.0f,  -2.0f, 0.0f,
+
+    // right
+    2.0f,  -1.0f, 0.0f,
+    2.0f,  0.0f, 0.0f,
+    2.0f,  1.0f, 0.0f,
+
+    // top
+    2.0f, 2.0f, 0.0f,
+    1.0f, 2.0f, 0.0f,
+    0.0f,  2.0f, 0.0f,
+    -1.0f,  2.0f, 0.0f,
+    -2.0f,  2.0f, 0.0f,
+
+    // left
+    -2.0f,  1.0f, 0.0f,
+    -2.0f,  0.0f, 0.0f,
+    -2.0f,  -1.0f, 0.0f,
+  };
+
+  const std::vector<unsigned int> indices = {
+    // horizontal
+    0, 4,
+    15, 5,
+    14, 6,
+    13, 7,
+    12, 8,
+    // vertical
+    0, 12,
+    1, 11,
+    2, 10,
+    3, 9,
+    4, 8,
+  };
+
+  GLuint vao;
+  glGenVertexArrays( 1, &vao );
+  glBindVertexArray( vao );
+
+  GLuint vbo;
+  glGenBuffers( 1, &vbo );
+  glBindBuffer( GL_ARRAY_BUFFER, vbo );
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+  glEnableVertexAttribArray( 0 );
+  glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
+
+  GLuint ibo;
+  glGenBuffers( 1, &ibo );
+  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  int length = indices.;
+  return std::make_tuple(vao, length);
+
+}
+
+Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;
@@ -203,14 +325,13 @@ int main(int argc, char *argv[]) {
 
   // 1. init
   GLFWwindow * window = make_window();
-  glfwSetCursorPosCallback(window, mouse_callback);
+  //glfwSetCursorPosCallback(window, mouse_callback);
 
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
   // 3. model
-  //auto [VAO, VBO, point_length] = load_model();
-  auto [VAO, VBO, point_length] = load_simple_model();
+  auto [VAO, length] = load_static_model2();
 
   // 6. projection
   Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
@@ -245,16 +366,11 @@ int main(int argc, char *argv[]) {
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
-    // 9. Draw mesh as wireframe
-    glEnable(GL_POINT_SMOOTH); // make the point circular
-    glPointSize(5);      // must be added before glDrawArrays is called
-
+    glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_POINTS, 0, point_length);
-    glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
-
-    //glDrawElements(GL_POINTS, point_cloud.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINES, length, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
+    glDisable(GL_DEPTH_TEST);
 
     glfwSwapBuffers(window);
 

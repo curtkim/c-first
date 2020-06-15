@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 GLFWwindow* window;
 
-#include <common/shader.hpp>
+#include "common/shader.hpp"
 
 
 int main( void )

@@ -98,32 +98,6 @@ GLFWwindow * make_window() {
   return window;
 }
 
-auto load_model() {
-  using PointT = pcl::PointXYZ;
-  pcl::PointCloud<PointT> point_cloud;
-  pcl::io::loadPLYFile("lidar.ply", point_cloud);
-  std::cout << "point_cloud.size() " << point_cloud.size() << std::endl;
-
-  // 4. Vertex Array
-  // Generate and attach buffers to vertex array
-  GLuint VAO;
-  glGenVertexArrays(1, &VAO);
-
-  GLuint VBO;
-  glGenBuffers(1, &VBO);
-  glBindVertexArray(VAO);
-
-  // Vertex
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * point_cloud.size(), &point_cloud.points[0], GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-
-  return std::make_tuple(VAO, VBO, point_cloud.size());
-}
 
 auto load_simple_model() {
   // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -156,7 +130,7 @@ auto load_simple_model() {
 }
 
 
-Camera camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 30.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;

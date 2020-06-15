@@ -17,9 +17,10 @@ foreach(FILE
 endforeach()
 
 foreach(APP
-        01_first 02_point 03_point_multi
+        01_first 02_point 03_point_multi 04_grid
         11_mouse
-        21_test-libigl )
+        21_test-libigl
+        31_map_control)
   add_executable(${APP} ${APP}.cpp common/shader.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
