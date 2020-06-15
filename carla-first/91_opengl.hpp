@@ -1,5 +1,11 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+
+#include "shader.hpp"
+
 
 const char *VERTEX_SHADER_SOURCE = R"(
 #version 330 core

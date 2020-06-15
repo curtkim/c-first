@@ -2,6 +2,18 @@
 
 #include <chrono>
 
+#include <carla/client/ActorBlueprint.h>
+#include <carla/client/BlueprintLibrary.h>
+#include <carla/client/Client.h>
+#include <carla/client/Map.h>
+#include <carla/client/Sensor.h>
+#include <carla/client/TimeoutException.h>
+#include <carla/geom/Transform.h>
+#include <carla/image/ImageIO.h>
+#include <carla/sensor/data/Image.h>
+#include <carla/client/World.h>
+
+
 namespace cc = carla::client;
 namespace cs = carla::sensor;
 namespace cg = carla::geom;

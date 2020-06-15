@@ -3,28 +3,11 @@
 #include <string>
 #include <thread>
 #include <tuple>
-#include <chrono>
-
-#include <carla/client/ActorBlueprint.h>
-#include <carla/client/BlueprintLibrary.h>
-#include <carla/client/Client.h>
-#include <carla/client/Map.h>
-#include <carla/client/Sensor.h>
-#include <carla/client/TimeoutException.h>
-#include <carla/client/World.h>
-#include <carla/geom/Transform.h>
-#include <carla/image/ImageIO.h>
-#include <carla/sensor/data/Image.h>
 
 #include <rxcpp/rx.hpp>
 
 #include "common.hpp"
 #include "carla_common.hpp"
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include "shader.hpp"
 
 #include "91_opengl.hpp"
 
