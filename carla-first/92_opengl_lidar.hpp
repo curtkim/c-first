@@ -17,7 +17,7 @@ out vec4 frag_color;
 
 void main()
 {
-  frag_color = mix(vec4(0.0, 0.0, 1.0, 1.0), vec4(0.0, 1.0, 0.0, 1.0), abs(sin(position.z)));
+  frag_color = mix(vec4(0.0, 0.0, 1.0, 1.0), vec4(0.0, 1.0, 0.0, 1.0), abs(sin(position.z/10)));
   gl_Position = proj * view * vec4(position,1.);
 }
 )";
@@ -96,8 +96,8 @@ void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::funct
     glm::radians(60.0f), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 250.0f);
   ourShader.setMat4("proj", projection);
 
-  glm::vec3 up(0.0f, 1.0f, 0.0f);
-  glm::vec3 pos(0.0f, 0.0f, 200.0f);
+  glm::vec3 up(0.0f, -1.0f, 0.0f);
+  glm::vec3 pos(0.0f, 0.0f, 240.0f);
   glm::vec3 front(0.0f, 0.0f, -1.0f);
 
   /*
