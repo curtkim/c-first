@@ -33,6 +33,8 @@ public:
       // unbind
       glBindVertexArray(0);
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+      std::cout << "vao=" << vao << " vbo=" << vbo << std::endl;
     }
 
     void render() {
