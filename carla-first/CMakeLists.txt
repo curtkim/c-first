@@ -13,7 +13,8 @@ foreach(APP
     03_multi_camera_performance
     11_rxcpp_sensor_create
     12_rxcpp_sensor_all
-    31_rxcpp_image_one_file)
+    31_rxcpp_image_one_file
+    61_sensor_server)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
   target_compile_features(${APP} PRIVATE cxx_std_17)
@@ -29,6 +30,7 @@ foreach(APP
   target_compile_features(${APP} PRIVATE cxx_std_17)
 endforeach()
 
+# opengl
 foreach(APP 51_opengl_camera 52_opengl_lidar)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)

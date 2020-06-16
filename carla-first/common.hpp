@@ -8,4 +8,10 @@ inline bool ends_with(std::string const & value, std::string const & ending)
   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
+long getEpochMillisecond() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+
 #endif // CARLA_FRIST_COMMON_HPP
