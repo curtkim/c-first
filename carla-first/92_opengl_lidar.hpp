@@ -93,18 +93,21 @@ void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::funct
   ourShader.use();
 
   glm::mat4 projection = glm::perspective(
-    glm::radians(60.0f), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 250.0f);
+    glm::radians(90.0f), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 250.0f);
   ourShader.setMat4("proj", projection);
 
+  /*
+  // topdown view
   glm::vec3 up(0.0f, -1.0f, 0.0f);
   glm::vec3 pos(0.0f, 0.0f, 240.0f);
   glm::vec3 front(0.0f, 0.0f, -1.0f);
-
-  /*
-  glm::vec3 up(0.0f, 0.0f, 1.0f);
-  glm::vec3 pos(0.0f, 0.0f, 0.0f);
-  glm::vec3 front(1.0f, 0.0f, 0.0f);
   */
+
+  // front view??
+  glm::vec3 up(0.0f, 0.0f, -1.0f);
+  glm::vec3 pos(-10.0f, 0.0f, -5.0f);
+  glm::vec3 front(0.0f, -1.0f, 0.0f);
+
   glm::mat4 view = glm::lookAt(pos, pos + front, up);
   ourShader.setMat4("view", view);
 

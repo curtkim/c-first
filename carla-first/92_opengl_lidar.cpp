@@ -41,6 +41,7 @@ auto load_model(boost::shared_ptr<csd::LidarMeasurement> lidar_measure) {
   return std::make_tuple(VAO, VBO, lidar_measure->size());
 }
 
+constexpr int POINTS_PER_SECOND = 360*10*32;
 
 int main(int argc, const char *argv[]) {
 
@@ -54,8 +55,9 @@ int main(int argc, const char *argv[]) {
      {"sensor_tick", "0.1"},
      {"range", "200"},
      {"channels", "32"},
-     {"rotation_frequency", "10}"
-  }};
+     {"rotation_frequency", "10"},
+     {"points_per_second", std::to_string(POINTS_PER_SECOND)},
+  };
   auto [lidar, lidar$] = from_sensor_data<csd::LidarMeasurement>(
     world, "sensor.lidar.ray_cast", lidar_attributes, lidar_transform,
     vehicle);
