@@ -29,6 +29,8 @@ foreach(APP
   target_compile_features(${APP} PRIVATE cxx_std_17)
 endforeach()
 
-add_executable(91_opengl_camera 91_opengl_camera.cpp)
-target_link_libraries(91_opengl_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(91_opengl_camera PUBLIC cxx_std_17)
+foreach(APP 91_opengl_camera 92_opengl_lidar)
+  add_executable(${APP} ${APP}.cpp)
+  target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+  target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()

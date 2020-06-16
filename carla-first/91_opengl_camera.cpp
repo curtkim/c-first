@@ -8,7 +8,7 @@
 
 #include "common.hpp"
 #include "carla_common.hpp"
-#include "91_opengl.hpp"
+#include "91_opengl_camera.hpp"
 
 
 namespace cc = carla::client;
