@@ -31,4 +31,4 @@ endforeach()
 
 add_executable(91_opengl_camera 91_opengl_camera.cpp)
 target_link_libraries(91_opengl_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(91_opengl_camera PRIVATE cxx_std_17)
+target_compile_features(91_opengl_camera PUBLIC cxx_std_17)

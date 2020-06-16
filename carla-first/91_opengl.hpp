@@ -3,9 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-
 #include "shader.hpp"
-
 
 const char *VERTEX_SHADER_SOURCE = R"(
 #version 330 core
@@ -122,7 +120,7 @@ auto load_model() {
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
   glEnableVertexAttribArray(2);
 
-  return std::make_tuple(VBO, VAO, EBO);
+  return std::make_tuple(VAO, VBO, EBO);
 }
 
 
@@ -131,22 +129,16 @@ long getEpochMillisecond() {
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
-void loop_opengl(rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
+void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
 
-  GLFWwindow* window = make_window();
-  auto [VBO, VAO, EBO] = load_model();
-  unsigned int texture = GL_TEXTURE0;
   Shader ourShader(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+  ourShader.use();
+  //ourShader.setInt("texture1", GL_TEXTURE0);
 
   int frame = 0;
   while (!glfwWindowShouldClose(window))
   {
     auto start_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
-
-    sendFrame(frame++);
-    while (!rl.empty() && rl.peek().when < rl.now()) {
-      rl.dispatch();
-    }
 
     // input
     // -----
@@ -157,17 +149,11 @@ void loop_opengl(rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendF
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // bind textures on corresponding texture units
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
 
-    // render container
-    ourShader.use();
-    ourShader.setInt("texture1", GL_TEXTURE0);
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glDeleteTextures(1, &texture);
+    sendFrame(frame++);
+    while (!rl.empty() && rl.peek().when < rl.now()) {
+      rl.dispatch();
+    }
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -182,14 +168,7 @@ void loop_opengl(rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendF
     }
   }
 
-  // optional: de-allocate all resources once they've outlived their purpose:
-  // ------------------------------------------------------------------------
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
-
   // glfw: terminate, clearing all previously allocated GLFW resources.
   // ------------------------------------------------------------------
   glfwTerminate();
-
 }
