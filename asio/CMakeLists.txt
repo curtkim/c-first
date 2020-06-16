@@ -22,6 +22,7 @@ foreach(APP
     51_spawn_echo_server
     61_domain_echo_server 62_domain_echo_client
     63_domain_server_sync 64_domain_client_sync
+    65_unnamed_socket
     71_chat_server 72_chat_client
     )
   add_executable(${APP} ${APP}.cpp)
