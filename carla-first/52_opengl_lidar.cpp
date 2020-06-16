@@ -11,7 +11,7 @@
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/pointcloud/PointCloudIO.h>
 
-#include "92_opengl_lidar.hpp"
+#include "52_opengl_lidar.hpp"
 
 
 namespace cc = carla::client;
@@ -90,7 +90,6 @@ int main(int argc, const char *argv[]) {
       spectator->SetTransform(tf);
 
       auto[frame, lidar_measure] = v;
-      //auto [VAO, VBO, point_length] = load_model_static();
       auto [VAO, VBO, point_length] = load_model(lidar_measure);
 
       glBindVertexArray(VAO);

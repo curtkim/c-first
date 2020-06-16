@@ -18,6 +18,7 @@
 #include <carla/sensor/data/Image.h>
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/sensor/data/GnssMeasurement.h>
+#include <carla/sensor/data/IMUMeasurement.h>
 
 #include <rxcpp/rx.hpp>
 
@@ -139,7 +140,7 @@ int main(int argc, const char *argv[]) {
         cg::Location{0.0f, 0.0f, 0.0f}, // x, y, z.
         cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> gnss_attributes = {};
-    auto [gnss, gnss$] = from_sensor_data<csd::LidarMeasurement>(
+    auto [gnss, gnss$] = from_sensor_data<csd::GnssMeasurement>(
         world, "sensor.other.gnss", gnss_attributes, gnss_transform, vehicle);
     gnss$
         .subscribe(
@@ -155,7 +156,7 @@ int main(int argc, const char *argv[]) {
         cg::Location{0.0f, 0.0f, 0.0f}, // x, y, z.
         cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
     std::map<std::string, std::string> imu_attributes = {};
-    auto [imu, imu$] = from_sensor_data<csd::LidarMeasurement>(
+    auto [imu, imu$] = from_sensor_data<csd::IMUMeasurement>(
         world, "sensor.other.imu", imu_attributes, imu_transform, vehicle);
     imu$
         .subscribe(
