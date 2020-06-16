@@ -13,17 +13,22 @@ uniform mat4 proj;
 uniform mat4 view;
 
 layout (location = 0) in vec3 position;
+out vec4 frag_color;
+
 void main()
 {
+  frag_color = mix(vec4(0.0, 0.0, 1.0, 1.0), vec4(0.0, 1.0, 0.0, 1.0), abs(sin(position.z)));
   gl_Position = proj * view * vec4(position,1.);
 }
 )";
 
 const char *FRAGMENT_SHADER_SOURCE = R"(
 #version 330
+in vec4 frag_color;
 out vec4 f_color;
 void main() {
-  f_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+  f_color = frag_color;
+  //f_color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 )";
 
@@ -88,10 +93,19 @@ void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::funct
   ourShader.use();
 
   glm::mat4 projection = glm::perspective(
-    glm::radians(45.0f), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
+    glm::radians(60.0f), (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 250.0f);
   ourShader.setMat4("proj", projection);
 
-  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f) + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+  glm::vec3 up(0.0f, 1.0f, 0.0f);
+  glm::vec3 pos(0.0f, 0.0f, 200.0f);
+  glm::vec3 front(0.0f, 0.0f, -1.0f);
+
+  /*
+  glm::vec3 up(0.0f, 0.0f, 1.0f);
+  glm::vec3 pos(0.0f, 0.0f, 0.0f);
+  glm::vec3 front(1.0f, 0.0f, 0.0f);
+  */
+  glm::mat4 view = glm::lookAt(pos, pos + front, up);
   ourShader.setMat4("view", view);
 
   int frame = 0;
@@ -105,6 +119,7 @@ void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::funct
     // render
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPointSize(3);
 
     sendFrame(frame++);
     while (!rl.empty() && rl.peek().when < rl.now()) {
