@@ -54,6 +54,7 @@ foreach(APP
         utf8
         producer_consumer
         function
+        ref
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)

@@ -1,11 +1,8 @@
 // from https://blog.panicsoftware.com/coroutines-introduction/
 #include <cstdlib>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <thread>
-#include <thread>
-#include <boost/intrusive_ptr.hpp>
 #include <boost/fiber/all.hpp>
 
 inline void fn( std::string const& str, int n) {
