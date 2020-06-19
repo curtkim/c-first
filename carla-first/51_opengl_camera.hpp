@@ -123,12 +123,6 @@ auto load_model() {
   return std::make_tuple(VAO, VBO, EBO);
 }
 
-
-long getEpochMillisecond() {
-  using namespace std::chrono;
-  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
 void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
 
   Shader ourShader(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);

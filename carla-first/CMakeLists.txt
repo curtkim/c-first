@@ -14,7 +14,8 @@ foreach(APP
     11_rxcpp_sensor_create
     12_rxcpp_sensor_all
     31_rxcpp_image_one_file
-    61_sensor_server)
+    61_sensor_server
+    62_sensor_client)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
   target_compile_features(${APP} PRIVATE cxx_std_17)

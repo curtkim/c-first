@@ -34,11 +34,6 @@ namespace csd = carla::sensor::data;
 using namespace std::chrono_literals;
 using namespace std::string_literals;
 
-long getEpochMillisecond() {
-  using namespace std::chrono;
-  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-}
-
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
