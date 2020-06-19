@@ -18,28 +18,28 @@ void session_read(std::shared_ptr<tcp::socket> socket) {
   socket->async_read_some(
     asio::buffer(data, MAX_LENGTH),
     [socket](std::error_code ec, std::size_t length) {
-        if (!ec) {
-          std::cout << &data << std::endl;
-          std::cout << std::this_thread::get_id() << " read: " << data << " " << length << std::endl;
-          session_write(socket, length);
-        }
+      if (!ec) {
+        std::cout << &data << std::endl;
+        std::cout << std::this_thread::get_id() << " read: " << data << " " << length << std::endl;
+        session_write(socket, length);
+      }
     });
 }
 
 void session_write(std::shared_ptr<tcp::socket> socket, std::size_t length) {
   socket->async_write_some(asio::buffer(data, length), [socket](std::error_code ec, std::size_t length) {
-      if (!ec) {
-        std::cout << std::this_thread::get_id() << " write: " << data << std::endl;
-        session_read(socket);
-      }
+    if (!ec) {
+      std::cout << std::this_thread::get_id() << " write: " << data << std::endl;
+      session_read(socket);
+    }
   });
 }
 
-void do_accept(tcp::acceptor& acceptor) {
+void do_accept(tcp::acceptor &acceptor) {
   acceptor.async_accept([&acceptor](std::error_code ec, tcp::socket socket) {
-      if (!ec)
-        session_read(std::make_shared<tcp::socket>(std::move(socket)));
-      do_accept(acceptor);
+    if (!ec)
+      session_read(std::make_shared<tcp::socket>(std::move(socket)));
+    do_accept(acceptor);
   });
 }
 
