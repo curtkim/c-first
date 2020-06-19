@@ -10,6 +10,8 @@ using asio::ip::tcp;
 void session_write(std::shared_ptr<tcp::socket> socket, std::size_t length);
 
 const int MAX_LENGTH = 1024;
+
+// TODO global변수를 제거한다. session_read에서 생성되고, session_write에서 삭제될 수 있도록
 char data[MAX_LENGTH];
 
 void session_read(std::shared_ptr<tcp::socket> socket) {
