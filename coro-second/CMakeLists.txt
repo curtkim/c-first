@@ -15,3 +15,7 @@ target_compile_options(echo_server PRIVATE -fcoroutines)
 target_compile_definitions(echo_server PUBLIC ASIO_HAS_CO_AWAIT)
 target_compile_definitions(echo_server PUBLIC ASIO_HAS_STD_COROUTINE)
 target_link_libraries(echo_server pthread)
+
+add_executable(first_coroutine first_coroutine.cpp)
+target_compile_options(first_coroutine PRIVATE -fcoroutines)
+
