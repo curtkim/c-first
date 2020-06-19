@@ -19,9 +19,10 @@ void session_read(std::shared_ptr<tcp::socket> socket) {
     asio::buffer(data, MAX_LENGTH),
     [socket](std::error_code ec, std::size_t length) {
       if (!ec) {
-        std::cout << &data << std::endl;
         std::cout << std::this_thread::get_id() << " read: " << data << " " << length << std::endl;
         session_write(socket, length);
+      } else if (asio::error::eof == ec || asio::error::connection_reset == ec) {
+        std::cout << "disconnect in read" << std::endl;
       }
     });
 }
@@ -31,14 +32,20 @@ void session_write(std::shared_ptr<tcp::socket> socket, std::size_t length) {
     if (!ec) {
       std::cout << std::this_thread::get_id() << " write: " << data << std::endl;
       session_read(socket);
+    } else if (asio::error::eof == ec || asio::error::connection_reset == ec) {
+      std::cout << "disconnect in write" << std::endl;
     }
   });
 }
 
 void do_accept(tcp::acceptor &acceptor) {
   acceptor.async_accept([&acceptor](std::error_code ec, tcp::socket socket) {
-    if (!ec)
+    if (!ec) {
+      std::cout << socket.local_endpoint() << std::endl;
+      std::cout << socket.remote_endpoint() << std::endl;
       session_read(std::make_shared<tcp::socket>(std::move(socket)));
+    }
+
     do_accept(acceptor);
   });
 }

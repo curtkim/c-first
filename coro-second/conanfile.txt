@@ -1,5 +1,5 @@
 [requires]
-asio/1.16.0
+asio/latest@demo/testing
 
 [generators]
 cmake
