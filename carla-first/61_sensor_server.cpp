@@ -42,11 +42,6 @@ int main(int argc, const char *argv[]) {
   tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8000));
   do_accept(acceptor);
 
-  // 2. 별도의 thread에서 실행한다.
-  std::thread io_thread([&io_context](){
-    io_context.run();
-  });
-
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
   auto[world, vehicle] = init_carla(MAP_NAME);
@@ -103,7 +98,7 @@ int main(int argc, const char *argv[]) {
     );
   */
 
-  io_thread.join();
+  io_context.run();
 
   // Remove actors from the simulation.
   camera->Destroy();
