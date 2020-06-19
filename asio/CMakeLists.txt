@@ -18,7 +18,7 @@ foreach(APP
     11_daytime_client
     21_stdin_read 22_stdout_write
     31_file_write_c 32_file_write_future 33_file_watch
-    41_async_tcp_echo_server 42_tcp_echo_client
+    41_async_tcp_echo_server 41_async_tcp_echo_server_wo_class 42_tcp_echo_client
     51_spawn_echo_server
     61_domain_echo_server 62_domain_echo_client
     63_domain_server_sync 64_domain_client_sync
