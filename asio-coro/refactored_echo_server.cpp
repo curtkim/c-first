@@ -13,15 +13,25 @@ using asio::detached;
 using asio::use_awaitable;
 namespace this_coro = asio::this_coro;
 
+
+awaitable<void> echo_once(tcp::socket& socket)
+{
+  char data[128];
+  std::size_t n = co_await socket.async_read_some(asio::buffer(data), use_awaitable);
+  co_await async_write(socket, asio::buffer(data, n), use_awaitable);
+}
+
 awaitable<void> echo(tcp::socket socket)
 {
   try
   {
-    char data[1024];
     for (;;)
     {
-      std::size_t n = co_await socket.async_read_some(asio::buffer(data), use_awaitable);
-      co_await async_write(socket, asio::buffer(data, n), use_awaitable);
+      // The asynchronous operations to echo a single chunk of data have been
+      // refactored into a separate function. When this function is called, the
+      // operations are still performed in the context of the current
+      // coroutine, and the behaviour is functionally equivalent.
+      co_await echo_once(socket);
     }
   }
   catch (std::exception& e)
@@ -34,6 +44,7 @@ awaitable<void> listener()
 {
   auto executor = co_await this_coro::executor;
   tcp::acceptor acceptor(executor, {tcp::v4(), 55555});
+
   for (;;)
   {
     tcp::socket socket = co_await acceptor.async_accept(use_awaitable);
