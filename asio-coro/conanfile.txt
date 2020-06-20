@@ -1,0 +1,5 @@
+[requires]
+asio/latest@demo/testing
+
+[generators]
+cmake
