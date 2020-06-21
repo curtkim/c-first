@@ -20,7 +20,7 @@ void receive(asio::io_context& io_context, const char* hostname)
     tcp::socket socket(io_context, tcp::v4());
     socket.connect(*endpoints.get().begin());
 
-    std::array<char, 1024*16> recv_buf;
+    std::array<char, 480000> recv_buf;
     while(true){
       std::future<std::size_t> recv_length = socket.async_receive(asio::buffer(recv_buf), asio::use_future);
       std::cout << recv_length.get() << std::endl;

@@ -15,7 +15,8 @@ foreach(APP
     12_rxcpp_sensor_all
     31_rxcpp_image_one_file
     61_sensor_server
-    62_sensor_client)
+    62_sensor_client 62_sensor_client_rx
+    )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})
   target_compile_features(${APP} PRIVATE cxx_std_17)
@@ -32,7 +33,7 @@ foreach(APP
 endforeach()
 
 # opengl
-foreach(APP 51_opengl_camera 52_opengl_lidar)
+foreach(APP 51_opengl_camera 52_opengl_lidar 62_sensor_client_sync)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)

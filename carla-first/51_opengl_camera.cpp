@@ -31,6 +31,50 @@ unsigned int loadTexture(boost::shared_ptr<csd::Image> image) {
   return texture1;
 }
 
+void loop_opengl(GLFWwindow* window, rxcpp::schedulers::run_loop &rl, std::function<void(int)> sendFrame) {
+
+  Shader ourShader(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+  ourShader.use();
+  //ourShader.setInt("texture1", GL_TEXTURE0);
+
+  int frame = 0;
+  while (!glfwWindowShouldClose(window))
+  {
+    auto start_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
+    // input
+    // -----
+    processInput(window);
+
+    // render
+    // ------
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+
+    sendFrame(frame++);
+    while (!rl.empty() && rl.peek().when < rl.now()) {
+      rl.dispatch();
+    }
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+
+    auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
+    long diff = (end_time - start_time).count();
+    long duration = 1000/30;
+    if (diff < duration) {
+      std::cout << "sleep " << duration -diff << std::endl;
+      std::this_thread::sleep_for(std::chrono::milliseconds(duration -diff ));
+    }
+  }
+
+  // glfw: terminate, clearing all previously allocated GLFW resources.
+  // ------------------------------------------------------------------
+  glfwTerminate();
+}
+
 int main(int argc, const char *argv[]) {
 
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
