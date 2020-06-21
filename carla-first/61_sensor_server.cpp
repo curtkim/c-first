@@ -63,9 +63,10 @@ int main(int argc, const char *argv[]) {
     auto image = boost::static_pointer_cast<csd::Image>(data);
     assert(image != nullptr);
 
+    std::cout << "begin=" << image->begin() << " end=" << image->end()<< std::endl;
     std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
     if( _socket )
-      _socket->async_write_some(asio::buffer(image->data(), image->size()*3), [image](std::error_code ec, std::size_t length) {
+      _socket->async_write_some(asio::buffer(image->data(), image->size()*4), [image](std::error_code ec, std::size_t length) {
         if (!ec) {
           std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " write" << std::endl;
         }

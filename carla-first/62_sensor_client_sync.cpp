@@ -6,7 +6,7 @@
 
 using asio::ip::tcp;
 
-unsigned int loadTexture(std::array<char, 480000*3> recv_buf) {
+unsigned int loadTexture(std::array<char, 480000*4> recv_buf) {
   unsigned int texture1;
   glGenTextures(1, &texture1);
   glBindTexture(GL_TEXTURE_2D, texture1);
@@ -43,9 +43,10 @@ int main(int argc, char* argv[])
     ourShader.use();
 
 
-    std::array<char, 480000*3> recv_buf;
+    std::array<char, 480000*4> recv_buf;
     while(!glfwWindowShouldClose(window)){
-      std::size_t recv_length = socket.receive(asio::buffer(recv_buf));
+      std::size_t recv_length = asio::read(socket, asio::buffer(recv_buf));
+      //std::size_t recv_length = socket.receive(asio::buffer(recv_buf));
       std::cout << recv_length << std::endl;
       std::cout << "\n" << std::this_thread::get_id() << " get ended" << std::endl;
 
