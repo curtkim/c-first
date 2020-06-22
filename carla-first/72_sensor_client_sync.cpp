@@ -51,14 +51,16 @@ int main(int argc, char* argv[])
       std::vector<char> topic_name_buf(header.topic_name_length);
       std::size_t topic_name_length = asio::read(socket, asio::buffer(topic_name_buf));
       std::string topic_name(topic_name_buf.begin(), topic_name_buf.end());
-      std::cout << "frame=" << header.frame << " topic=" << topic_name << " time=" << header.timepoint << std::endl;
-
-
+      std::cout << header << std::endl;
+      std::cout << "topic= " << topic_name << std::endl;
 
       std::vector<char> body_buf(header.body_length);
       std::size_t recv_length = asio::read(socket, asio::buffer(body_buf));
       std::cout << recv_length << std::endl;
       std::cout << "\n" << std::this_thread::get_id() << " get ended" << std::endl;
+
+      if(header.record_type != 0)
+        continue;
 
       // render
       // ------

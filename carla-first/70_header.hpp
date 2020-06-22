@@ -15,5 +15,11 @@ struct Header{
   uint32_t body_length;
 };
 
+std::ostream& operator<<(std::ostream& os, const Header& header)
+{
+  return os << "frame=" << header.frame
+    << " time=" << header.timepoint
+    << " type=" << header.record_type;
+}
 
 #endif //CARLA_FRIST_70_HEADER_HPP

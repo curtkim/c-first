@@ -11,6 +11,7 @@
 #include <carla/geom/Transform.h>
 #include <carla/image/ImageIO.h>
 #include <carla/sensor/data/Image.h>
+#include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/client/World.h>
 
 
