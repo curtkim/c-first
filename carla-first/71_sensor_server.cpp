@@ -78,6 +78,8 @@ int main(int argc, const char *argv[]) {
       std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
       header.timepoint = d.count();
       header.record_type = 0;
+      header.param1 = image->GetWidth();
+      header.param2 = image->GetHeight();
 
       std::vector<asio::const_buffer> buffers;
       buffers.push_back(asio::buffer(&header, sizeof(header)));

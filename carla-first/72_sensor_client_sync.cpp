@@ -7,7 +7,7 @@
 
 using asio::ip::tcp;
 
-unsigned int loadTexture(std::vector<char> recv_buf) {
+unsigned int loadTexture(std::vector<char> recv_buf, int width, int height) {
   unsigned int texture1;
   glGenTextures(1, &texture1);
   glBindTexture(GL_TEXTURE_2D, texture1);
@@ -15,7 +15,7 @@ unsigned int loadTexture(std::vector<char> recv_buf) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_BGRA, GL_UNSIGNED_BYTE, recv_buf.data());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, recv_buf.data());
   glGenerateMipmap(GL_TEXTURE_2D);
   return texture1;
 }
@@ -62,12 +62,15 @@ int main(int argc, char* argv[])
       if(header.record_type != 0)
         continue;
 
+      std::cout << header.body_length << " " << header.param1 << " " << header.param2 << std::endl;
+      assert(header.body_length == header.param1*header.param2*4);
+
       // render
       // ------
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      unsigned int texture = loadTexture(body_buf);
+      unsigned int texture = loadTexture(body_buf, header.param1, header.param2);
       glBindTexture(GL_TEXTURE_2D, texture);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       glDeleteTextures(1, &texture);
