@@ -6,6 +6,8 @@
 #include <fstream>
 #include <memory>
 
+#include <type_traits>
+
 #include <asio.hpp>
 #include <rxcpp/rx.hpp>
 
@@ -35,7 +37,17 @@ void do_accept(tcp::acceptor &acceptor) {
 }
 
 
+inline std::array<char, 4> toBuffer(uint32_t len){
+  return std::array<char, 4>{
+    static_cast<char>((len >> 0)),
+    static_cast<char>((len >> 8)),
+    static_cast<char>((len >> 16)),
+    static_cast<char>((len >> 24))
+  };
+}
+
 int main(int argc, const char *argv[]) {
+
 
   // asio
   asio::io_context io_context;
@@ -65,12 +77,19 @@ int main(int argc, const char *argv[]) {
 
     std::cout << "begin=" << image->begin() << " end=" << image->end()<< std::endl;
     std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
-    if( _socket )
-      _socket->async_write_some(asio::buffer(image->data(), image->size()*4), [image](std::error_code ec, std::size_t length) {
+    if( _socket ) {
+      std::vector<asio::const_buffer> buffers;
+      size_t byte_length = image->size() * 4;
+      buffers.push_back(asio::buffer(toBuffer(byte_length)));
+      buffers.push_back(asio::buffer(image->data(), byte_length));
+      size_t frame = image->GetFrame();
+      _socket->async_write_some(buffers, [frame](std::error_code ec, std::size_t length) {
         if (!ec) {
-          std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " write" << std::endl;
+          std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << frame
+                    << " write" << std::endl;
         }
       });
+    }
   });
 
   // Apply control to vehicle.

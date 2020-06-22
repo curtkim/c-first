@@ -6,7 +6,7 @@
 
 using asio::ip::tcp;
 
-unsigned int loadTexture(std::array<char, 480000*4> recv_buf) {
+unsigned int loadTexture(std::vector<char> recv_buf) {
   unsigned int texture1;
   glGenTextures(1, &texture1);
   glBindTexture(GL_TEXTURE_2D, texture1);
@@ -18,7 +18,6 @@ unsigned int loadTexture(std::array<char, 480000*4> recv_buf) {
   glGenerateMipmap(GL_TEXTURE_2D);
   return texture1;
 }
-
 
 int main(int argc, char* argv[])
 {
@@ -43,8 +42,21 @@ int main(int argc, char* argv[])
     ourShader.use();
 
 
-    std::array<char, 480000*4> recv_buf;
+
     while(!glfwWindowShouldClose(window)){
+      std::array<char, 4> len_buf;
+      std::size_t len_length = asio::read(socket, asio::buffer(len_buf));
+
+      uint32_t body_len = 0;
+      std::memcpy(&body_len, len_buf.data(), sizeof(uint32_t));
+
+      std::cout << "len_buf=["
+                << (int)len_buf[0] << ',' << (int)len_buf[1] << ','
+                << (int)len_buf[2] << ',' << (int)len_buf[3] << ']'
+                << " " << body_len
+                << std::endl;
+
+      std::vector<char> recv_buf(body_len);
       std::size_t recv_length = asio::read(socket, asio::buffer(recv_buf));
       //std::size_t recv_length = socket.receive(asio::buffer(recv_buf));
       std::cout << recv_length << std::endl;
