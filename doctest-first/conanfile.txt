@@ -1,5 +1,5 @@
 [requires]
-doctest/2.3.7
+doctest/2.3.8
 
 [generators]
 cmake
