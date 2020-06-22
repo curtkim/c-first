@@ -6,7 +6,7 @@ project (datetime)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP main format)
+foreach(APP main format execution_time time_point)
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
