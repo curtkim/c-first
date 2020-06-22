@@ -23,3 +23,17 @@ TEST_CASE ("test bitwize op") {
   }
 }
 
+TEST_CASE("test reinterpret_cast") {
+  double a = 1234.5678;
+
+  char* b = reinterpret_cast<char*>(&a);
+  double final = *reinterpret_cast<double*>(b);
+
+  CHECK(final == a);
+  CHECK(22.0/7 != doctest::Approx(3.141));
+  CHECK(22.0/7 == doctest::Approx(3.141).epsilon(0.01));
+
+  CHECK(doctest::Approx(0.1000001) == 0.1000002);
+  CHECK(doctest::Approx(0.5000) != 0.5001);
+}
+
