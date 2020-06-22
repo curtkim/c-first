@@ -2,7 +2,7 @@
 #include <iostream>
 #include <thread>
 #include "asio.hpp"
-#include "51_opengl_camera.hpp"
+#include "51_camera_opengl.hpp"
 
 using asio::ip::tcp;
 
