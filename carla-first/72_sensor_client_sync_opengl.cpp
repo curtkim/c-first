@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
       std::cout << recv_length << std::endl;
       std::cout << "\n" << std::this_thread::get_id() << " get ended" << std::endl;
 
-      if(header.record_type != 0)
+      if(header.record_type != 0 || topic_name != "/camera/1")
         continue;
 
       std::cout << header.body_length << " " << header.param1 << " " << header.param2 << std::endl;

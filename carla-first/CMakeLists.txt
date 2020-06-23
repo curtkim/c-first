@@ -17,6 +17,7 @@ foreach(APP
     61_sensor_server
     62_sensor_client 62_sensor_client_rx
     71_sensor_server
+    71_sensor_server_rx
     72_sensor_client_sync_rx
     )
   add_executable(${APP} ${APP}.cpp)
