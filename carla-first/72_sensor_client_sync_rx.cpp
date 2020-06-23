@@ -49,16 +49,42 @@ int main(int argc, char* argv[])
         s.on_next(std::make_shared<Record>(std::move(header), std::move(topic_name), std::move(body_buf)));
       }
       s.on_completed();
+    }).publish();
+
+  auto camera0$ = record$.filter([](std::shared_ptr<Record> rec){
+    return rec->topic_name == "/camera/0";
+  });
+
+  auto lidar0$ = record$.filter([](std::shared_ptr<Record> rec){
+    return rec->topic_name == "/lidar/0";
+  });
+
+
+  auto threads = rxcpp::observe_on_new_thread();
+
+  camera0$
+    .observe_on(threads)
+    .subscribe([](std::shared_ptr<Record> rec){
+      std::cout << std::this_thread::get_id() << " " << rec->header << " " << rec->topic_name << std::endl;
     });
 
-  rxcpp::identity_one_worker i2 = rxcpp::identity_immediate();
+  lidar0$
+    .observe_on(threads)
+    .subscribe([](std::shared_ptr<Record> rec){
+      std::cout << std::this_thread::get_id() << " " << rec->header << " " << rec->topic_name << std::endl;
+    });
 
+  record$.connect();
+  /*
   // main thread에서 record$를 generate하고, subscribe는 rxcpp::observe_on_new_thread()에서 한다.
   record$
     .observe_on(rxcpp::observe_on_new_thread())
     .subscribe([](std::shared_ptr<Record> rec){
       std::cout << std::this_thread::get_id() << " " << rec->header << " " << rec->topic_name << std::endl;
     });
+  */
+
+  //std::this_thread::sleep_for(std::chrono::seconds(10));
 
   return 0;
 }
