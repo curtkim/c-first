@@ -45,6 +45,14 @@ int main(int argc, const char *argv[]) {
   tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 7000));
   do_accept(acceptor);
 
+  asio::signal_set signals(io_context, SIGINT, SIGTERM);
+  signals.async_wait([&](auto, auto){
+    io_context.stop();
+  });
+
+  std::ofstream myfile ("/data/dump.om", std::ios::out | std::ios::binary); // std::ios::app |
+
+
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
   auto[world, vehicle] = init_carla(MAP_NAME);
@@ -62,30 +70,34 @@ int main(int argc, const char *argv[]) {
   auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
 
   // Register a callback to save images to disk.
-  camera->Listen([](auto data) {
+  camera->Listen([&myfile](auto data) {
     auto image = boost::static_pointer_cast<csd::Image>(data);
     assert(image != nullptr);
 
     std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
+
+    std::string topic_name = "/camera/0";
+    Header header;
+    header.frame = image->GetFrame();
+    header.body_length = image->size() * 4;
+    header.topic_name_length = topic_name.length();
+
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
+    header.timepoint = d.count();
+    header.record_type = 0;
+    header.param1 = image->GetWidth();
+    header.param2 = image->GetHeight();
+
+    std::vector<asio::const_buffer> buffers;
+    buffers.push_back(asio::buffer(&header, sizeof(header)));
+    buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
+    buffers.push_back(asio::buffer(image->data(), header.body_length));
+
+    myfile.write( (char*)image->data(), header.body_length );
+    myfile.flush();
+
     if( _socket ) {
-      std::string topic_name = "/camera/0";
-      Header header;
-      header.frame = image->GetFrame();
-      header.body_length = image->size() * 4;
-      header.topic_name_length = topic_name.length();
-
-      std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-      std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
-      header.timepoint = d.count();
-      header.record_type = 0;
-      header.param1 = image->GetWidth();
-      header.param2 = image->GetHeight();
-
-      std::vector<asio::const_buffer> buffers;
-      buffers.push_back(asio::buffer(&header, sizeof(header)));
-      buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
-      buffers.push_back(asio::buffer(image->data(), header.body_length));
-
       size_t frame = image->GetFrame();
       _socket->async_write_some(buffers, [frame](std::error_code ec, std::size_t length) {
         if (!ec) {
@@ -118,26 +130,30 @@ int main(int argc, const char *argv[]) {
   auto lidar_actor = world.SpawnActor(*lidar_bp, lidar_transform, vehicle.get());
   auto lidar = boost::static_pointer_cast<cc::Sensor>(lidar_actor);
 
-  lidar->Listen([](auto data) {
+  lidar->Listen([&myfile](auto data) {
     auto lidar_data = boost::static_pointer_cast<csd::LidarMeasurement>(data);
     assert(lidar_data != nullptr);
+
+    std::string topic_name = "/lidar/0";
+    Header header;
+    header.frame = lidar_data->GetFrame();
+    header.body_length = lidar_data->size() * 3 * sizeof(float);
+    header.topic_name_length = topic_name.length();
+
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
+    header.timepoint = d.count();
+    header.record_type = 1;
+
+    std::vector<asio::const_buffer> buffers;
+    buffers.push_back(asio::buffer(&header, sizeof(header)));
+    buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
+    buffers.push_back(asio::buffer(lidar_data->data(), header.body_length));
+
+    myfile.write( (char*)lidar_data->data(), header.body_length );
+    myfile.flush();
+
     if( _socket ) {
-      std::string topic_name = "/lidar/0";
-      Header header;
-      header.frame = lidar_data->GetFrame();
-      header.body_length = lidar_data->size() * 3 * sizeof(float);
-      header.topic_name_length = topic_name.length();
-
-      std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-      std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
-      header.timepoint = d.count();
-      header.record_type = 1;
-
-      std::vector<asio::const_buffer> buffers;
-      buffers.push_back(asio::buffer(&header, sizeof(header)));
-      buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
-      buffers.push_back(asio::buffer(lidar_data->data(), header.body_length));
-
       size_t frame = lidar_data->GetFrame();
       _socket->async_write_some(buffers, [frame](std::error_code ec, std::size_t length) {
         if (!ec) {
@@ -152,8 +168,15 @@ int main(int argc, const char *argv[]) {
 
   io_context.run();
 
+  myfile.close();
+
   // Remove actors from the simulation.
+  lidar->Stop();
+  camera->Stop();
+
+  lidar->Destroy();
   camera->Destroy();
   vehicle->Destroy();
+
   std::cout << std::this_thread::get_id() << " Actors destroyed." << std::endl;
 }

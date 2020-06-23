@@ -35,7 +35,11 @@ foreach(APP
 endforeach()
 
 # opengl
-foreach(APP 51_camera_opengl 52_lidar_opengl 62_sensor_client_sync 72_sensor_client_sync)
+foreach(APP
+        51_camera_opengl
+        52_lidar_opengl
+        62_sensor_client_sync
+        72_sensor_client_sync_opengl)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
