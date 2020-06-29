@@ -5,7 +5,7 @@ from conans import ConanFile, CMake, tools
 
 class PclConan(ConanFile):
     name = "pcl"
-    version = "1.10.1"
+    version = "1.11.0"
     license = "<Put the package license here>"
     author = "<Put your name here> <And your email here>"
     url = "https://github.com/conan-io/conan-center-index"
@@ -92,8 +92,8 @@ class PclConan(ConanFile):
         cmake.install()
 
         # TODO not good
-        os.rename(self.package_folder + "/include/pcl-1.10/pcl", self.package_folder + "/include/pcl")
-        os.rmdir(self.package_folder + "/include/pcl-1.10") 
+        os.rename(self.package_folder + "/include/pcl-1.11/pcl", self.package_folder + "/include/pcl")
+        os.rmdir(self.package_folder + "/include/pcl-1.11") 
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
