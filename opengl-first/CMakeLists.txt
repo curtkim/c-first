@@ -16,7 +16,7 @@ foreach(FILE
 endforeach()
 
 foreach(APP
-        01_first 02_point 03_point_multi 04_grid
+        01_first 02_point 03_point_multi 04_grid 05_polylines
         11_renderable
         21_mouse
         31_map_control
