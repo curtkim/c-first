@@ -17,8 +17,10 @@ public:
 
   void write(const chat_message &msg) {
     asio::post(io_context_, [this, msg]() {
+                 bool empty = write_msgs_.empty();
                  write_msgs_.push_back(msg);
-                 if (write_msgs_.empty()) {
+                 std::cout << write_msgs_.size() << std::endl;
+                 if (empty) {
                    do_write();
                  }
                });
@@ -65,6 +67,7 @@ private:
   }
 
   void do_write() {
+    std::cout << "do_write" << std::endl;
     asio::async_write(socket_,
                       asio::buffer(write_msgs_.front().data(),
                                    write_msgs_.front().length()),
