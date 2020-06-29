@@ -25,7 +25,7 @@ auto read_shapefile(const std::string& filename)
     for (int i = 0; i < nEntities; i++)
     {
       SHPObject* psShape = SHPReadObject(handle, i );
-      if (psShape->nSHPType == SHPT_POLYGON && psShape->nParts == 1)
+      if (psShape->nParts == 1)
       {
         counts.push_back(psShape->nVertices);
       }
@@ -39,10 +39,11 @@ auto read_shapefile(const std::string& filename)
     for (int i = 0; i < nEntities; i++)
     {
       SHPObject* psShape = SHPReadObject(handle, i );
-      if (psShape->nSHPType == SHPT_POLYGON && psShape->nParts == 1)
+      if (psShape->nParts == 1)
       {
         double* x = psShape->padfX;
         double* y = psShape->padfY;
+
         for (int v = 0; v < psShape->nVertices; v++)
         {
           float vx = (float)x[v];

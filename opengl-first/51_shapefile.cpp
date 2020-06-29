@@ -117,7 +117,7 @@ auto load_static_model(std::vector<float> g_vertex_buffer_data) {
   return std::make_tuple(vao, vbo);
 }
 
-Camera camera(glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
+Camera camera(glm::vec3(0.0f, 0.0f, 800.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;
@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
-  auto [counts, vertex_buffer_data] = read_shapefile("../../Countries_WGS84.shp");
+  auto [counts, vertex_buffer_data] = read_shapefile("../../carla_town05_link.shp");
   std::vector<GLint> firsts(counts.size());
 
   firsts[0] = 0;
