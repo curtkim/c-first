@@ -114,6 +114,8 @@ int main(int argc, char **argv) {
   draco::Encoder encoder;
   encoder.SetAttributeQuantization(draco::GeometryAttribute::POSITION, 16);
   encoder.SetEncodingMethod(draco::MESH_EDGEBREAKER_ENCODING);
+  encoder.SetSpeedOptions(5, 5);
+
   draco::EncoderBuffer buffer;
   encoder.EncodeMeshToBuffer(*dracoMesh, &buffer);
 
