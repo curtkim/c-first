@@ -1,5 +1,5 @@
 [requires]
-boost_geometry/1.69.0@bincrafters/stable
+boost/1.73.0
 shapelib/1.5.0
 
 [generators]

@@ -129,6 +129,8 @@ int main()
     double xmin, ymin, xmax, ymax, mmin, mmax, zmin, zmax;
     string shape;
     char *filePath = "../../Countries_WGS84.shp";
+
+
 	char*fileBuf;			// Pointer to our buffered data
 	FILE *file = NULL;		// File pointer
 	// Open the file in binary mode using the "rb" format string
