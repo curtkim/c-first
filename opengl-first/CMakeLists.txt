@@ -20,7 +20,8 @@ foreach(APP
         11_renderable
         21_mouse
         31_map_control
-        41_test-libigl)
+        41_test-libigl
+        51_shapefile)
   add_executable(${APP} ${APP}.cpp common/shader.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
