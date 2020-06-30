@@ -16,7 +16,9 @@ foreach(APP
 		02_binding_glfw_opengl3
 		03_show_image
 		04_with_opengl
+		05_custom_shape
 		31_model
+		41_docking
 		99_test
 		)
 

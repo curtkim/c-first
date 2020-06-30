@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <tuple>
 
-
 #include <imgui.h>
 #include "bindings/imgui_impl_glfw.h"
 #include "bindings/imgui_impl_opengl3.h"
@@ -111,15 +110,13 @@ int main(int, char **) {
 #endif
 
   // Create window with graphics context
-  GLFWwindow *window =
-      glfwCreateWindow(w, h, "Dear ImGui - Conan", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(w, h, "Dear ImGui - Conan", NULL, NULL);
   if (window == NULL)
     return 1;
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
 
   bool err = gladLoadGL() == 0;
-
   if (err) {
     fprintf(stderr, "Failed to initialize OpenGL loader!\n");
     return 1;
@@ -163,6 +160,7 @@ int main(int, char **) {
   igl::frustum(-right, right, -top, top, near, far, proj);
   std::cout << proj << std::endl;
 
+
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
@@ -173,6 +171,7 @@ int main(int, char **) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     // 2. feed inputs to dear imgui, start new frame
+
 
     {
       Eigen::Affine3f model = Eigen::Affine3f::Identity();

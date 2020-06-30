@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <imgui.h>
 #include "bindings/imgui_impl_glfw.h"
 #include "bindings/imgui_impl_opengl3.h"
@@ -79,11 +80,13 @@ void imgui_main(GLFWwindow * window) {
   // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
   // - Read 'docs/FONTS.txt' for more instructions and details.
   // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-  //io.Fonts->AddFontDefault();
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-  //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+  io.Fonts->AddFontDefault();
+  ImFont* font1 = io.Fonts->AddFontFromFileTTF("../../fonts/Roboto-Medium.ttf", 16.0f);
+  assert(font1 != NULL);
+  std::cout << font1->GetDebugName() << std::endl;
+  //io.Fonts->AddFontFromFileTTF("../../fonts/Cousine-Regular.ttf", 15.0f);
+  //io.Fonts->AddFontFromFileTTF("../../fonts/DroidSans.ttf", 16.0f);
+  //io.Fonts->AddFontFromFileTTF("../../fonts/ProggyTiny.ttf", 10.0f);
   //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
   //IM_ASSERT(font != NULL);
 

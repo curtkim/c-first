@@ -2,7 +2,7 @@
 glfw/3.3.2@curt/testing
 glad/0.1.29@bincrafters/stable
 stb/20190512@conan/stable
-imgui/1.76
+imgui/1.77-docking@curt/testing
 eigen/3.3.7
 libigl/2.2.0@demo/testing
 
@@ -14,3 +14,10 @@ cmake
 ./res/bindings, imgui_impl_glfw.cpp -> ../bindings
 ./res/bindings, imgui_impl_opengl3.h -> ../bindings
 ./res/bindings, imgui_impl_opengl3.cpp -> ../bindings
+
+./res/fonts, DroidSans.ttf -> ../fonts
+./res/fonts, ProggyTiny.ttf -> ../fonts
+./res/fonts, ProggyClean.ttf -> ../fonts
+./res/fonts, Karla-Regular.ttf -> ../fonts
+./res/fonts, Roboto-Medium.ttf -> ../fonts
+./res/fonts, Cousine-Regular.ttf -> ../fonts
