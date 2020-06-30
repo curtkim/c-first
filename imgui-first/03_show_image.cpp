@@ -132,7 +132,10 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     ImVec4 circle_color = ImVec4(1.0f, 0.0f, 0.0f, 1.00f);
 
-    // Main loop
+    bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
+    IM_ASSERT(ret);
+
+  // Main loop
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -141,9 +144,6 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
-        IM_ASSERT(ret);
 
         {
             // draw image in frame

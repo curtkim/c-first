@@ -130,6 +130,10 @@ int main(int, char **) {
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+  bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
+  IM_ASSERT(ret);
+
+
   // Main loop
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
@@ -139,15 +143,14 @@ int main(int, char **) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
-    IM_ASSERT(ret);
-
     {
       // draw circle in background
       ImDrawList *drawList = ImGui::GetBackgroundDrawList();
-      drawList->AddImage((void *) (intptr_t) my_image_texture, ImVec2(0, 0), ImVec2(my_image_width, my_image_height));
-      drawList->AddImage((void *) (intptr_t) my_image_texture, ImVec2(my_image_width, 0),
-                         ImVec2(my_image_width * 2, my_image_height));
+      for(int y = 0; y < 3; y++)
+        for(int x = 0; x < 3; x++)
+          drawList->AddImage((void *) (intptr_t) my_image_texture,
+                             ImVec2(my_image_width*x, my_image_height*y),
+                             ImVec2(my_image_width*(x+1), my_image_height*(y+1)));
     }
 
     {
