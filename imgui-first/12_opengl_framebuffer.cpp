@@ -5,6 +5,7 @@
 #include "opengl_shader.h"
 #include <stdio.h>
 #include <tuple>
+#include <iostream>
 
 #include <glad/glad.h> // Initialize with gladLoadGL()
 
@@ -87,6 +88,36 @@ std::tuple<unsigned int,unsigned int,unsigned int> create_triangle() {
   return std::make_tuple(vbo, vao, ebo);
 }
 
+auto make_framebuffer_texture(int width, int height) {
+  // framebuffer configuration
+  // -------------------------
+  unsigned int framebuffer;
+  glGenFramebuffers(1, &framebuffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+  // create a color attachment texture
+  unsigned int textureColorbuffer;
+  glGenTextures(1, &textureColorbuffer);
+  glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+
+  // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+  unsigned int rbo;
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); // use a single renderbuffer object for both a depth AND stencil buffer.
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+  // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  return std::make_tuple(framebuffer, textureColorbuffer, rbo);
+}
+
 int main(int, char **) {
   // Setup window
   glfwSetErrorCallback(glfw_error_callback);
@@ -136,6 +167,8 @@ int main(int, char **) {
   Shader triangle_shader;
   triangle_shader.init(vertex_shader_text, fragment_shader_text);
 
+  auto [framebuffer, textureColorbuffer, renderbuffer] = make_framebuffer_texture(screen_width, screen_height);
+
 
   // 1. Setup Dear ImGui context
   IMGUI_CHECKVERSION();
@@ -162,11 +195,18 @@ int main(int, char **) {
     // 2. feed inputs to dear imgui, start new frame
 
     {
+      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+      // clear
+      glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+      glClear(GL_COLOR_BUFFER_BIT);
+
       // rendering our geometries
       triangle_shader.use();
       glBindVertexArray(vao);
       glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     {
@@ -188,6 +228,19 @@ int main(int, char **) {
       ImGui::End();
     }
 
+    {
+      // draw image in frame
+      ImGui::Begin("OpenGL framebuffer Texture");
+      ImGui::Image((void *) (intptr_t) textureColorbuffer, ImVec2(screen_width, screen_height));
+      ImGui::End();
+    }
+
+    {
+      // draw framebuffer in background
+      ImDrawList *drawList = ImGui::GetBackgroundDrawList();
+      drawList->AddImage((void *) (intptr_t) textureColorbuffer, ImVec2(0,0), ImVec2(screen_width, screen_height));
+    }
+
     // Render dear imgui into screen
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -197,6 +250,15 @@ int main(int, char **) {
     glViewport(0, 0, display_w, display_h);
     glfwSwapBuffers(window);
   }
+
+  glDeleteVertexArrays(1, &vbo);
+  glDeleteBuffers(1, &vao);
+  glDeleteBuffers(1, &ebo);
+
+  glDeleteTextures(1, &textureColorbuffer);
+  glDeleteRenderbuffers(1, &renderbuffer);
+  glDeleteFramebuffers(1, &framebuffer);
+
 
   // 3. Cleanup
   ImGui_ImplOpenGL3_Shutdown();
