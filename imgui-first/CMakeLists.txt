@@ -12,12 +12,11 @@ foreach(FILE
 endforeach()
 
 foreach(APP
-		01_first
 		02_binding_glfw_opengl3
 		03_show_image
-		04_with_opengl
 		05_custom_shape
-		31_model
+		11_first
+		12_model
 		41_docking
 		99_test
 		)
