@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.15)
 project(conan-imgui)
 
 find_package(OpenGL REQUIRED)
@@ -15,7 +15,7 @@ foreach(APP
 		02_binding_glfw_opengl3
 		03_show_image
 		05_custom_shape
-		11_first
+		11_opengl_background
 		12_model
 		41_docking
 		99_test
