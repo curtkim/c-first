@@ -42,39 +42,45 @@ auto make_camera_subscriber(std::string&& topic_name, std::ofstream& myfile) {
   return [topic_name = std::move(topic_name), &myfile](boost::shared_ptr<csd::Image> image){
     std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
 
-    Header header;
-    header.frame = image->GetFrame();
-    header.body_length = image->size() * 4;
-    header.topic_name_length = topic_name.length();
-
-    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
-    header.timepoint = d.count();
-    header.record_type = 0;
-    header.param1 = image->GetWidth();
-    header.param2 = image->GetHeight();
-
-    std::vector<asio::const_buffer> buffers;
-    buffers.push_back(asio::buffer(&header, sizeof(header)));
-    buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
-    buffers.push_back(asio::buffer(image->data(), header.body_length));
-
-    myfile.write( (char*)image->data(), header.body_length );
-    myfile.flush();
+    //myfile.write( (char*)image->data(), header.body_length );
+    //myfile.flush();
 
     if( _socket ) {
       size_t frame = image->GetFrame();
+
+      Header header;
+      header.frame = image->GetFrame();
+      header.body_length = image->size() * 4;
+      header.topic_name_length = topic_name.length();
+
+      std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+      std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
+      header.timepoint = d.count();
+      header.record_type = 0;
+      header.param1 = image->GetWidth();
+      header.param2 = image->GetHeight();
+
+      std::vector<asio::const_buffer> buffers;
+      buffers.push_back(asio::buffer(&header, sizeof(header)));
+      buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
+      buffers.push_back(asio::buffer(image->data(), header.body_length));
+
       std::size_t length = asio::write(*_socket.get(), buffers);
       std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
                 << " write len=" << length << " " << header.timepoint - image->GetTimestamp() << std::endl;
-      /*
-      asio::async_write(*_socket.get(), buffers, [frame, &topic_name](std::error_code ec, std::size_t length) {
-        if (!ec) {
-          std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
-                    << " write len=" << length << std::endl;
-        }
+       /*
+      strand.post([image, topic_name](){
+        //std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
+
+        _socket->async_write_some(buffers, [frame, topic_name](std::error_code ec, std::size_t length) {
+          if (!ec) {
+            std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
+                      << " write len=" << length << std::endl;
+          }
+        });
+
       });
-      */
+       */
     }
   };
 }
@@ -83,35 +89,39 @@ auto make_lidar_subscriber(std::string&& topic_name, std::ofstream & myfile) {
   return [topic_name = std::move(topic_name), &myfile](boost::shared_ptr<csd::LidarMeasurement> lidar_data){
     std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << lidar_data->GetFrame() << " " << lidar_data->size() << std::endl;
 
-    Header header;
-    header.frame = lidar_data->GetFrame();
-    header.body_length = lidar_data->size() * 3 * sizeof(float);
-    header.topic_name_length = topic_name.length();
 
-    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-    std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
-    header.timepoint = d.count();
-    header.record_type = 1;
-
-    std::vector<asio::const_buffer> buffers;
-    buffers.push_back(asio::buffer(&header, sizeof(header)));
-    buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
-    buffers.push_back(asio::buffer(lidar_data->data(), header.body_length));
-
-    myfile.write( (char*)lidar_data->data(), header.body_length );
-    myfile.flush();
+    //myfile.write( (char*)lidar_data->data(), header.body_length );
+    //myfile.flush();
 
     if( _socket ) {
       size_t frame = lidar_data->GetFrame();
+
+      Header header;
+      header.frame = lidar_data->GetFrame();
+      header.body_length = lidar_data->size() * 3 * sizeof(float);
+      header.topic_name_length = topic_name.length();
+
+      std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+      std::chrono::duration<double> d = std::chrono::duration<double>(now.time_since_epoch());
+      header.timepoint = d.count();
+      header.record_type = 1;
+
+      std::vector<asio::const_buffer> buffers;
+      buffers.push_back(asio::buffer(&header, sizeof(header)));
+      buffers.push_back(asio::buffer(topic_name, header.topic_name_length));
+      buffers.push_back(asio::buffer(lidar_data->data(), header.body_length));
+
       std::size_t length = asio::write(*_socket.get(), buffers);
       std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
                 << " write len=" << length << " " << header.timepoint - lidar_data->GetTimestamp() << std::endl;
       /*
-      asio::async_write(*_socket.get(), buffers, [topic_name, frame](std::error_code ec, std::size_t length) {
-        if (!ec) {
-          std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
-                    << " write len=" << length << std::endl;
-        }
+      strand.post([lidar_data, topic_name](){
+        _socket->async_write_some(buffers, [topic_name, frame](std::error_code ec, std::size_t length) {
+          if (!ec) {
+            std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << frame
+                      << " write len=" << length << std::endl;
+          }
+        });
       });
        */
     }
@@ -203,7 +213,6 @@ int main(int argc, const char *argv[]) {
   auto [camera8, camera8$] = from_sensor_data<csd::Image>(
     world, "sensor.camera.rgb", camera_attributes, camera_transform8, vehicle);
   camera8$.subscribe(make_camera_subscriber("/camera/8", myfile));
-
 
   auto lidar_transform = cg::Transform{
     cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
