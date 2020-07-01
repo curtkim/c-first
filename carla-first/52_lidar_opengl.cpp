@@ -8,6 +8,7 @@
 
 #include "common.hpp"
 #include "carla_common.hpp"
+#include "carla_rxcpp.hpp"
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/pointcloud/PointCloudIO.h>
 

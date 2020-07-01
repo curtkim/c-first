@@ -14,7 +14,9 @@
 
 #include "common.hpp"
 #include "carla_common.hpp"
+#include "carla_rxcpp.hpp"
 #include "70_header.hpp"
+#include "70_sensors.hpp"
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
@@ -38,8 +40,8 @@ void do_accept(tcp::acceptor &acceptor) {
   });
 }
 
-auto make_camera_subscriber(std::string&& topic_name, std::ofstream& myfile) {
-  return [topic_name = std::move(topic_name), &myfile](boost::shared_ptr<csd::Image> image){
+auto make_camera_subscriber(const std::string& topic_name, std::ofstream& myfile) {
+  return [&topic_name, &myfile](boost::shared_ptr<csd::Image> image){
     std::cout << std::this_thread::get_id() << " " << topic_name << " " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
 
     //myfile.write( (char*)image->data(), header.body_length );
@@ -150,69 +152,16 @@ int main(int argc, const char *argv[]) {
   auto[world, vehicle] = init_carla(MAP_NAME);
   auto blueprint_library = world.GetBlueprintLibrary();
 
-  auto camera_transform = cg::Transform{
-    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+  std::vector<boost::shared_ptr<cc::Sensor>> cameras;
   std::map<std::string, std::string> camera_attributes = {{"sensor_tick", "0.033"}};
-  auto [camera, camera$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform, vehicle);
-  camera$.subscribe(make_camera_subscriber("/camera/0", myfile));
 
-  auto camera_transform1 = cg::Transform{
-    cg::Location{1.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera1, camera1$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform1, vehicle);
-  camera1$.subscribe(make_camera_subscriber("/camera/1", myfile));
+  for( auto const& [topic_name, transform] : CAMERA_TOPIC_TRANSFORM_MAP ){
+    auto [camera, camera$] = from_sensor_data<csd::Image>(
+      world, "sensor.camera.rgb", camera_attributes, transform, vehicle);
+    camera$.subscribe(make_camera_subscriber(topic_name, myfile));
+    cameras.push_back(camera);
+  }
 
-  auto camera_transform2 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -180.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera2, camera2$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform2, vehicle);
-  camera2$.subscribe(make_camera_subscriber("/camera/2", myfile));
-
-  auto camera_transform3 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, 90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera3, camera3$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform3, vehicle);
-  camera3$.subscribe(make_camera_subscriber("/camera/3", myfile));
-
-  auto camera_transform4 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera4, camera4$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform4, vehicle);
-  camera4$.subscribe(make_camera_subscriber("/camera/4", myfile));
-
-  auto camera_transform5 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera5, camera5$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform5, vehicle);
-  camera5$.subscribe(make_camera_subscriber("/camera/5", myfile));
-
-  auto camera_transform6 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera6, camera6$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform6, vehicle);
-  camera6$.subscribe(make_camera_subscriber("/camera/6", myfile));
-
-  auto camera_transform7 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera7, camera7$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform7, vehicle);
-  camera7$.subscribe(make_camera_subscriber("/camera/7", myfile));
-
-  auto camera_transform8 = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, -90.0f, 0.0f}}; // pitch, yaw, roll.
-  auto [camera8, camera8$] = from_sensor_data<csd::Image>(
-    world, "sensor.camera.rgb", camera_attributes, camera_transform8, vehicle);
-  camera8$.subscribe(make_camera_subscriber("/camera/8", myfile));
 
   auto lidar_transform = cg::Transform{
     cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
@@ -239,26 +188,12 @@ int main(int argc, const char *argv[]) {
 
   // Remove actors from the simulation.
   lidar->Stop();
-  camera->Stop();
-  camera1->Stop();
-  camera2->Stop();
-  camera3->Stop();
-  camera4->Stop();
-  camera5->Stop();
-  camera6->Stop();
-  camera7->Stop();
-  camera8->Stop();
-
   lidar->Destroy();
-  camera->Destroy();
-  camera1->Destroy();
-  camera2->Destroy();
-  camera3->Destroy();
-  camera4->Destroy();
-  camera5->Destroy();
-  camera6->Destroy();
-  camera7->Destroy();
-  camera8->Destroy();
+
+  for(std::vector<boost::shared_ptr<cc::Sensor>>::iterator it = cameras.begin(); it != cameras.end(); ++it) {
+    (*it)->Stop();
+    (*it)->Destroy();
+  }
 
   vehicle->Destroy();
 

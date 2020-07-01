@@ -8,6 +8,7 @@
 
 #include "common.hpp"
 #include "carla_common.hpp"
+#include "carla_rxcpp.hpp"
 #include "51_camera_opengl.hpp"
 
 

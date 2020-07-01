@@ -2,7 +2,6 @@
 #include <random>
 #include <string>
 #include <thread>
-#include <tuple>
 #include <fstream>
 #include <memory>
 #include <chrono>
@@ -10,7 +9,6 @@
 #include <type_traits>
 
 #include <asio.hpp>
-#include <rxcpp/rx.hpp>
 
 #include "common.hpp"
 #include "carla_common.hpp"

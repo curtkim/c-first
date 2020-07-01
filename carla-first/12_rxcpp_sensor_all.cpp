@@ -24,7 +24,7 @@
 
 #include "common.hpp"
 #include "carla_common.hpp"
-
+#include "carla_rxcpp.hpp"
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
