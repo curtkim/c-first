@@ -21,6 +21,7 @@ foreach(APP
 		12_opengl_framebuffer
 		13_model
 		41_docking
+		43_docking_init
 		99_test
 		)
 

@@ -17,13 +17,86 @@ static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
-struct OurState {
-  bool show_demo_window = false;
-  bool show_another_window = false;
-  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-  float f = 0.0f;
-  int counter = 0;
-};
+void make_window() {
+
+  ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking;
+
+  ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+  std::cout << "viewport->Pos " << viewport->Pos.x << " " << viewport->Pos.y << std::endl; // 0 0
+  ImGui::SetNextWindowPos(viewport->Pos);
+  std::cout << "viewport->Size " << viewport->Size.x << " " << viewport->Size.y << std::endl; // 1280 720
+  ImGui::SetNextWindowSize(viewport->Size);
+  std::cout << "viewport->ID " << viewport->ID << std::endl;
+  ImGui::SetNextWindowViewport(viewport->ID);
+
+  // PushStyle 1
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+  flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+  flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+  flags |= ImGuiWindowFlags_NoNav;
+
+  // PushStyle 2
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+  ImGui::Begin("DockSpace Demo", 0, flags);
+  ImGui::PopStyleVar();
+  // PushStyle 2
+
+  /*
+  if (ImGui::BeginMenuBar())
+  {
+    if (initialized == 0)
+    {
+      if (ImGui::Button("1. Initialize"))
+        initialized = 1;
+    }
+    if (initialized > 0 && new_window == 0)
+    {
+      if (ImGui::Button("2. New Window"))
+        new_window = 1;
+    }
+    ImGui::EndMenuBar();
+  }
+  */
+
+  ImGuiIO& io = ImGui::GetIO();
+  ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
+
+    /*
+    ImGuiContext* ctx = ImGui::GetCurrentContext();
+    ImGui::DockBuilderRemoveNode(ctx, dockspace_id); // Clear out existing layout
+    ImGui::DockBuilderAddNode(ctx, dockspace_id, ImGui::GetMainViewport()->Size); // Add empty node
+
+    ImGuiID dock_main_id = dockspace_id; // This variable will track the document node, however we are not using it here as we aren't docking anything into it.
+    ImGuiID dock_id_prop = ImGui::DockBuilderSplitNode(ctx, dock_main_id, ImGuiDir_Left, 0.20f, NULL, &dock_main_id);
+    ImGuiID dock_id_bottom = ImGui::DockBuilderSplitNode(ctx, dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
+
+    ImGui::DockBuilderDockWindow(ctx, "Log", dock_id_bottom);
+    ImGui::DockBuilderDockWindow(ctx, "Properties", dock_id_prop);
+    ImGui::DockBuilderFinish(ctx, dockspace_id);
+     */
+
+  ImGui::DockSpace(dockspace_id);
+
+  {
+    ImGui::Begin("Properties");
+    ImGui::End();
+
+    ImGui::Begin("Log");
+    ImGui::End();
+  }
+
+  {
+    // Should dock window to empty space, instead window is not docked anywhere.
+    //ImGui::SetNextWindowDockId(dockspace_id, ImGuiCond_Once);
+    ImGui::Begin("New Window");
+    ImGui::End();
+  }
+
+  ImGui::End();
+  ImGui::PopStyleVar();
+  // PushStyle 1
+}
 
 int main(int, char **) {
   // Setup window
@@ -50,7 +123,7 @@ int main(int, char **) {
 #endif
 
   // Create window with graphics context
-  GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui - Docking", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui - Docking2", NULL, NULL);
   if (window == NULL)
     return 1;
   glfwMakeContextCurrent(window);
@@ -84,8 +157,6 @@ int main(int, char **) {
   ImGui::StyleColorsDark();
   // 1. Setup Dear ImGui context
 
-  OurState state;
-
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
@@ -97,46 +168,8 @@ int main(int, char **) {
     ImGui::NewFrame();
     // 2. feed inputs to dear imgui, start new frame
 
-    {
-      ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-      ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking; //| ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-      bool open = true;
-      ImGui::Begin("DockSpace Demo", &open, window_flags);
 
-      ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-      ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-      ImGui::End();
-    }
-
-    {
-      ImGui::Begin("My shapes");
-      ImDrawList *draw_list = ImGui::GetWindowDrawList();
-      ImVec2 p = ImGui::GetCursorScreenPos();
-      draw_list->AddCircleFilled(ImVec2(p.x + 50, p.y + 50), 30.0f, IM_COL32(255, 0, 0, 255), 16);
-      draw_list->AddLine(ImVec2(p.x, p.y), ImVec2(p.x + 100.0f, p.y + 100.0f), IM_COL32(255, 255, 0, 255), 3.0f);
-      ImGui::Dummy(ImVec2(200, 200));
-      ImGui::End();
-    }
-
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-    {
-      ImGui::Begin("Hello, world!"); // Create a window called "Hello, world!" and append into it.
-
-      ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
-      ImGui::Checkbox("Demo Window", &state.show_demo_window); // Edit bools storing our window open/close state
-      ImGui::Checkbox("Another Window", &state.show_another_window);
-
-      ImGui::SliderFloat("float", &state.f, 0.0f, 1.0f); // Edit 1 float using a slider from 0.0f to 1.0f
-      ImGui::ColorEdit3("clear color", (float *) &state.clear_color); // Edit 3 floats representing a color
-
-      if (ImGui::Button("Button")) // Buttons return true when clicked (most widgets return true when edited/activated)
-        state.counter++;
-      ImGui::SameLine();
-      ImGui::Text("counter = %d", state.counter);
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,ImGui::GetIO().Framerate);
-      ImGui::End();
-    }
-
+    make_window();
 
     // Render dear imgui into screen
     ImGui::Render();

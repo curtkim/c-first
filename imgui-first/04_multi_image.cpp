@@ -130,9 +130,6 @@ int main(int, char **) {
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-  bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
-  IM_ASSERT(ret);
-
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
@@ -143,20 +140,31 @@ int main(int, char **) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    bool ret = LoadTextureFromFile("../../MyImage01.jpg", &my_image_texture, &my_image_width, &my_image_height);
+    IM_ASSERT(ret);
+
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    const int SIZE = 4;
+    int unit_size = std::min(viewport->Size.x, viewport->Size.y) / SIZE;
+
     {
-      // draw circle in background
       ImDrawList *drawList = ImGui::GetBackgroundDrawList();
-      for(int y = 0; y < 3; y++)
-        for(int x = 0; x < 3; x++)
+      for(int y = 0; y < SIZE; y++)
+        for(int x = 0; x < SIZE; x++)
           drawList->AddImage((void *) (intptr_t) my_image_texture,
-                             ImVec2(my_image_width*x, my_image_height*y),
-                             ImVec2(my_image_width*(x+1), my_image_height*(y+1)));
+                             ImVec2(unit_size*x, unit_size*y),
+                             ImVec2(unit_size*(x+1), unit_size*(y+1)));
     }
 
     {
-      ImGui::Begin("OpenGL framebuffer Texture");
-      ImGui::Image((void *) (intptr_t) my_image_texture, ImVec2(my_image_width, my_image_height));
-      ImGui::Image((void *) (intptr_t) my_image_texture, ImVec2(my_image_width, my_image_height));
+      ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar;
+
+      bool open = true;
+      ImGui::Begin("OpenGL framebuffer Texture", &open, flags);
+      ImVec2 window_size = ImGui::GetWindowSize();
+      ImGui::Image((void *) (intptr_t) my_image_texture, window_size);
+      //ImGui::Image((void *) (intptr_t) my_image_texture, ImVec2(my_image_width, my_image_height));
       ImGui::End();
     }
 
@@ -170,6 +178,8 @@ int main(int, char **) {
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     glfwSwapBuffers(window);
+
+    glDeleteTextures(1, &my_image_texture);
   }
 
   // Cleanup
