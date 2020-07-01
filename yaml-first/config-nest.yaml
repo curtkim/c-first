@@ -1,0 +1,10 @@
+username: curt
+password: pass
+login-count: 100
+cameras:
+  - name: cam1
+    param1: 1
+    param2: 2
+  - name: cam2
+    param1: 3
+    param2: 4

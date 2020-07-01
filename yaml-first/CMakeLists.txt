@@ -11,3 +11,6 @@ target_link_libraries(main ${CONAN_LIBS})
 
 add_executable(convert convert.cpp)
 target_link_libraries(convert ${CONAN_LIBS})
+
+add_executable(nested nested.cpp)
+target_link_libraries(nested ${CONAN_LIBS})
