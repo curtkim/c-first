@@ -13,6 +13,7 @@
 #include "common.hpp"
 #include "carla_common.hpp"
 #include "70_header.hpp"
+#include "70_sensors.hpp"
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
@@ -36,47 +37,13 @@ void do_accept(tcp::acceptor &acceptor) {
   });
 }
 
-int main(int argc, const char *argv[]) {
-
-  // asio
-  asio::io_context io_context;
-  asio::io_context::strand strand(io_context);
-
-  tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 7000));
-  do_accept(acceptor);
-
-  asio::signal_set signals(io_context, SIGINT, SIGTERM);
-  signals.async_wait([&](auto, auto){
-    io_context.stop();
-  });
-
-  std::ofstream myfile ("/data/dump.om", std::ios::out | std::ios::binary); // std::ios::app |
-
-
-  std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
-
-  auto[world, vehicle] = init_carla(MAP_NAME);
-  auto blueprint_library = world.GetBlueprintLibrary();
-
-  auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
-  assert(camera_bp != nullptr);
-  const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
-
-  // Spawn a camera attached to the vehicle.
-  auto camera_transform = cg::Transform{
-    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
-  auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, vehicle.get());
-  auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
-
-  // Register a callback to save images to disk.
-  camera->Listen([&myfile, &strand](auto data) {
+auto make_listener(std::ofstream& myfile, asio::io_context::strand& strand, const std::string& topic_name) {
+  return [&myfile, &strand, &topic_name](auto data) {
     auto image = boost::static_pointer_cast<csd::Image>(data);
     assert(image != nullptr);
 
     std::cout << std::this_thread::get_id() << " camera " << getEpochMillisecond() << " frame=" << image->GetFrame() << " " << image->size() << std::endl;
 
-    std::string topic_name = "/camera/0";
 
     //myfile.write( (char*)image->data(), header.body_length );
     //myfile.flush();
@@ -111,8 +78,42 @@ int main(int argc, const char *argv[]) {
         });
       });
     }
+  };
+}
+
+int main(int argc, const char *argv[]) {
+
+  // asio
+  asio::io_context io_context;
+  asio::io_context::strand strand(io_context);
+
+  tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 7000));
+  do_accept(acceptor);
+
+  asio::signal_set signals(io_context, SIGINT, SIGTERM);
+  signals.async_wait([&](auto, auto){
+    io_context.stop();
   });
 
+  std::ofstream myfile ("/data/dump.om", std::ios::out | std::ios::binary); // std::ios::app |
+
+
+  std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
+
+  auto[world, vehicle] = init_carla(MAP_NAME);
+  auto blueprint_library = world.GetBlueprintLibrary();
+
+  auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
+  assert(camera_bp != nullptr);
+  const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
+
+  std::vector<boost::shared_ptr<cc::Sensor>> cameras;
+  for( auto const& [topic_name, transform] : CAMERA_TOPIC_TRANSFORM_MAP ) {
+    auto cam_actor = world.SpawnActor(*camera_bp, transform, vehicle.get());
+    auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
+    cameras.push_back(camera);
+    camera->Listen(make_listener(myfile, strand, topic_name));
+  }
 
   auto *lidar_bp = blueprint_library->Find("sensor.lidar.ray_cast");
   assert(lidar_bp != nullptr);
@@ -180,12 +181,14 @@ int main(int argc, const char *argv[]) {
 
   myfile.close();
 
+  for(std::vector<boost::shared_ptr<cc::Sensor>>::iterator it = cameras.begin(); it != cameras.end(); ++it) {
+    (*it)->Stop();
+    (*it)->Destroy();
+  }
+
   // Remove actors from the simulation.
   lidar->Stop();
-  camera->Stop();
-
   lidar->Destroy();
-  camera->Destroy();
   vehicle->Destroy();
 
   std::cout << std::this_thread::get_id() << " Actors destroyed." << std::endl;

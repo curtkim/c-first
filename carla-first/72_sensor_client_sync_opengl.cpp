@@ -77,7 +77,6 @@ int main(int argc, char* argv[])
 
       glfwSwapBuffers(window);
       glfwPollEvents();
-
     }
   }
   catch (std::exception& e)

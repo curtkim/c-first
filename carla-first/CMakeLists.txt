@@ -18,7 +18,9 @@ foreach(APP
     62_sensor_client 62_sensor_client_rx
     71_sensor_server
     71_sensor_server_rx
+    71_sensor_server_dummy
     72_sensor_client_sync_rx
+    72_sensor_client_dummy
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS})

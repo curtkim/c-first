@@ -13,5 +13,14 @@ long getEpochMillisecond() {
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
+long getEpochMicrosecond() {
+  using namespace std::chrono;
+  return duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
+}
+
+long getEpochNanosecond() {
+  using namespace std::chrono;
+  return duration_cast<nanoseconds>(system_clock::now().time_since_epoch()).count();
+}
 
 #endif // CARLA_FRIST_COMMON_HPP

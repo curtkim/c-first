@@ -5,6 +5,7 @@
 #include <rxcpp/rx.hpp>
 
 #include "asio.hpp"
+#include "common.hpp"
 #include "70_header.hpp"
 
 struct Record {
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
   camera0$
     .observe_on(threads)
     .subscribe([](std::shared_ptr<Record> rec){
-      std::cout << std::this_thread::get_id() << " " << rec->header << " " << rec->topic_name << std::endl;
+      std::cout << std::this_thread::get_id() << " " << getEpochMicrosecond() << " " << rec->header << " " << rec->topic_name << std::endl;
     });
 
   lidar0$
