@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.15)
 project(benchmark)
-
-#add_definitions("-std=c++17")
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP first)
+foreach(APP google nano_first nano_complexity_set)
 	add_executable(${APP} ${APP}.cpp)
 	target_link_libraries(${APP} ${CONAN_LIBS})
 	target_compile_features(${APP} PRIVATE cxx_std_17)
