@@ -20,3 +20,5 @@ add_executable(memory_mapped_read memory_mapped_read.cpp)
 
 add_executable(inotify_first inotify_first.cpp)
 add_executable(write_direct write_direct.cpp)
+
+add_executable(epoll_echo_server epoll_echo_server.cpp)
