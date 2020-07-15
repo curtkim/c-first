@@ -1,0 +1,7 @@
+[requires]
+glfw/3.3.2@curt/testing
+fmt/6.1.2
+
+
+[generators]
+cmake
