@@ -4,6 +4,12 @@ project(MD5Encrypter)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(ex3_03 ex3_03.cpp)
-target_link_libraries(ex3_03 ${CONAN_LIBS})
-target_compile_features(ex3_03 PUBLIC cxx_std_17)
+file(COPY input1.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+foreach(APP ex03_03 ex03_05 ex03_06 ex03_10
+        ex18_03)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} ${CONAN_LIBS})
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
