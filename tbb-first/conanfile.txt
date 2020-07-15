@@ -1,0 +1,6 @@
+[requires]
+tbb/2020.1
+fmt/6.1.2
+
+[generators]
+cmake
