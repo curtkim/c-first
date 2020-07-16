@@ -1,5 +1,6 @@
 [requires]
 tbb/2020.1
+parallelstl/20181004@conan/stable
 fmt/6.1.2
 lodepng/20200520@curt/testing
 

@@ -7,7 +7,9 @@ conan_basic_setup()
 file(COPY input1.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-foreach(APP ex03_03 ex03_05 ex03_06 ex03_10
+foreach(APP
+        ex01_04 ex01_05 ex01_07 ex01_10
+        ex03_03 ex03_05 ex03_06 ex03_10
         ex18_03)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
