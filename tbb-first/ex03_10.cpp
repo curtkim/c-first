@@ -29,14 +29,11 @@ public:
   void write() const;
 };
 
+
 int getNextFrameNumber();
-
 PNGImage getLeftImage(uint64_t frameNumber);
-
 PNGImage getRightImage(uint64_t frameNumber);
-
 void increasePNGChannel(PNGImage &image, int channel_offset, int increase);
-
 void mergePNGImages(PNGImage &right, const PNGImage &left);
 
 
