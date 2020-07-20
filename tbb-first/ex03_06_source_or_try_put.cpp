@@ -42,6 +42,7 @@ void loop_with_try_put() {
       std::cout << i << std::endl;
     }
   };
+
   for (int count = 0; count < limit; ++count) {
     int value = count;
     my_node.try_put(value);
