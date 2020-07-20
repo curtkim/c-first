@@ -25,4 +25,13 @@ std::ostream& operator<<(std::ostream& os, const Header& header)
     << " type=" << header.record_type;
 }
 
+struct Record {
+  Header header;
+  std::string topic_name;
+  std::vector<char> body;
+
+  Record(Header header, std::string topic_name, std::vector<char> body) : header(header), topic_name(topic_name), body(body) {}
+};
+
+
 #endif //CARLA_FRIST_70_HEADER_HPP

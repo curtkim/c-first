@@ -8,14 +8,6 @@
 #include "common.hpp"
 #include "70_header.hpp"
 
-struct Record {
-  Header header;
-  std::string topic_name;
-  std::vector<char> body;
-
-  Record(Header header, std::string topic_name, std::vector<char> body) : header(header), topic_name(topic_name), body(body) {}
-};
-
 using asio::ip::tcp;
 
 int main(int argc, char* argv[])
