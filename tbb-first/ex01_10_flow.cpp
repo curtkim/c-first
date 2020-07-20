@@ -59,6 +59,7 @@ void fig_1_10(const std::vector<ImagePtr> &image_vector) {
   tbb::flow::make_edge(src, gamma);
   tbb::flow::make_edge(gamma, tint);
   tbb::flow::make_edge(tint, write);
+
   src.activate();
   g.wait_for_all();
 }

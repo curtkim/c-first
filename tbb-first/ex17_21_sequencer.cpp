@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 static inline void spinWaitForAtLeast(double sec) {
   tbb::tick_count t0 = tbb::tick_count::now();
@@ -21,8 +22,8 @@ struct Message {
 
   Message(int i) : my_seq_no(i), my_string(std::to_string(i)) {}
 };
-
 using MessagePtr = std::shared_ptr<Message>;
+
 
 void fig_17_21() {
   const int N = 10;
@@ -31,10 +32,13 @@ void fig_17_21() {
     g, tbb::flow::unlimited,
     [](MessagePtr m) {
       m->my_string += " with sequencer";
+      std::cout << m->my_seq_no << std::endl;
       return m;
     }};
 
-  tbb::flow::sequencer_node<MessagePtr> sequencer(g, [](MessagePtr m) {
+  tbb::flow::sequencer_node<MessagePtr> sequencer(
+    g,
+    [](MessagePtr m) {
     return m->my_seq_no;
   });
 
@@ -47,8 +51,12 @@ void fig_17_21() {
   tbb::flow::make_edge(first_node, sequencer);
   tbb::flow::make_edge(sequencer, last_node);
 
-  for (int i = 0; i < N; ++i)
+  for (int i = 0; i < N/2; ++i)
     first_node.try_put(std::make_shared<Message>(i));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  for (int i = N/2+1; i < N; ++i)
+    first_node.try_put(std::make_shared<Message>(i));
+
   g.wait_for_all();
 }
 

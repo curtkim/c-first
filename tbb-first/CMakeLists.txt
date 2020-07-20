@@ -8,14 +8,15 @@ file(COPY input1.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 foreach(APP
-        ex00_01_join_key_match
+        ex00_join_key_match ex00_indexer ex00_split_node ex00_buffer ex00_queue_node
         ex01_04 ex01_05 ex01_07 ex01_10_flow ex01_11_parallel_for ex01_12_unseq
         ex02_10_parallel_reduce ex02_30_parallel_pipeline
         ex03_03 ex03_05 ex03_06 ex03_10
         ex04_04 ex04_11
         ex07_09
-        ex17_09 ex17_10 ex17_13_no_limit ex17_15_limit ex17_16 ex17_17 ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
-        ex18_03)
+        ex17_09 ex17_10 ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
+        ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
+        ex18_03_async)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
     target_compile_features(${APP} PUBLIC cxx_std_17)
