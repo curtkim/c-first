@@ -3,6 +3,9 @@ benchmark/1.5.0
 nanobench/4.0.0
 doctest/2.4.0
 lodepng/20200520@curt/testing
+libjpeg/9d
+#libjpeg-turbo/2.0.4
+
 
 [generators]
 cmake

@@ -1,0 +1,1 @@
+libjpeg-turbo가 libjpeg보다 2.5배 빠름.
