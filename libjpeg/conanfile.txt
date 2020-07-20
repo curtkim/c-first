@@ -1,0 +1,7 @@
+[requires]
+libjpeg/9d
+libjpeg-turbo/2.0.4
+fmt/6.1.2
+
+[generators]
+cmake
