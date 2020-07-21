@@ -19,7 +19,8 @@ public:
     asio::post(io_context_, [this, msg]() {
                  bool empty = write_msgs_.empty();
                  write_msgs_.push_back(msg);
-                 std::cout << write_msgs_.size() << std::endl;
+                 std::cout << "empty=" << empty << " write_msgs_.size()=" << write_msgs_.size() << std::endl;
+                 // empty일때만 do_write를 호출한다. empty가 아닌경우 do_write가 이미 호출되어 있다.
                  if (empty) {
                    do_write();
                  }
