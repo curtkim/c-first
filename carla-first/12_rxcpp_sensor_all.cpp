@@ -5,6 +5,7 @@
 #include <chrono>
 #include <ctime>
 
+#include <carla/Memory.h>
 #include <carla/client/ActorBlueprint.h>
 #include <carla/client/BlueprintLibrary.h>
 #include <carla/client/Client.h>
@@ -17,6 +18,7 @@
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
 #include <carla/sensor/data/LidarMeasurement.h>
+#include <carla/sensor/data/RadarMeasurement.h>
 #include <carla/sensor/data/GnssMeasurement.h>
 #include <carla/sensor/data/IMUMeasurement.h>
 
@@ -36,6 +38,28 @@ using namespace std::string_literals;
 
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
+
+std::ostream& operator<< (std::ostream& o, const cg::Vector3D& a)
+{
+  o << "x: " << a.x << " y: " << a.y << " z: " << a.z;
+  return o;
+}
+std::ostream& operator<< (std::ostream& o, const cg::GeoLocation& a)
+{
+  o << "lng: " << a.longitude << " lat: " << a.latitude << " alt: " << a.altitude;
+  return o;
+}
+std::ostream& operator<< (std::ostream& o, const carla::sensor::s11n::RadarDetection& a)
+{
+  o << "azi: " << a.azimuth << " alt: " << a.altitude << " depth: " << a.depth << " vel:" << a.velocity;
+  return o;
+}
+std::ostream& operator<< (std::ostream& o, const carla::sensor::data::Color& a)
+{
+  o << "r: " << (int)a.r << " g: " << (int)a.g << " b: " << (int)a.b << " a:" << (int)a.a;
+  return o;
+}
+
 
 int main(int argc, const char *argv[]) {
   try {
@@ -106,8 +130,9 @@ int main(int argc, const char *argv[]) {
 
     image2$
       .subscribe(
-        [](auto v){
-            std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " camera2 onNext " << v->GetFrame() << std::endl;
+        [](boost::shared_ptr<csd::Image> v){
+            std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " camera2 onNext " << v->GetFrame()
+            << " begin=" << *(v->begin()) << std::endl;
         },
         [](){
             std::cout << std::this_thread::get_id() << " camera2 OnCompleted" << std::endl;
@@ -123,13 +148,32 @@ int main(int argc, const char *argv[]) {
         vehicle);
     lidar$
         .subscribe(
-            [](auto v){
-              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " lidar onNext " << v->GetFrame() << std::endl;
+            [](boost::shared_ptr<csd::LidarMeasurement> v){
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " lidar onNext " << v->GetFrame()
+              << " first=" << *(v->begin()) << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " lidar OnCompleted" << std::endl;
             }
         );
+
+    auto radar_transform = cg::Transform{
+      cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+      cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+    std::map<std::string, std::string> radar_attributes = {{"sensor_tick", "0.1"}};
+    auto [radar, radar$] = from_sensor_data<csd::RadarMeasurement>(
+      world, "sensor.other.radar", radar_attributes, radar_transform,
+      vehicle);
+    radar$
+      .subscribe(
+        [](boost::shared_ptr<csd::RadarMeasurement> v){
+          std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " radar onNext " << v->GetFrame()
+          << " first=" << *(v->begin()) << std::endl;
+        },
+        [](){
+          std::cout << std::this_thread::get_id() << " radar OnCompleted" << std::endl;
+        }
+      );
 
     auto gnss_transform = cg::Transform{
         cg::Location{0.0f, 0.0f, 0.0f}, // x, y, z.
@@ -139,8 +183,9 @@ int main(int argc, const char *argv[]) {
         world, "sensor.other.gnss", gnss_attributes, gnss_transform, vehicle);
     gnss$
         .subscribe(
-            [](auto v){
-              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " gnss onNext " << v->GetFrame() << std::endl;
+            [](boost::shared_ptr<csd::GnssMeasurement> v){
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " gnss onNext " << v->GetFrame() << " "
+              << v->GetGeoLocation() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " gnss OnCompleted" << std::endl;
@@ -155,8 +200,9 @@ int main(int argc, const char *argv[]) {
         world, "sensor.other.imu", imu_attributes, imu_transform, vehicle);
     imu$
         .subscribe(
-            [](auto v){
-              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " imu onNext " << v->GetFrame() << std::endl;
+            [](boost::shared_ptr<csd::IMUMeasurement> v){
+              std::cout << std::this_thread::get_id() << " " << getEpochMillisecond() << " imu onNext " << v->GetFrame() << " "
+              << v->GetAccelerometer() << " " << v->GetGyroscope() << " " << v->GetCompass() << std::endl;
             },
             [](){
               std::cout << std::this_thread::get_id() << " imu OnCompleted" << std::endl;
