@@ -13,6 +13,7 @@ conan_basic_setup()
 #target_link_libraries(range_based_for ${CONAN_LIBS})
 
 foreach(APP
+    01_timer_interval
     01_timer_system
     02_signal
     11_daytime_client
