@@ -1,0 +1,6 @@
+[requires]
+ms-gsl/3.0.1
+fmt/6.1.2
+
+[generators]
+cmake
