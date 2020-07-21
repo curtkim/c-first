@@ -9,7 +9,7 @@ file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 foreach(APP
         ex00_join_key_match ex00_indexer ex00_split_node ex00_buffer ex00_queue_node
-        ex00_overwrite_join_reserving
+        ex00_overwrite_join_reserving ex00_multifunction
         ex01_04_parallel_invoke ex01_05_for_each_par ex01_07_plain_loop
         ex01_10_flow ex01_11_flow_parallel_for ex01_12_flow_parallel_for_unseq
         ex02_10_parallel_reduce ex02_30_parallel_pipeline
@@ -19,7 +19,8 @@ foreach(APP
         ex17_09_transpose ex17_10_transpose_tile
         ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
         ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
-        ex18_03_async)
+        ex18_03_async
+        rx01_with_latest rx02_merge rx03_buffer)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
     target_compile_features(${APP} PUBLIC cxx_std_17)

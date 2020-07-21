@@ -1,7 +1,7 @@
 #include <iostream>
+#include <thread>
 #include <tbb/flow_graph.h>
 #include <tbb/tick_count.h>
-#include <tbb/compat/thread>
 
 
 class AsyncActivity {
@@ -17,7 +17,7 @@ public:
     gateway.reserve_wait();
     asyncThread = std::thread{
       [&, input]() {
-        std::cout << "World! Input: " << input << '\n';
+        std::cout << std::this_thread::get_id() << " World! Input: " << input << '\n';
         int output = input + 1;
         gateway.try_put(output);
         gateway.release_wait();
@@ -38,7 +38,7 @@ void async_world() {
     g,
     [&](int &a) {
       if (n) return false;
-      std::cout << "Async ";
+      std::cout << std::this_thread::get_id() << " Async ";
       a = 10;
       n = true;
       return true;
@@ -61,7 +61,7 @@ void async_world() {
   tbb::flow::function_node<int> out_node{
     g, tbb::flow::unlimited,
     [](int const &a_num) {
-      std::cout << "Bye! Received: " << a_num << '\n';
+      std::cout << std::this_thread::get_id() << " Bye! Received: " << a_num << '\n';
     }
   };
 
@@ -75,6 +75,8 @@ void async_world() {
 }
 
 int main() {
+  std::cout << std::this_thread::get_id() << " main thread" << std::endl;
+
   tbb::tick_count mainStartTime = tbb::tick_count::now();
   async_world();
   auto time = (tbb::tick_count::now() - mainStartTime).seconds();
