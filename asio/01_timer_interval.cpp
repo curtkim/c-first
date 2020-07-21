@@ -9,17 +9,18 @@ public:
   std::function<void(const std::error_code &e)> func_wrapper;
   bool autofree = false;
 
-  explicit TimerContext(asio::io_service &__io_svc) : timer(__io_svc) {}
+  explicit TimerContext(asio::io_service &__io_svc) : timer(__io_svc) {
+  }
 };
 
-void clearInterval(TimerContext * ctx) {
+void clearInterval(TimerContext *&ctx) {
   if (ctx) {
     ctx->timer.cancel();
     ctx = nullptr;
   }
 }
 
-void clearTimeout(TimerContext * ctx) {
+void clearTimeout(TimerContext *&ctx) {
   clearInterval(ctx);
 }
 
@@ -52,6 +53,7 @@ auto setTimeout(asio::io_service &io_svc, const std::function<void()> &func, siz
 
   struct ret {
     operator TimerContext*() {
+      std::cout << " ** " << std::endl;
       ctx->autofree = false;
       return ctx;
     }
@@ -76,7 +78,6 @@ auto setTimeout(asio::io_service &io_svc, const std::function<void()> &func, siz
 
   return ret{ctx};
 }
-
 int main(void) {
 
   asio::io_service io_service;
@@ -85,12 +86,12 @@ int main(void) {
   TimerContext* t = setInterval(io_service, [&](){
     puts("aaaa");
     cnt++;
-    if (cnt == 5) clearInterval(t);
+    if (cnt == 3) clearInterval(t);
   }, 1000);
 
   TimerContext* t2 = setTimeout(io_service, [](){
     puts("bbb");
-  }, 3000);
+  }, 2000);
 
   io_service.run();
   delete t;
