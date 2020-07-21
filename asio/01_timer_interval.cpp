@@ -1,3 +1,4 @@
+// from https://github.com/YukiWorkshop/cpp-async-timer
 #include <iostream>
 #include <asio.hpp>
 
@@ -11,18 +12,18 @@ public:
   explicit TimerContext(asio::io_service &__io_svc) : timer(__io_svc) {}
 };
 
-void clearInterval(TimerContext *&__ctx) {
-  if (__ctx) {
-    __ctx->timer.cancel();
-    __ctx = nullptr;
+void clearInterval(TimerContext * ctx) {
+  if (ctx) {
+    ctx->timer.cancel();
+    ctx = nullptr;
   }
 }
 
-void clearTimeout(TimerContext *&__ctx) {
-  clearInterval(__ctx);
+void clearTimeout(TimerContext * ctx) {
+  clearInterval(ctx);
 }
 
-TimerContext * setInterval(asio::io_service &io_svc, const std::function<void()> &func, size_t interval) {
+TimerContext* setInterval(asio::io_service &io_svc, const std::function<void()> &func, size_t interval) {
   auto *ctx = new TimerContext(io_svc);
   ctx->func = func;
 
@@ -81,12 +82,19 @@ int main(void) {
   asio::io_service io_service;
 
   int cnt = 0;
-  TimerContext *t = setInterval(io_service, [&](){
+  TimerContext* t = setInterval(io_service, [&](){
     puts("aaaa");
     cnt++;
     if (cnt == 5) clearInterval(t);
   }, 1000);
 
+  TimerContext* t2 = setTimeout(io_service, [](){
+    puts("bbb");
+  }, 3000);
+
   io_service.run();
+  delete t;
+  delete t2;
+
   return 0;
 }
