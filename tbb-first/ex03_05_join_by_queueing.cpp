@@ -24,6 +24,7 @@ void fig_3_5() {
     }
   };
 
+  // 들어오는 대로 매칭하는 것 같다.
   tbb::flow::join_node<std::tuple<std::string, double>, tbb::flow::queueing> my_join_node{g};
 
   tbb::flow::function_node<std::tuple<std::string, double>,int> my_final_node{
@@ -43,6 +44,10 @@ void fig_3_5() {
   // step 4: send messages
   my_node.try_put(1);
   my_other_node.try_put(2);
+
+  my_node.try_put(3);
+  my_other_node.try_put(4);
+
   // step 5: wait for the graph to complete
   g.wait_for_all();
 }
