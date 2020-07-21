@@ -1,3 +1,5 @@
 sources:
   "0.6.0":
     url: https://github.com/pytorch/vision/archive/v0.6.0.tar.gz
+  "0.7.0-rc3":
+    url: https://github.com/pytorch/vision/archive/v0.7.0-rc3.tar.gz
