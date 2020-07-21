@@ -4,6 +4,7 @@
 #include <thread>
 #include "asio.hpp"
 #include "70_chat_message.hpp"
+#include <thread>
 
 using asio::ip::tcp;
 
@@ -16,10 +17,11 @@ public:
   }
 
   void write(const chat_message &msg) {
+    // io_context안에서 호출되도록 asio::post로 호출한다. std::deque<chat_message>는 io_context안에서만 접근한다.
     asio::post(io_context_, [this, msg]() {
                  bool empty = write_msgs_.empty();
                  write_msgs_.push_back(msg);
-                 std::cout << "empty=" << empty << " write_msgs_.size()=" << write_msgs_.size() << std::endl;
+                 std::cout << std::this_thread::get_id() << " empty=" << empty << " write_msgs_.size()=" << write_msgs_.size() << std::endl;
                  // empty일때만 do_write를 호출한다. empty가 아닌경우 do_write가 이미 호출되어 있다.
                  if (empty) {
                    do_write();
@@ -68,7 +70,7 @@ private:
   }
 
   void do_write() {
-    std::cout << "do_write" << std::endl;
+    std::cout << std::this_thread::get_id() << " do_write" << std::endl;
     asio::async_write(socket_,
                       asio::buffer(write_msgs_.front().data(),
                                    write_msgs_.front().length()),
@@ -92,6 +94,7 @@ private:
 };
 
 int main(int argc, char *argv[]) {
+  std::cout << std::this_thread::get_id() << " main thread" << std::endl;
   try {
     asio::io_context io_context;
 
@@ -105,7 +108,7 @@ int main(int argc, char *argv[]) {
     while (std::cin.getline(line, chat_message::max_body_length + 1)) {
       chat_message msg;
       msg.body_length(std::strlen(line));
-      std::cout << "length =" << msg.body_length() << std::endl;
+      std::cout << std::this_thread::get_id() << " cin length =" << msg.body_length() << std::endl;
       std::memcpy(msg.body(), line, msg.body_length());
       msg.encode_header();
       c.write(msg);
