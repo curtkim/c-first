@@ -42,6 +42,7 @@ void mergePNGImages(PNGImage &right, const PNGImage &left);
 void fig_2_30() {
   using Image = PNGImage;
   using ImagePair = std::pair<PNGImage, PNGImage>;
+
   tbb::parallel_pipeline(
     8,
     tbb::make_filter<void, Image>(

@@ -12,11 +12,14 @@ foreach(APP
         ex00_overwrite_join_reserving ex00_multifunction
         ex01_04_parallel_invoke ex01_05_for_each_par ex01_07_plain_loop
         ex01_10_flow ex01_11_flow_parallel_for ex01_12_flow_parallel_for_unseq
-        ex02_10_parallel_reduce ex02_30_parallel_pipeline
+        ex02_10_parallel_reduce ex02_27_parallel_pipeline ex02_30_parallel_pipeline
         ex03_03 ex03_05_join_by_queueing ex03_06_source_or_try_put ex03_10_join_tag_match
         ex04_04_par_unseq ex04_11_reduce
         ex05_03_histogram ex05_05 ex05_20_atomic ex05_20_atomic_cache_aligned ex05_22_tls_ets ex05_26_conbinable ex05_27_parallel_reduce
+        ex06_01_concurrent_map ex06_02_concurrent_queue ex06_10
         ex07_09_parallel_for
+        ex10_04_parallel_invoke ex10_06_task_group ex10_08 ex10_11 ex10_11_bypass ex10_15_recycle
+        ex17_01 ex17_02 ex17_03 ex17_04
         ex17_09_transpose ex17_10_transpose_tile
         ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
         ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
