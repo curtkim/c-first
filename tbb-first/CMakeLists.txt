@@ -10,6 +10,7 @@ file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 foreach(APP
         ex00_join_key_match ex00_indexer ex00_split_node ex00_buffer ex00_queue_node
         ex00_overwrite_join_reserving ex00_multifunction
+        ex00_single_broadcast
         ex01_04_parallel_invoke ex01_05_for_each_par ex01_07_plain_loop
         ex01_10_flow ex01_11_flow_parallel_for ex01_12_flow_parallel_for_unseq
         ex02_10_parallel_reduce ex02_27_parallel_pipeline ex02_30_parallel_pipeline
