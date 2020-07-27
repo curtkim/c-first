@@ -15,6 +15,7 @@ foreach(APP
         ex02_10_parallel_reduce ex02_30_parallel_pipeline
         ex03_03 ex03_05_join_by_queueing ex03_06_source_or_try_put ex03_10_join_tag_match
         ex04_04_par_unseq ex04_11_reduce
+        ex05_03_histogram ex05_05 ex05_20_atomic ex05_20_atomic_cache_aligned ex05_22_tls_ets ex05_26_conbinable ex05_27_parallel_reduce
         ex07_09_parallel_for
         ex17_09_transpose ex17_10_transpose_tile
         ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
