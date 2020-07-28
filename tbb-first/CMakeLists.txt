@@ -8,7 +8,7 @@ file(COPY input1.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 foreach(APP
-        ex00_buffer_buffer ex00_buffer_queue_node ex00_buffer_overwrite_join_reserving ex00_buffer_sequencer 
+        ex00_buffer_buffer ex00_buffer_queue_node ex00_buffer_overwrite_join_reserving ex00_buffer_sequencer
         ex00_function_multifunction
         ex00_service_join ex00_service_join_key_match ex00_service_indexer ex00_service_split_node ex00_service_broadcast
 
@@ -26,7 +26,7 @@ foreach(APP
         ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
         ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
         ex18_03_async
-        rx01_with_latest rx02_merge rx02_merge2 rx03_buffer rx04_scan
+        rx01_with_latest rx02_merge rx02_merge2 rx03_buffer rx04_scan rx05_flatmap
         zz01_interactive)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
