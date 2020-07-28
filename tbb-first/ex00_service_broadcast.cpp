@@ -2,7 +2,6 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <thread>
 
 using namespace tbb::flow;
 
@@ -26,9 +25,9 @@ void run_example1() {  // example for Flow_Graph_Single_Vs_Broadcast.xml
   tbb::atomic<size_t> b2;  // for each function _node body
   tbb::atomic<size_t> b3;  //
 
-  function_node<continue_msg> f1(g,serial,fn_body1(b1));
-  function_node<continue_msg> f2(g,serial,fn_body1(b2));
-  function_node<continue_msg> f3(g,serial,fn_body1(b3));
+  function_node<continue_msg> f1(g,serial, fn_body1(b1));
+  function_node<continue_msg> f2(g,serial, fn_body1(b2));
+  function_node<continue_msg> f3(g,serial, fn_body1(b3));
   buffer_node<continue_msg> buf1(g);
 
   // single-push policy

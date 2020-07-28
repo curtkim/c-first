@@ -10,10 +10,11 @@ double fig_17_3(int num_trials, int N, double per_node_time) {
   tbb::tick_count t0, t1;
   using node_t = tbb::flow::multifunction_node<int, std::tuple<int>>;
   tbb::flow::graph g;
-  node_t n(g, tbb::flow::unlimited,
-           [N, per_node_time](int i, node_t::output_ports_type& p) {
-             spinWaitForAtLeast(per_node_time);
-           }
+  node_t n(
+    g, tbb::flow::unlimited,
+    [N, per_node_time](int i, node_t::output_ports_type &out) {
+      spinWaitForAtLeast(per_node_time);
+    }
   );
 
   for (int t = -1; t < num_trials; ++t) {
@@ -24,16 +25,16 @@ double fig_17_3(int num_trials, int N, double per_node_time) {
     g.wait_for_all();
   }
   t1 = tbb::tick_count::now();
-  return (t1-t0).seconds()/num_trials;
+  return (t1 - t0).seconds() / num_trials;
 }
 
 int main() {
   const int P = tbb::task_scheduler_init::default_num_threads();
   const int NUM_TRIALS = 2;
   const int H = 16;
-  const int N = (1<<H) - 1;
+  const int N = (1 << H) - 1;
   const int PER_NODE_TIMES = 4;
-  double per_node_time[PER_NODE_TIMES] = { 1e-7, 1e-6, 1e-5, 1e-4 };
+  double per_node_time[PER_NODE_TIMES] = {1e-7, 1e-6, 1e-5, 1e-4};
 
   std::cout << "The system has " << P << " threads" << std::endl
             << "time in seconds for the master loop puts to a parallel node:"

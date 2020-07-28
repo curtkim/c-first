@@ -10,7 +10,7 @@
 // flat_map?
 // scan
 
-typedef tbb::flow::multifunction_node<int, std::tuple<std::vector<int>>> multi_node;
+typedef tbb::flow::multifunction_node<int, std::tuple<std::vector<int>>> buffer4_node;
 
 // buffer(4를 묶어서)
 int main() {
@@ -35,16 +35,16 @@ int main() {
     }, false);
 
   std::vector<int> temp;
-  multi_node process(
+  buffer4_node process(
     g, tbb::flow::unlimited,
-    [&temp](const int &in, multi_node::output_ports_type &op){
-      std::cout << std::this_thread::get_id() << " data : " << in << std::endl;
+    [&temp](const int &in, buffer4_node::output_ports_type &out){
+      //std::cout << std::this_thread::get_id() << " data : " << in << std::endl;
       temp.push_back(in);
       if( temp.size() >= 4){
         // TODO 메모리를 효율적으로
         std::vector<int> temp2;
         temp2 = temp;
-        std::get<0>(op).try_put(temp2);
+        std::get<0>(out).try_put(temp2);
         temp.clear();
       }
     });

@@ -2,32 +2,21 @@
 #include "tbb/flow_graph.h"
 
 using namespace tbb::flow;
-typedef multifunction_node<int, std::tuple<int,int> > multi_node;
+typedef multifunction_node<int, std::tuple<int,int> > buffer4_node;
 
-/*
-struct MultiBody {
-  void operator()(const int &i, multi_node::output_ports_type &op) {
-    if(i % 2)
-      std::get<1>(op).try_put(i); // put to odd queue
-    else
-      std::get<0>(op).try_put(i); // put to even queue
-  }
-};
-*/
 int main() {
   graph g;
 
   queue_node<int> even_queue(g);
   queue_node<int> odd_queue(g);
 
-  multi_node m_node(g,unlimited,[](const int &i, multi_node::output_ports_type &op){
+  buffer4_node m_node(g, unlimited, [](const int &i, buffer4_node::output_ports_type &out){
     if(i % 2)
-      std::get<1>(op).try_put(i); // put to odd queue
+      std::get<1>(out).try_put(i); // put to odd queue
     else
-      std::get<0>(op).try_put(i); // put to even queue
+      std::get<0>(out).try_put(i); // put to even queue
   });
 
-  //output_port<0>(m_node).register_successor(even_queue);
   make_edge(output_port<0>(m_node), even_queue);
   make_edge(output_port<1>(m_node), odd_queue);
 

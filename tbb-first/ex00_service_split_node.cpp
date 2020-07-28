@@ -1,3 +1,4 @@
+#include <iostream>
 #include "tbb/flow_graph.h"
 using namespace tbb::flow;
 
@@ -11,9 +12,14 @@ int main() {
   output_port<0>(my_split_node).register_successor(first_queue);
   make_edge(output_port<1>(my_split_node), second_queue);
 
-  for(int i = 0; i < 1000; ++i) {
+  for(int i = 0; i < 10; ++i) {
     tuple<int, int> my_tuple(2*i, 2*i+1);
     my_split_node.try_put(my_tuple);
+  }
+
+  int v;
+  while(first_queue.try_get(v)){
+    std::cout << v << std::endl;
   }
   g.wait_for_all();
 }

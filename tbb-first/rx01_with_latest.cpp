@@ -2,15 +2,7 @@
 #include <thread>
 #include <tbb/flow_graph.h>
 
-// merge
-// interval
-// with_latest
-// window?
-// pairwise
-// flat_map?
-// scan
-
-
+// overwrite_node와 join_node<reserving>으로 with_latest구현
 int main() {
   const int DATA_LIMIT = 5;
   int count = 0;
