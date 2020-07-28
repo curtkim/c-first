@@ -8,7 +8,7 @@ file(COPY input1.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 file(COPY input2.png DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 foreach(APP
-        ex00_buffer_buffer ex00_buffer_queue_node ex00_buffer_overwrite_join_reserving
+        ex00_buffer_buffer ex00_buffer_queue_node ex00_buffer_overwrite_join_reserving ex00_buffer_sequencer 
         ex00_function_multifunction
         ex00_service_join ex00_service_join_key_match ex00_service_indexer ex00_service_split_node ex00_service_broadcast
 

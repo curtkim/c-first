@@ -27,6 +27,7 @@ using MessagePtr = std::shared_ptr<Message>;
 
 void fig_17_21() {
   const int N = 10;
+
   tbb::flow::graph g;
   tbb::flow::function_node<MessagePtr, MessagePtr> first_node{
     g, tbb::flow::unlimited,
@@ -39,8 +40,8 @@ void fig_17_21() {
   tbb::flow::sequencer_node<MessagePtr> sequencer(
     g,
     [](MessagePtr m) {
-    return m->my_seq_no;
-  });
+      return m->my_seq_no;
+    });
 
   tbb::flow::function_node<MessagePtr, int, tbb::flow::rejecting> last_node{
     g, tbb::flow::serial,
@@ -48,6 +49,7 @@ void fig_17_21() {
       std::cout << m->my_string << std::endl;
       return 0;
     }};
+
   tbb::flow::make_edge(first_node, sequencer);
   tbb::flow::make_edge(sequencer, last_node);
 
