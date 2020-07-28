@@ -26,7 +26,7 @@ foreach(APP
         ex17_13_no_limit ex17_15_limit ex17_16_rejecting ex17_17_token_buffer
         ex17_19_arena ex17_21_sequencer ex17_22_order_multifunction ex17_33_composite
         ex18_03_async
-        rx01_with_latest rx02_merge rx02_merge2 rx03_buffer
+        rx01_with_latest rx02_merge rx02_merge2 rx03_buffer rx04_scan
         zz01_interactive)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
