@@ -3,7 +3,7 @@ from conans import ConanFile, CMake, tools
 
 class TorchConan(ConanFile):
     name = "torch"
-    version = "nightly"
+    version = "1.6.0"
     settings = "os", "compiler", "build_type", "arch"
     options = {"cuda": ["9.2", "10.1", "10.2"]}
     default_options = {"cuda": "10.1"}
@@ -17,7 +17,8 @@ class TorchConan(ConanFile):
 
         #url = f"https://download.pytorch.org/libtorch/cu{cuda_version}/libtorch-cxx11-abi-shared-with-deps-{self.version}.zip" # 1.5.0
         #url = f"https://download.pytorch.org/libtorch/cu{cuda_version}/libtorch-cxx11-abi-shared-with-deps-{self.version}%2Bcu{cuda_version}.zip" #1.5.1
-        url = f"https://download.pytorch.org/libtorch/nightly/cu101/libtorch-cxx11-abi-shared-with-deps-latest.zip"
+        #url = f"https://download.pytorch.org/libtorch/nightly/cu101/libtorch-cxx11-abi-shared-with-deps-latest.zip"
+        url = f"https://download.pytorch.org/libtorch/cu{cuda_version}/libtorch-cxx11-abi-shared-with-deps-{self.version}%2Bcu101.zip"
         tools.get(url)
 
     def package(self):

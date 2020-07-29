@@ -6,7 +6,7 @@ from conans import ConanFile, tools, CMake
 class TorchVisionConan(ConanFile):
 
     ## for test
-    version = "0.6.0"
+    version = "0.7.0"
 
     name = "torchvision"
     url = ""
@@ -27,7 +27,7 @@ class TorchVisionConan(ConanFile):
     generators = "cmake"
 
     requires = (
-        "torch/1.5.0@curt/prebuilt",
+        "torch/1.6.0@curt/prebuilt",
     )
 
     _cmake = None
@@ -85,5 +85,5 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
         cmake = self._configure_cmake()
         cmake.install()
 
-    def package_info(self):
-        self.cpp_info.libs = ["avrocpp_s", "avrocpp"]
+    #def package_info(self):
+    #    self.cpp_info.libs = ["avrocpp_s", "avrocpp"]
