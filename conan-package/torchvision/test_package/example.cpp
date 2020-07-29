@@ -4,6 +4,7 @@
 
 int main()
 {
+  /*
   auto model = vision::models::ResNet18();
   model->eval();
 
@@ -12,4 +13,5 @@ int main()
   auto out = model->forward(in);
 
   std::cout << out;
+  */
 }

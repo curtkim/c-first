@@ -8,7 +8,7 @@ int main(int argc, const char* argv[]) {
   torch::jit::script::Module module;
   try {
     // Deserialize the ScriptModule from a file using torch::jit::load().
-    module = torch::jit::load("../../detr_demo-da2a99e9.pth");
+    module = torch::jit::load("../../wrapped_detr.zip");
   }
   catch (const c10::Error& e) {
     std::cerr << e.msg() << std::endl;
