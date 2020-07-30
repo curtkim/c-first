@@ -1,6 +1,6 @@
 [requires]
 torch/1.6.0@curt/prebuilt
-torchvision/0.7.0@demo/testing
+#torchvision/0.7.0@demo/testing
 opencv/4.1.1@conan/stable
 
 [generators]

@@ -6,6 +6,8 @@ add_definitions("-std=c++17")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+set(TORCH_CXX_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=1")
+
 #find_package(PythonLibs REQUIRED)
 #include_directories(${PYTHON_INCLUDE_DIRS})
 #target_link_libraries(<your exe or lib> ${PYTHON_LIBRARIES})
