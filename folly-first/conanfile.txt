@@ -1,0 +1,6 @@
+[requires]
+folly/2019.10.21.00
+fmt/6.1.2
+
+[generators]
+cmake
