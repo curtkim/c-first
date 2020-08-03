@@ -5,6 +5,7 @@ glm/0.9.9.7
 libigl/2.2.0@demo/testing
 pcl/1.10.1@demo/testing
 shapelib/1.5.0
+readerwriterqueue/1.0.2@demo/testing
 
 [generators]
 cmake

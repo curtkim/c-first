@@ -16,12 +16,13 @@ foreach(FILE
 endforeach()
 
 foreach(APP
-        01_first 02_point 03_point_multi 04_grid 05_polylines
+        01_first 02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
         11_renderable
         21_mouse
         31_map_control
         41_test-libigl
-        51_shapefile)
+        51_shapefile
+        61_opengl_thread)
   add_executable(${APP} ${APP}.cpp common/shader.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
