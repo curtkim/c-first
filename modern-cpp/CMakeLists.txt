@@ -55,6 +55,8 @@ foreach(APP
         producer_consumer
         function
         ref
+
+        question01
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
