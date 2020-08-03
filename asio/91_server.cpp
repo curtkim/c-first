@@ -1,32 +1,26 @@
-#include <cstdlib>
-#include <deque>
+#include <asio.hpp>
 #include <iostream>
-#include <thread>
-#include "asio.hpp"
-#include "70_chat_message.hpp"
-#include <thread>
+#include <deque>
+#include "90_record.hpp"
 
 using asio::ip::tcp;
 
-
-class chat_client {
+class Connection {
 public:
-  chat_client(asio::io_context &io_context, const tcp::resolver::results_type &endpoints)
+  Connection(asio::io_context &io_context, const tcp::resolver::results_type &endpoints)
     : io_context_(io_context), socket_(io_context) {
     do_connect(endpoints);
   }
 
-  void write(const chat_message &msg) {
-    std::cout << "msg addr(write1) " << &msg << std::endl;
+  void write(const Record &msg) {
     // io_context안에서 호출되도록 asio::post로 호출한다. std::deque<chat_message>는 io_context안에서만 접근한다.
     asio::post(
       io_context_,
       [this, msg]() {
-        bool empty = write_msgs_.empty();
-        write_msgs_.push_back(msg);
-        std::cout << std::this_thread::get_id() << " empty=" << empty << " write_msgs_.size()=" << write_msgs_.size()
+        bool empty = write_rec.empty();
+        write_rec.push_back(msg);
+        std::cout << std::this_thread::get_id() << " empty=" << empty << " write_msgs_.size()=" << write_rec.size()
                   << std::endl;
-        std::cout << "msg addr(write2) " << &msg << std::endl;
         // empty일때만 do_write를 호출한다. empty가 아닌경우 do_write가 이미 호출되어 있다.
         if (empty) {
           do_write();
@@ -79,15 +73,13 @@ private:
 
   void do_write() {
     std::cout << std::this_thread::get_id() << " do_write" << std::endl;
-    chat_message msg = write_msgs_.front();
-    std::cout << "msg addr(do_write) " << &msg << std::endl;
     asio::async_write(
       socket_,
-      asio::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
+      asio::buffer(write_rec.front().data(), write_rec.front().length()),
       [this](std::error_code ec, std::size_t /*length*/) {
         if (!ec) {
-          write_msgs_.pop_front();
-          if (!write_msgs_.empty()) {
+          write_rec.pop_front();
+          if (!write_rec.empty()) {
             do_write();
           }
         } else {
@@ -99,38 +91,6 @@ private:
 private:
   asio::io_context &io_context_;
   tcp::socket socket_;
-  chat_message read_msg_;
-  std::deque<chat_message> write_msgs_;
+  Record read_rec;
+  std::deque<Record> write_rec;
 };
-
-int main(int argc, char *argv[]) {
-  std::cout << std::this_thread::get_id() << " main thread" << std::endl;
-  try {
-    asio::io_context io_context;
-
-    tcp::resolver resolver(io_context);
-    auto endpoints = resolver.resolve("localhost", "7000");
-    chat_client c(io_context, endpoints);
-
-    std::thread t([&io_context]() { io_context.run(); });
-
-    char line[chat_message::max_body_length + 1];
-    while (std::cin.getline(line, chat_message::max_body_length + 1)) {
-      chat_message msg;
-      std::cout << "msg addr(loop) " << &msg << std::endl;
-      msg.body_length(std::strlen(line));
-      std::cout << std::this_thread::get_id() << " cin length =" << msg.body_length() << std::endl;
-      std::memcpy(msg.body(), line, msg.body_length());
-      msg.encode_header();
-      c.write(msg);
-    }
-
-    c.close();
-    t.join();
-  }
-  catch (std::exception &e) {
-    std::cerr << "Exception: " << e.what() << "\n";
-  }
-
-  return 0;
-}

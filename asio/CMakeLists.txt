@@ -24,6 +24,7 @@ foreach(APP
     63_domain_server_sync 64_domain_client_sync
     65_unnamed_socket
     71_chat_server 72_chat_client
+    91_server
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} stdc++fs)
