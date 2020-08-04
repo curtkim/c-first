@@ -3,7 +3,7 @@ import shutil
 from conans import ConanFile, tools, CMake
 
 
-class Torchvision(ConanFile):
+class TorchVisionConan(ConanFile):
 
     ## for test
     version = "0.7.0"
@@ -14,7 +14,7 @@ class Torchvision(ConanFile):
     description = "Datasets, Transforms and Models specific to Computer Vision"
     topics = ("conan", "vision", "torch")
     license = "BSD 3-Clause License"
-    #exports_sources = ["CMakeLists.txt", "patches/*"]
+    exports_sources = ["CMakeLists.txt", "patches/*"]
     settings = "os", "compiler", "build_type", "arch"
     options = {
         "fPIC": [True, False],
@@ -41,9 +41,6 @@ class Torchvision(ConanFile):
             del self.options.fPIC
 
     def source(self):
-        #print(self.version)
-        #print(self.conan_data)
-        #print(os.getcwd())
         tools.get(**self.conan_data["sources"][self.version])
         extracted_name = "vision-" + self.version
 
@@ -54,8 +51,18 @@ class Torchvision(ConanFile):
         tools.replace_in_file("source_subfolder/CMakeLists.txt", 
 '''project(torchvision)''', 
 '''project(torchvision)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()''')
+
+        tools.replace_in_file("source_subfolder/CMakeLists.txt", 
+'''find_package(Torch REQUIRED)''', 
+'''find_package(Torch REQUIRED)
+
+set_property(TARGET torch_cuda PROPERTY INTERFACE_COMPILE_OPTIONS "")
+set_property(TARGET torch_cpu PROPERTY INTERFACE_COMPILE_OPTIONS "")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+''')
 
         # patch 
         #for patch in self.conan_data["patches"][self.version]:
@@ -69,14 +76,14 @@ conan_basic_setup()''')
         if self._cmake:
             return self._cmake
         self._cmake = CMake(self)
-        #self._cmake.definitions["BUILD_TESTING"] = False
+        self._cmake.definitions["WITH_CUDA"] = "ON" if self.options.with_cuda else "OFF"
         self._cmake.configure(source_folder=self._source_subfolder)
         return self._cmake
 
     def package(self):
-        self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
+        self.copy("LICENSE", dst="licenses", src=self._source_subfolder+"/lang/c++")
         cmake = self._configure_cmake()
         cmake.install()
 
-    def package_info(self):
-        self.cpp_info.libs = self.collect_libs()
+    #def package_info(self):
+    #    self.cpp_info.libs = ["avrocpp_s", "avrocpp"]
