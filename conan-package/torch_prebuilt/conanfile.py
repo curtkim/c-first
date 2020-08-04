@@ -27,6 +27,14 @@ class TorchConan(ConanFile):
         self.copy("*", src="libtorch/share", dst="share", keep_path=True)
 
     def package_info(self):
+        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.includedirs = ['include', 'include/torch/csrc/api/include']
+
+    '''
+    def package_info(self):
+        print('---')
+        print(self.collect_libs())
         self.cpp_info.libs = self.collect_libs()
         self.cpp_info.includedirs = ['include', 'include/torch/csrc/api/include']
         #self.cpp_info.libs = ["hello"]
+    '''

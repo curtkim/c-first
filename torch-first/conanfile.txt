@@ -1,5 +1,5 @@
 [requires]
-torch/1.5.0@curt/prebuilt
+torch/1.6.0@curt/prebuilt
 opencv/4.1.1@conan/stable
 #boost/1.73.0
 
