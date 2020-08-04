@@ -16,6 +16,12 @@ public:
     std::cout << "chat_message con" << std::endl;
   }
 
+  chat_message(const chat_message & that) {
+    std::cout << "chat_message copy con" << std::endl;
+    std::memcpy(this->body(), that.data(), that.body_length_);
+    this->body_length_ = that.body_length_;
+  }
+
   ~chat_message() {
     std::cout << "chat_message decon " << body() << " data addr:" << &data_ << std::endl;
   }
@@ -97,7 +103,7 @@ void operator delete(void * p)
 }
 
 void write(chat_message& msg){
-  std::cout << msg.length() << " addr=" << &msg << std::endl;
+  std::cout << msg.length() << " data=" << msg.data() << " addr=" << &msg << std::endl;
 
 }
 
