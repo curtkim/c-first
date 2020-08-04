@@ -8,7 +8,7 @@ int main()
 {
   ArrayXf v = ArrayXf::LinSpaced(11, 0.f, 10.f);
   cout << "size=" << v.size() << endl;
-  
+
   float *vc = v.data();
   cout << vc[3] << endl;  // 3.0
 
