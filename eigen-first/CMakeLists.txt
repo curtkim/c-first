@@ -6,7 +6,7 @@ add_definitions("-std=c++11")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP first transform quaternion roll_pitch_yaw)
+foreach(APP first transform quaternion roll_pitch_yaw c_data)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
 endforeach()
