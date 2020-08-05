@@ -17,8 +17,13 @@ add_executable(namedpipe_read namedpipe_read.cpp)
 
 add_executable(memory_mapped_write memory_mapped_write.cpp)
 add_executable(memory_mapped_read memory_mapped_read.cpp)
+add_executable(mmap_test mmap_test.cpp)
 
 add_executable(inotify_first inotify_first.cpp)
 add_executable(write_direct write_direct.cpp)
 
 add_executable(epoll_echo_server epoll_echo_server.cpp)
+
+#
+add_executable(test_read_ifstream test_read_ifstream.cpp)
+add_executable(test_read_mmap test_read_mmap.cpp)
