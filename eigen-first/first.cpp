@@ -50,7 +50,7 @@ int main() {
   // dynamic row?
   using PointCloudXYZ = Matrix<float, Dynamic, 3>;
   PointCloudXYZ pc;
-  pc.resize(4,3); // cols이 3이 아니면 에러가 발생한다. 
+  pc.resize(4,3); // cols이 3이 아니면 에러가 발생한다.
   pc << 1, 2, 3,
     1,2,4,
     1,2,5,
