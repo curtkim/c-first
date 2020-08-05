@@ -17,7 +17,8 @@ int main() {
 
 
   c.backward(); // a.grad() will now hold the gradient of c w.r.t. a
-
+  std::cout << "===" << std::endl;
+  std::cout << a.grad() << std::endl;
 
   return 0;
 }

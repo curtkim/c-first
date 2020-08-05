@@ -19,18 +19,17 @@ int main() {
   };
 
   at::Tensor a = at::ones({2, 2}, HW, at::kInt);
-  cout << "sizeof(a)=" << sizeof(a) << endl;
-  cout << "byteof(a) = " << a.nbytes() << endl;
-
+  cout << "sizeof(a)=" << sizeof(a) << endl;          // 8
+  cout << "byteof(a) = " << a.nbytes() << endl;       // 16 = 4*4
   cout << a.get_named_tensor_meta()->names() << endl;
 
-  at::Tensor b = at::randn({2, 2}).mul(2); // float type
-  cout << "sizeof(b)=" << sizeof(b) << endl;
-  cout << "byteof(b) = " << b.nbytes() << endl;
+  at::Tensor b = at::randn({2, 2}).mul(2);  // float type
+  cout << "sizeof(b)=" << sizeof(b) << endl;          // 8
+  cout << "byteof(b) = " << b.nbytes() << endl;       // 16 = 4*4
 
   auto c = a + b.to(at::kInt);
-  cout << "sizeof(c)=" << sizeof(c) << endl;
-  cout << "byteof(c)=" << c.nbytes() << endl;
+  cout << "sizeof(c)=" << sizeof(c) << endl;          // 8
+  cout << "byteof(c)=" << c.nbytes() << endl;         // 16 = 4*4
   cout << "c.has_names(): " << c.has_names() << endl;
 
   cout << a << endl;

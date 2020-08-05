@@ -6,10 +6,10 @@ conan_basic_setup()
 
 include_directories(/usr/local/cuda-10.1/include)
 
-#message(STATUS "------------------")
-#foreach(A ${CONAN_LIBS})
-#	message(STATUS ${A})
-#endforeach()
+message(STATUS "------------------")
+foreach(A ${CONAN_LIBS})
+	message(STATUS ${A})
+endforeach()
 
 foreach(APP
 		00_aten
