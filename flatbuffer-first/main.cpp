@@ -1,14 +1,11 @@
+#define FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE
+
 #include <iostream>
 #include "monster_generated.h"  // Already includes "flatbuffers/flatbuffers.h".
 
 using namespace MyGame::Sample;
 
-// Example how to use FlatBuffers to create and read binary buffers.
-
-int main(int /*argc*/, const char * /*argv*/[]) {
-  // Build up a serialized buffer algorithmically:
-  flatbuffers::FlatBufferBuilder builder;
-
+void create(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
   // First, lets serialize some weapons for the Monster: A 'sword' and an 'axe'.
   flatbuffers::Offset<flatbuffers::String> weapon_one_name = builder.CreateString("Sword");
   short weapon_one_damage = 3;
@@ -37,20 +34,15 @@ int main(int /*argc*/, const char * /*argv*/[]) {
   // Shortcut for creating monster with all fields set:
   auto orc = CreateMonster(builder, &position, 150, 80, name, inventory,
                            Color_Red, weapons, Equipment_Weapon, axe.Union());
+  if( sizePrefixed)
+    builder.FinishSizePrefixed(orc);
+  else
+    builder.Finish(orc);  // Serialize the root of the object.
+}
 
-  builder.Finish(orc);  // Serialize the root of the object.
-
-  std::cout << "size=" << builder.GetSize() << std::endl;
-
-  // We now have a FlatBuffer we can store on disk or send over a network.
-
-  // ** file/network code goes here :) **
-  // access builder.GetBufferPointer() for builder.GetSize() bytes
-
-  // Instead, we're going to access it right away (as if we just received it).
-
+void read(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
   // Get access to the root:
-  auto monster = GetMonster(builder.GetBufferPointer());
+  const Monster* monster = sizePrefixed ? GetSizePrefixedMonster(builder.GetBufferPointer()): GetMonster(builder.GetBufferPointer());
 
   // Get and test some scalar types from the FlatBuffer.
   assert(monster->hp() == 80);
@@ -86,6 +78,48 @@ int main(int /*argc*/, const char * /*argv*/[]) {
   assert(equipped->name()->str() == "Axe");
   assert(equipped->damage() == 5);
   (void)equipped;
+}
 
-  printf("The FlatBuffer was successfully created and verified!\n");
+int main(int /*argc*/, const char * /*argv*/[]) {
+  assert(FLATBUFFERS_LITTLEENDIAN);
+
+  size_t INIT_SIZE = 160;
+  // Build up a serialized buffer algorithmically:
+  flatbuffers::FlatBufferBuilder builder(INIT_SIZE);
+
+  {
+    create(builder, false);
+    std::cout << "size=" << builder.GetSize() << std::endl;
+    // We now have a FlatBuffer we can store on disk or send over a network.
+
+    // ** file/network code goes here :) **
+    // access builder.GetBufferPointer() for builder.GetSize() bytes
+
+    flatbuffers::Verifier verifier{builder.GetBufferPointer(), builder.GetSize()};
+    assert(VerifyMonsterBuffer(verifier));
+    assert(!VerifySizePrefixedMonsterBuffer(verifier));
+    std::cout << "verifier.GetComputedSize() " << verifier.GetComputedSize() << std::endl;
+
+    // Instead, we're going to access it right away (as if we just received it).
+    read(builder, false);
+    builder.Clear();
+  }
+
+  //////////////////////////////////////////////
+  {
+    create(builder, true);
+    std::cout << "size=" << builder.GetSize() << std::endl;
+    // We now have a FlatBuffer we can store on disk or send over a network.
+
+    // ** file/network code goes here :) **
+    // access builder.GetBufferPointer() for builder.GetSize() bytes
+
+    flatbuffers::Verifier verifier{builder.GetBufferPointer(), builder.GetSize()};
+    assert(!VerifyMonsterBuffer(verifier));
+    assert(VerifySizePrefixedMonsterBuffer(verifier));
+    std::cout << "verifier.GetComputedSize() " << verifier.GetComputedSize() << std::endl;
+
+    // Instead, we're going to access it right away (as if we just received it).
+    read(builder, true);
+  }
 }
