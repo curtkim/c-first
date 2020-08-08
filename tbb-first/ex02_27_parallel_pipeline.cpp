@@ -28,8 +28,9 @@ void fig_2_27(int num_tokens, std::ofstream &caseBeforeFile, std::ofstream &case
     tbb::make_filter<CaseStringPtr, CaseStringPtr>(
       tbb::filter::parallel,
       [](CaseStringPtr s_ptr) -> CaseStringPtr {
-        std::transform(s_ptr->begin(), s_ptr->end(), s_ptr->begin(),
-                       [](char c) -> char {
+        std::transform(
+          s_ptr->begin(), s_ptr->end(), s_ptr->begin(),
+          [](char c) -> char {
                          if (std::islower(c))
                            return std::toupper(c);
                          else if (std::isupper(c))
