@@ -42,6 +42,6 @@ int main() {
   // argument for unions where C++ has both a type and a data argument.
   ns(Equipment_union_ref_t) equipped = ns(Equipment_as_Weapon(axe));
   ns(Vec3_t) pos = { 1.0f, 2.0f, 3.0f };
-  //ns(Monster_create_as_root(B, &pos, mana, hp, name, inventory, ns(Color_Red),weapons, equipped, path));
+  ns(Monster_create_as_root(B, &pos, mana, hp, name, inventory, ns(Color_Red),weapons, equipped));
 
 }
