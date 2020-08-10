@@ -51,6 +51,9 @@ foreach(APP
         const
         promise
         clock_steady
+        chrono_timepoint
+        chrono_duration
+        chrono_to_time_t
         utf8
         producer_consumer
         function
