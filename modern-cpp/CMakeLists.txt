@@ -37,6 +37,7 @@ foreach(APP
         struct_test
         vector_test
         vector_cast
+        allocator_test
         main
         cpp17
         move_forward
