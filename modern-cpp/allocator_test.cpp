@@ -36,16 +36,17 @@ public:
 
 int main()
 {
+  const int SIZE = 100;
   {
-    int my_arr[100] = {9};
+    int my_arr[SIZE] = {9};
     std::cout << "My_Arr[0]: " << my_arr[0] << "\n";
 
     std::cout << &my_arr << std::endl;
-    std::vector<int, PreAllocator<int>> my_vec(0, PreAllocator<int>(&my_arr[0], 100));
+    std::vector<int, PreAllocator<int>> my_vec(0, PreAllocator<int>(&my_arr[0], SIZE));
     std::cout << "My_Vec.size(): " << my_vec.size() << std::endl;
 
     // 101개를 push_back하면 에러가 발생한다.
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < SIZE; i++)
       my_vec.push_back(1024);
 
     std::cout << "My_Vec[0]: " << my_vec[0] << "\n";
@@ -55,8 +56,8 @@ int main()
   }
 
   {
-    int *my_heap_ptr = new int[100]();
-    std::vector<int, PreAllocator<int>> my_heap_vec(0, PreAllocator<int>(&my_heap_ptr[0], 100));
+    int *my_heap_ptr = new int[SIZE]();
+    std::vector<int, PreAllocator<int>> my_heap_vec(0, PreAllocator<int>(&my_heap_ptr[0], SIZE));
     my_heap_vec.push_back(1024);
     std::cout << "My_Heap_Vec[0]: " << my_heap_vec[0] << "\n";
     std::cout << "My_Heap_Ptr[0]: " << my_heap_ptr[0] << "\n";
