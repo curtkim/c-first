@@ -34,6 +34,7 @@ target_link_libraries( Threadpool_test pthread )
 ### 17
 
 foreach(APP
+        struct_test
         main
         cpp17
         move_forward
