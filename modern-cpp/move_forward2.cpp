@@ -21,8 +21,7 @@ private:
 };
 
 BigOne make(int a){
-  BigOne bigOne(a);
-  return bigOne;
+  return BigOne(a);
 }
 
 int main() {
