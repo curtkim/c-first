@@ -28,7 +28,10 @@ public:
   ~PreAllocator() {}
 
 
-  pointer allocate(size_type n, const void* hint = 0) {return memory_ptr;}
+  pointer allocate(size_type n, const void* hint = 0) {
+    std::cout << "\tallocate n=" << n << "\n";
+    return memory_ptr;
+  }
   void deallocate(T* ptr, size_type n) {}
 
   size_type max_size() const {return memory_size;}
@@ -43,7 +46,9 @@ int main()
 
     std::cout << &my_arr << std::endl;
     std::vector<int, PreAllocator<int>> my_vec(0, PreAllocator<int>(&my_arr[0], SIZE));
-    std::cout << "My_Vec.size(): " << my_vec.size() << std::endl;
+    std::cout << "My_Vec.size(): " << my_vec.size()
+      << "My_Vec.capacity(): " << my_vec.capacity()
+      << std::endl;
 
     // 101개를 push_back하면 에러가 발생한다.
     for(int i = 0; i < SIZE; i++)
@@ -51,7 +56,10 @@ int main()
 
     std::cout << "My_Vec[0]: " << my_vec[0] << "\n";
     std::cout << "My_Arr[0]: " << my_arr[0] << "\n";
-    std::cout << "My_Vec.size(): " << my_vec.size() << std::endl;
+    std::cout << "My_Vec.size(): " << my_vec.size()
+              << "My_Vec.capacity(): " << my_vec.capacity()
+              << std::endl;
+
 
   }
 
@@ -61,6 +69,8 @@ int main()
     my_heap_vec.push_back(1024);
     std::cout << "My_Heap_Vec[0]: " << my_heap_vec[0] << "\n";
     std::cout << "My_Heap_Ptr[0]: " << my_heap_ptr[0] << "\n";
+
+    std::cout << "My_Vec.capacity(): " << my_heap_vec.capacity() << std::endl;
 
     delete[] my_heap_ptr;
     my_heap_ptr = nullptr;
