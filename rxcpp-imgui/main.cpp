@@ -13,8 +13,6 @@ int main(int, char **) {
 
   GLFWwindow * window = init_imgui();
 
-  rxcpp::schedulers::run_loop rl;
-
   rxcpp::subjects::subject<int> framebus;
   auto frame$ = framebus.get_observable();
   auto frameout = framebus.get_subscriber();
@@ -22,10 +20,18 @@ int main(int, char **) {
       frameout.on_next(frame);
   };
 
+  rxcpp::schedulers::run_loop rl;
+
   auto interval$ = rxcpp::sources::interval(std::chrono::seconds(1));
 
   frame$
     .with_latest_from(interval$)
+//    .observe_on(rxcpp::observe_on_new_thread())
+//    .tap([](std::tuple<int, int> v){
+//      auto [frame, second] = v;
+//      std::cout << std::this_thread::get_id() << " " << frame << " in tap1" << std::endl;
+//    })
+    .observe_on(rxcpp::observe_on_run_loop(rl))
     .tap([](std::tuple<int, int> v) {
       auto [frame, second] = v;
 
@@ -35,7 +41,7 @@ int main(int, char **) {
       ImGui::Text("second = %d", second);
       ImGui::End();
 
-      std::cout << std::this_thread::get_id() << " " << frame << " in tap" << std::endl;
+      std::cout << std::this_thread::get_id() << " " << frame << " in tap2" << std::endl;
     })
     .subscribe();
 
