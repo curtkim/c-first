@@ -48,6 +48,19 @@ void test_with_latest_from() {
     });
 }
 
+void test_concat() {
+  std::cout << "-- test_concat" << std::endl;
+  auto o1 = rxcpp::observable<>::range(1, 3);
+  auto o2 = rxcpp::observable<>::just(4);
+  auto o3 = rxcpp::observable<>::from(5, 6);
+  auto base = rxcpp::observable<>::from(o1.as_dynamic(), o2, o3);
+  auto values = base.concat();
+  values.
+    subscribe(
+    [](int v){printf("OnNext: %d\n", v);},
+    [](){printf("OnCompleted\n");});
+}
+
 void test_concat_map() {
   cout << "---" << __FUNCTION__ << endl;
 
@@ -56,6 +69,7 @@ void test_concat_map() {
     .subscribe(
       [](int v) { printf("%d ", v); },
       []() { printf("\nOnCompleted\n"); });
+  // 0 1 0 1 2 0 1 2 3
 }
 
 void test_scan() {
@@ -68,12 +82,32 @@ void test_scan() {
       []() { printf("\nOnCompleted\n"); });
 }
 
+void test_reduce() {
+  cout << "---" << __FUNCTION__ << endl;
+
+  rxcpp::sources::range(0, 10)
+    .reduce(0, [](int seed, int i){ return seed+i;})
+    .subscribe(
+      [](int v) { printf("%d ", v); },
+      []() { printf("\nOnCompleted\n"); });
+}
+
+
 int main() {
 
   test_with_latest_from_and_pairwise();
   test_with_latest_from();
+  test_concat();
   test_concat_map();
   test_scan();
+  test_reduce();
+
+  rxcpp::sources::from("a", "B")
+    .publish()
+    .ref_count()
+    .subscribe([](std::string a){
+      cout << a;
+    });
 
   return 0;
 }

@@ -20,7 +20,7 @@ int main()
     uniform_int_distribution<> dist(4, 18);
 
     // for testing purposes, produce byte stream that from lines of text
-    auto bytes = range(0, 10) |
+    rxcpp::observable<vector<uint8_t>> bytes = range(0, 10) |
                  flat_map([&](int i){
                      auto body = from((uint8_t)('A' + i)) |
                                  repeat(dist(gen)) |
@@ -28,7 +28,7 @@ int main()
                      auto delim = from((uint8_t)'\r');
                      return from(body, delim) | concat();
                  }) |
-                 window(17) |
+                 window(7) |
                  flat_map([](observable<uint8_t> w){
                      return w |
                             reduce(
@@ -55,7 +55,7 @@ int main()
     };
 
     // create strings split on \r
-    auto strings = bytes |
+    rxcpp::observable<string> strings = bytes |
                    concat_map([](vector<uint8_t> v){
                        string s(v.begin(), v.end());
                        regex delim(R"/(\r)/");

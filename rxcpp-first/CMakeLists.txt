@@ -12,10 +12,10 @@ conan_basic_setup()
 
 foreach(APP 01_create 02_op 03_read_file 04_last_five
         05_create_thread 06_create_thread_interval
-        09_complex
+        09_complex 08_complex_step
         11_parallel 12_rxcurl_ex 13_rxrest
         20_coordination_list 21_observe_on 22_observe_on_runloop 25_synchronize_in 28_worker_schedule
-        31_multi_subscribe
+        31_multi_subscribe 32_filter_with_latest
         51_value_move
         61_create_asio_timer
         62_asio_stdin

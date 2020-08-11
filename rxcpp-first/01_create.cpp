@@ -14,7 +14,7 @@ using namespace Rx;
 int main() {
 
     // create
-    auto ints = rxcpp::sources::create<int>(
+    rxcpp::observable<int> ints = rxcpp::sources::create<int>(
             [](rxcpp::subscriber<int> s){
                 s.on_next(1);
                 s.on_next(2);
@@ -27,7 +27,7 @@ int main() {
 
     // iterate
     std::array< int, 3 > a={1, 2, 3};
-    auto values1 = rxcpp::sources::iterate(a);
+    rxcpp::observable<int> values1 = rxcpp::sources::iterate(a);
     values1.
             subscribe(
             [](int v){printf("OnNext: %d\n", v);},
