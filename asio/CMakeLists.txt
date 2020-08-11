@@ -18,6 +18,7 @@ foreach(APP
     02_signal
     11_daytime_client
     21_stdin_read 21_stdin_read_no_thread 22_stdout_write
+    23_pipe_stdout 23_pipe_stdin
     31_file_write_c 32_file_write_future 33_file_watch
     41_async_tcp_echo_server 41_async_tcp_echo_server_wo_class 42_tcp_echo_client
     61_domain_echo_server 62_domain_echo_client
@@ -28,7 +29,7 @@ foreach(APP
     )
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} stdc++fs)
-  target_compile_definitions(${APP} PUBLIC BOOST_ASIO_DISABLE_EPOLL)
+  #target_compile_definitions(${APP} PUBLIC BOOST_ASIO_DISABLE_EPOLL)
   target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
