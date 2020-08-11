@@ -129,7 +129,7 @@ auto load_static_model() {
   return std::make_tuple(VAO, VBO, LENGTH);
 }
 
-void opengl_loop(moodycamel::ReaderWriterQueue<float> & q) {
+void opengl_main(moodycamel::ReaderWriterQueue<float> & q) {
   GLFWwindow * window = make_window();
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
   auto [VAO, VBO, length] = load_static_model();
@@ -165,13 +165,13 @@ int main(int argc, char *argv[]) {
   moodycamel::ReaderWriterQueue<float> q(5);
 
   std::thread t([&q](){
-    opengl_loop(q);
+    opengl_main(q);
   });
   //t.join();
 
   float a = 0.0;
   while(true){
-    a += 0.001;
+    a += 0.005;
     q.try_enqueue(a);
     std::cout << "q.size " << q.size_approx() << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(33));

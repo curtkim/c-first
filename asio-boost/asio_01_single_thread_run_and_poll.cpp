@@ -55,7 +55,7 @@ int main() {
   //ex1_run();
   //ex2_work();
   //ex3_poll();
-  //ex4_poll_with_work();
+  ex4_poll_with_work();
   ex5_run_work_reset();
   return 0;
 }
