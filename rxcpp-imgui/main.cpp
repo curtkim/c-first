@@ -9,6 +9,8 @@ void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::functi
 
 
 int main(int, char **) {
+  std::cout << std::this_thread::get_id() << " main" << std::endl;
+
   GLFWwindow * window = init_imgui();
 
   rxcpp::schedulers::run_loop rl;
@@ -33,11 +35,11 @@ int main(int, char **) {
       ImGui::Text("second = %d", second);
       ImGui::End();
 
-      std::cout << std::this_thread::get_id() << " in tap" << std::endl;
+      std::cout << std::this_thread::get_id() << " " << frame << " in tap" << std::endl;
     })
     .subscribe();
 
-  loop_imgui(window, rl, sendFrame);
+  loop_imgui(window,rl, sendFrame);
 
   cleanup_imgui(window);
 
