@@ -5,7 +5,7 @@ from conans import ConanFile, CMake, tools
 
 class PclConan(ConanFile):
     name = "pcl"
-    version = "1.11.0"
+    version = "1.11.1"
     license = "<Put the package license here>"
     author = "<Put your name here> <And your email here>"
     url = "https://github.com/conan-io/conan-center-index"
