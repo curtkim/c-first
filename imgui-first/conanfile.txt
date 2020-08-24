@@ -1,10 +1,10 @@
 [requires]
 glfw/3.3.2@curt/testing
-glad/0.1.29@bincrafters/stable
-stb/20190512@conan/stable
+glad/0.1.33
+stb/20200203
 imgui/1.77-docking@curt/testing
 eigen/3.3.7
-libigl/2.2.0@curt/testing
+libigl/2.2.0@demo/testing
 
 [generators]
 cmake
