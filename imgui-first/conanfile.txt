@@ -4,7 +4,7 @@ glad/0.1.29@bincrafters/stable
 stb/20190512@conan/stable
 imgui/1.77-docking@curt/testing
 eigen/3.3.7
-libigl/2.2.0@demo/testing
+libigl/2.2.0@curt/testing
 
 [generators]
 cmake
