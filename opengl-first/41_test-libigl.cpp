@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <Eigen/Core>
@@ -71,11 +71,11 @@ int main(int argc, char *argv[]) {
   glfwMakeContextCurrent(window);
 
   // Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
+  // glad: load all OpenGL function pointers
+  // ---------------------------------------
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
 

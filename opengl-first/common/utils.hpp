@@ -28,15 +28,13 @@ GLFWwindow * make_window(int w, int h) {
   }
   glfwMakeContextCurrent(window);
 
-  // 3. Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to initialize GLEW";
+  // glad: load all OpenGL function pointers
+  // ---------------------------------------
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+  {
+    std::cout << "Failed to initialize GLAD" << std::endl;
+    throw "Failed to initialize GLAD";
   }
-
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
   const auto &reshape = [](GLFWwindow *window, int w, int h) {
