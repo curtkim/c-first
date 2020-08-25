@@ -1,11 +1,11 @@
 [requires]
-carla-client/0.9.9.4@demo/testing
+carla-client/0.9.9@demo/testing
 nlohmann_json/3.7.3
 rxcpp/4.1.0
 glfw/3.3.2@demo/testing
-glad/0.1.29@bincrafters/stable
+glad/0.1.33
 glm/0.9.9.7
-lodepng/20200520@curt/testing
+lodepng/cci.20200615
 asio/1.16.1
 
 [generators]
