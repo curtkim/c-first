@@ -27,3 +27,6 @@ add_executable(epoll_echo_server epoll_echo_server.cpp)
 #
 add_executable(test_read_ifstream test_read_ifstream.cpp)
 add_executable(test_read_mmap test_read_mmap.cpp)
+
+add_executable(test_aio_passwd test_aio_passwd.c)
+add_executable(test_aio_poll test_aio_poll.c)
