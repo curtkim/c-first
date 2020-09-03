@@ -19,4 +19,6 @@ target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_CO_AWAIT)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_STD_COROUTINE)
 target_link_libraries(03_echo_server pthread)
 
-
+add_executable(04_state_machine 04_state_machine.cpp)
+target_compile_options(04_state_machine PRIVATE -fcoroutines)
+target_compile_features(04_state_machine PUBLIC cxx_std_20)
