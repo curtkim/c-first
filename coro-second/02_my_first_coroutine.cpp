@@ -9,8 +9,8 @@ public:
   using coro_handle = std::coroutine_handle<promise_type>;
 
   resumable(coro_handle handle) : handle_(handle) { assert(handle); }
-  resumable(resumable&) = delete;
-  resumable(resumable&&) = delete;
+  //resumable(resumable&) = delete;
+  //resumable(resumable&&) = delete;
 
   bool resume() {
     if (not handle_.done())
@@ -34,6 +34,14 @@ struct resumable::promise_type {
   void unhandled_exception() {
     std::terminate();
   }
+  /*
+  void* operator new(std::size_t) noexcept {
+    return nullptr;
+  }
+  static resumable get_return_object_on_allocation_failure(){
+    throw std::bad_alloc();
+  }
+   */
 };
 
 resumable foo(){
