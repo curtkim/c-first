@@ -12,6 +12,7 @@ target_link_libraries( 02_graceful pthread )
 add_executable(03_socket_server 03_socket_server.cpp)
 add_executable(03_socket_client 03_socket_client.cpp)
 add_executable(03_epoll_echo_server 03_epoll_echo_server.cpp)
+add_executable(03_poll 03_poll.cpp)
 
 add_executable(04_namedpipe_write 04_namedpipe_write.cpp)
 add_executable(04_namedpipe_read 04_namedpipe_read.cpp)
