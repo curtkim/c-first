@@ -67,6 +67,7 @@ foreach(APP
         condition_variable_test
         crtp_mixin
         crtp_static_polymorphism
+        tag_invoke_test
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
