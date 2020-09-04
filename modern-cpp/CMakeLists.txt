@@ -66,6 +66,7 @@ foreach(APP
         async_future
         condition_variable_test
         crtp
+        crtp_inheritance
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
