@@ -65,6 +65,7 @@ foreach(APP
         question01
         async_future
         condition_variable_test
+        crtp
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
