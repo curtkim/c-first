@@ -16,6 +16,7 @@ add_executable(03_poll 03_poll.cpp)
 
 add_executable(04_namedpipe_write 04_namedpipe_write.cpp)
 add_executable(04_namedpipe_read 04_namedpipe_read.cpp)
+add_executable(04_unnamed_pipe 04_unnamed_pipe.cpp)
 
 add_executable(05_memory_mapped_write 05_memory_mapped_write.cpp)
 add_executable(05_memory_mapped_read 05_memory_mapped_read.cpp)

@@ -6,6 +6,6 @@ apt-get install -y gcc
 #chmod +x ubuntu-mainline-kernel.sh
 #ubuntu-mainline-kernel.sh -i 
 
-git clone https://github.com/axboe/liburing.git
-cd liburing
-make install
+#git clone https://github.com/axboe/liburing.git
+#cd liburing
+#make install
