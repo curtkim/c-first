@@ -63,8 +63,15 @@ class Libunifex(ConanFile):
 
     def package(self):
         #self.copy("LICENSE", dst="licenses", src=self._source_subfolder+"/lang/c++")
-        cmake = self._configure_cmake()
-        cmake.install()
+        #cmake = self._configure_cmake()
+        #cmake.install()
+        self.copy("*.a", dst="lib", keep_path=False)
+        #self.copy("**/*.h", src=self._source_subfolder + "/LibCarla/source", dst="include", keep_path=True, excludes=("compiler/*", "test/*")) # from source        
+        self.copy("**/*.hpp", src=self._source_subfolder + "/include", dst="include", keep_path=True) # from source        
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ["unifex"]
+        if str(self.settings.os) in ["Linux", "Android"]:
+            self.cpp_info.libs.append('pthread')
+
+        #self.cpp_info.libs = tools.collect_libs(self)
