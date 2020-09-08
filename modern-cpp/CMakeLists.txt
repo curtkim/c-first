@@ -36,7 +36,6 @@ target_link_libraries( Threadpool_test pthread )
 foreach(APP
         struct_test
         vector_test
-        vector_cast
         allocator_test
         main
         cpp17
@@ -63,7 +62,6 @@ foreach(APP
         function
         ref
         question01
-        async_future
         condition_variable_test
         crtp_mixin
         crtp_static_polymorphism
@@ -72,6 +70,14 @@ foreach(APP
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
     set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    target_link_libraries( ${APP} pthread )
+endforeach()
+
+
+foreach(APP
+        span_test)
+    add_executable(${APP} ${APP}.cpp)
+    target_compile_features(${APP} PUBLIC cxx_std_20)
     target_link_libraries( ${APP} pthread )
 endforeach()
 
