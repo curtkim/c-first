@@ -1,0 +1,7 @@
+[requires]
+libunifex/20200908@curt/testing
+
+[generators]
+cmake
+
+[options]
