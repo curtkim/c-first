@@ -25,6 +25,7 @@ add_executable(05_mmap_test 05_mmap_test.cpp)
 add_executable(06_inotify_first 06_inotify_first.cpp)
 
 add_executable(07_write_direct 07_write_direct.cpp)
+add_executable(07_write_direct2 07_write_direct2.cpp)
 
 add_executable(08_read_ifstream 08_read_ifstream.cpp)
 add_executable(08_read_mmap 08_read_mmap.cpp)
