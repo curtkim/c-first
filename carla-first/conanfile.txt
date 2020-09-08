@@ -6,7 +6,7 @@ glfw/3.3.2@demo/testing
 glad/0.1.33
 glm/0.9.9.7
 lodepng/cci.20200615
-asio/1.16.1
+asio/1.17.0
 
 [generators]
 cmake
