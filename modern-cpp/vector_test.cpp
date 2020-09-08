@@ -54,5 +54,13 @@ int main() {
     cout << a << " ";
   cout << endl;
 
+  vector<int> b(ar);
+  ar.emplace_back(6);
+  cout << "after copy";
+  for(auto a : b)
+    cout << a << " ";
+  cout << endl;
+
+
   return 0;
 }
