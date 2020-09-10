@@ -1,0 +1,7 @@
+[requires]
+caf/0.17.6@bincrafters/stable
+
+[generators]
+cmake
+
+[options]
