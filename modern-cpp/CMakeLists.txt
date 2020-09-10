@@ -41,9 +41,9 @@ foreach(APP
         cpp17
         move_forward
         move_forward2
-        test_string_view
-        test_string_view2
-        test_string_view3
+        test_string_view_remove_prefix_subfix
+        test_string_view_small
+        test_string_view_long
         return_value_optimization
         thread_main
         test_async
