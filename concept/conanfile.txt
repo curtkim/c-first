@@ -1,0 +1,6 @@
+[requires]
+zlib/1.2.8
+boost/1.73.0
+
+[generators]
+cmake
