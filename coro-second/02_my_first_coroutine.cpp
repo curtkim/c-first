@@ -28,8 +28,12 @@ struct resumable::promise_type {
   auto get_return_object() {
     return coro_handle::from_promise(*this);
   }
-  auto initial_suspend() { return std::suspend_always(); }
-  auto final_suspend() { return std::suspend_always(); }
+  auto initial_suspend() {
+    return std::suspend_always();
+  }
+  auto final_suspend() {
+    return std::suspend_always();
+  }
   void return_void() {}
   void unhandled_exception() {
     std::terminate();
@@ -48,9 +52,12 @@ resumable foo(){
   std::cout << "Hello" << std::endl;
   co_await std::suspend_always();
   std::cout << "Coroutine" << std::endl;
+  co_return;
 }
 
 int main(){
   resumable res = foo();
-  while (res.resume());
+  while (res.resume()){
+    std::cout << "in while" << std::endl;
+  };
 }

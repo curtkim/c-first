@@ -10,8 +10,10 @@ conan_basic_setup()
 add_executable(01_main 01_main.cpp)
 target_compile_options(01_main PRIVATE -fcoroutines)
 
-add_executable(02_my_first_coroutine 02_my_first_coroutine.cpp)
-target_compile_options(02_my_first_coroutine PRIVATE -fcoroutines)
+foreach(APP 02_my_first_coroutine 02_my_first_coroutine_return 02_my_first_coroutine_yield)
+    add_executable(${APP} ${APP}.cpp)
+    target_compile_options(${APP} PRIVATE -fcoroutines)
+endforeach()
 
 add_executable(03_echo_server 03_echo_server.cpp)
 target_compile_options(03_echo_server PRIVATE -fcoroutines)
