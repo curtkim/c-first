@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(coroutines)
+project(coro_seconds)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -v")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
@@ -19,7 +19,7 @@ target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_CO_AWAIT)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_STD_COROUTINE)
 target_link_libraries(03_echo_server pthread)
 
-foreach(APP 04_state_machine)
+foreach(APP 04_state_machine 05_task)
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_features(${APP} PUBLIC cxx_std_20)
