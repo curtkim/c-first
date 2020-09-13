@@ -14,6 +14,7 @@ using namespace unifex;
 // deep recursion from a reduce over a synchronous stream.
 
 int main() {
+
   sync_wait(transform(
     reduce_stream(
       typed_via_stream(

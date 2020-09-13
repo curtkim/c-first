@@ -10,7 +10,10 @@ conan_basic_setup()
 #    message(STATUS ${A})
 #endforeach()
 
-foreach(APP when_all static_thread_pool reduce_with_trampoline schedule_with_subscheduler let for_each_synchronous io_epoll_test
+foreach(APP when_all static_thread_pool schedule_with_subscheduler let
+        reduce_synchronous reduce_with_trampoline
+        for_each_synchronous for_each_synchronous_simple
+        io_epoll_test
         transform_test)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )

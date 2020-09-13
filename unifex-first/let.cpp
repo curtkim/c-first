@@ -23,19 +23,6 @@ int main() {
       (decltype(func))func);
   };
 
-  // Simple usage of 'let()'
-  // - defines an async scope in which the result of one async
-  //   operation is in-scope for the duration of a second operation.
-  std::optional<int> result =
-    sync_wait(let(async([] { return 42; }), [&](int& x) {
-      printf("addressof x = %p, val = %i\n", (void*)&x, x);
-      return async([&]() -> int {
-        printf("successor tranform\n");
-        printf("addressof x = %p, val = %i\n", (void*)&x, x);
-        return x;
-      });
-    }));
-
   auto asyncVector = [&]() {
     return async([] {
       std::cout << "producing vector" << std::endl;
@@ -43,9 +30,26 @@ int main() {
     });
   };
 
+  // Simple usage of 'let()'
+  // - defines an async scope in which
+  //   the result of one async operation is
+  //   in-scope for the duration of a second operation.
+  std::optional<int> result = sync_wait(
+    let(
+      async([] { return 42; }),
+      [&](int& x) {
+        printf("addressof x = %p, val = %i\n", (void*)&x, x);
+        return async([&]() -> int {
+          printf("successor tranform\n");
+          printf("addressof x = %p, val = %i\n", (void*)&x, x);
+          return x;
+        });
+      }));
+  printf("result=%d\n", result.value());
+  printf("\n");
+
   // More complicated 'let' example that shows recursive let-scopes,
   // additional
-
   sync_wait(transform(
     when_all(
       let(asyncVector(),

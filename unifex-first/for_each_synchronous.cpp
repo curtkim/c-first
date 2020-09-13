@@ -1,6 +1,6 @@
 #include <unifex/sync_wait.hpp>
 #include <unifex/transform_stream.hpp>
-#include <unifex/for_each.hpp>
+#include <unifex/reduce_stream.hpp>
 #include <unifex/transform.hpp>
 #include <unifex/range_stream.hpp>
 
@@ -9,17 +9,19 @@
 using namespace unifex;
 
 int main() {
-  sync_wait(
-    transform(
-      for_each(
-        transform_stream(
-          range_stream{0, 10},
-          [](int value) { return value * value; }
-        ),
-        [](int value) { std::printf("got %i\n", value); }),
-      []() { std::printf("done\n"); }
-    )
-  );
+
+  int finalResult;
+
+  sync_wait(transform(
+    reduce_stream(
+      transform_stream(
+        range_stream{0, 10},
+        [](int value) { return value * value; }),
+      0,
+      [](int state, int value) { return state + value; }),
+    [&](int result) { finalResult = result; }));
+
+  std::printf("result = %i\n", finalResult);
 
   return 0;
 }
