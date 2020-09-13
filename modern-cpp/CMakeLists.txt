@@ -63,8 +63,8 @@ foreach(APP
         utf8
         function
         question01
-
         constexpr_test
+        attribute_pure
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
