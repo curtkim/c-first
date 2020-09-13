@@ -18,23 +18,26 @@ int main() {
   auto tp = tpContext.get_scheduler();
   std::atomic<int> x = 0;
 
-  sync_wait(when_all(
-    run_on(
-      tp,
-      [&] {
+  sync_wait(
+    when_all(
+      run_on(
+        tp,
+        [&] {
+          ++x;
+          std::printf("task 1 %ld\n", std::this_thread::get_id());
+        }),
+      run_on(
+        tp,
+        [&] {
+          ++x;
+          std::printf("task 2 %ld\n", std::this_thread::get_id());
+        }),
+      run_on(tp, [&] {
         ++x;
-        std::printf("task 1 %ld\n", std::this_thread::get_id());
-      }),
-    run_on(
-      tp,
-      [&] {
-        ++x;
-        std::printf("task 2 %ld\n", std::this_thread::get_id());
-      }),
-    run_on(tp, [&] {
-      ++x;
-      std::printf("task 3 %ld\n", std::this_thread::get_id());
-    })));
+        std::printf("task 3 %ld\n", std::this_thread::get_id());
+      })
+    )
+  );
 
   assert(x == 3);
 

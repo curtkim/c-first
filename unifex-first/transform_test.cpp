@@ -21,7 +21,8 @@ int main() {
   assert(count == 1);
 
   sync_wait(
-    just() | transform([&](){ ++count; })
+    just() |
+    transform([&](){ ++count; })
   );
   assert(count == 2);
 
