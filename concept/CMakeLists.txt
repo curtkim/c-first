@@ -5,7 +5,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 foreach(APP
-        main range_in test-predicate norm tick_tok
+        main range_in test-predicate norm tick_tok shape
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
