@@ -65,6 +65,8 @@ foreach(APP
         question01
         constexpr_test
         attribute_pure
+        lambda
+        lambda2
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
