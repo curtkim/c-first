@@ -19,7 +19,7 @@ foreach(APP
         01_first 02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
         11_renderable
         21_mouse
-        31_map_control
+        31_mouse_map_control
         41_test-libigl
         51_shapefile
         61_opengl_thread)
