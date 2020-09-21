@@ -21,6 +21,7 @@ auto read_shapefile(const std::string& filename)
 
     //nEntities = 3;
     std::vector<GLint> counts;
+    counts.reserve(nEntities);
 
     for (int i = 0; i < nEntities; i++)
     {
@@ -32,10 +33,13 @@ auto read_shapefile(const std::string& filename)
       SHPDestroyObject( psShape );
     }
 
-    GLint sum = std::accumulate(counts.begin(), counts.end(), decltype(counts)::value_type(0));
+    GLint sum = std::accumulate(counts.begin(), counts.end(), 0);
+    std::cout << "sum = " << sum << std::endl;
 
     // pass 2
     std::vector<float> g_vertex_buffer_data;
+    g_vertex_buffer_data.reserve(sum*3);
+
     for (int i = 0; i < nEntities; i++)
     {
       SHPObject* psShape = SHPReadObject(handle, i );
@@ -56,7 +60,7 @@ auto read_shapefile(const std::string& filename)
       }
       SHPDestroyObject( psShape );
     }
-
+    std::cout << "g_vertex_buffer_data.size() = " << g_vertex_buffer_data.size() << std::endl;
     SHPClose(handle);
 
     return std::make_tuple(counts, g_vertex_buffer_data);

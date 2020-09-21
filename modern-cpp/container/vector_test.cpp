@@ -49,14 +49,14 @@ int main() {
 
   vector<int> ar = {1, 2, 3, 4, 5};
   test_vector(ar);
-  cout << "after test_vector, not changed";
+  cout << "after test_vector, not changed ";
   for(auto a : ar)
     cout << a << " ";
   cout << endl;
 
   vector<int> b(ar);
   ar.emplace_back(6);
-  cout << "after copy";
+  cout << "after copy, not changed ";
   for(auto a : b)
     cout << a << " ";
   cout << endl;

@@ -18,6 +18,21 @@
 #include "common/camera.hpp"
 #include "51_shapefile.hpp"
 
+void * operator new(size_t size)
+{
+  static int total_size = 0;
+  std::cout << "new " << size << " total_size " << size << std::endl;
+  total_size += size;
+  void * p = malloc(size);
+  return p;
+}
+
+void operator delete(void * p)
+{
+  std::cout << "delete " << std::endl;
+  free(p);
+}
+
 
 std::string vertex_shader = R"(
 #version 330 core
@@ -61,6 +76,7 @@ auto load_model(std::vector<float> g_vertex_buffer_data) {
   glEnableVertexAttribArray( 0 );
   glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
+  std::cout << "return std::make_tuple(vao, vbo)" << std::endl;
   return std::make_tuple(vao, vbo);
 }
 
@@ -126,6 +142,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "counts.size()=" << counts.size() << " vertex_buffer_data.size()=" << vertex_buffer_data.size() << std::endl;
 
+  /*
   std::cout << "firsts: ";
   for(auto const& value: firsts) {
     std::cout << value << " ";
@@ -142,20 +159,26 @@ int main(int argc, char *argv[]) {
     std::cout << vertex_buffer_data[i] << " ";
   }
   std::cout << std::endl;
-
+  */
 
   // 3. buffer
+  std::cout << "load_model" << std::endl;
   auto [VAO, VBO] = load_model(vertex_buffer_data);
+  std::cout << "load_model done" << std::endl;
 
   // 6. projection
-  Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
   float near = 0.01;
   float far = 1000;
   float top = tan(35. / 360. * M_PI) * near;
   float right = top * (double)::w / (double)::h;
+  /*
+  Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
   igl::frustum(-right, right, -top, top, near, far, proj);
   std::cout << proj << std::endl;
+  */
+  auto proj2 = glm::frustum(-right, right, -top, top, near, far);
 
+  std::cout << "loop" << std::endl;
   while (!glfwWindowShouldClose(window)) {
 
     processInput(window);
@@ -176,7 +199,8 @@ int main(int argc, char *argv[]) {
 
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
+    //glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, &proj2[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 

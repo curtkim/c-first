@@ -35,7 +35,7 @@ foreach(APP
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
 
-add_executable(00_second 00_second.cpp common/shader.cpp common/camera2.cpp)
+add_executable(00_second 00_second_grid.cpp common/shader.cpp common/camera2.cpp)
 target_link_libraries(00_second ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(00_second PUBLIC cxx_std_17)
 target_compile_definitions(00_second PUBLIC STB_IMAGE_IMPLEMENTATION)
