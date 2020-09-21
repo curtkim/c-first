@@ -7,12 +7,13 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 foreach(FILE
-    SimpleFragmentShader.fragmentshader
-    SimpleVertexShader.vertexshader
-    annulus.obj
-    bunny.off
-    lidar.ply)
-  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+        SimpleFragmentShader.fragmentshader
+        SimpleVertexShader.vertexshader
+        bunny.off
+        lidar.ply
+        carla_town05_link.shp
+        carla_town05_link.shx)
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/resources/${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 endforeach()
 
 foreach(APP

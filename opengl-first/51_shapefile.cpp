@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
-  auto [counts, vertex_buffer_data] = read_shapefile("../../carla_town05_link.shp");
+  auto [counts, vertex_buffer_data] = read_shapefile("carla_town05_link.shp");
   std::vector<GLint> firsts(counts.size());
 
   firsts[0] = 0;
