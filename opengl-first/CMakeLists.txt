@@ -20,7 +20,8 @@ endforeach()
 
 foreach(APP
         00_quantinion
-        01_first 02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
+        00_first
+        02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
         11_renderable
         21_mouse
         31_mouse_map_control
@@ -33,3 +34,8 @@ foreach(APP
   target_compile_features(${APP} PUBLIC cxx_std_17)
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
+
+add_executable(00_second 00_second.cpp common/shader.cpp common/camera2.cpp)
+target_link_libraries(00_second ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(00_second PUBLIC cxx_std_17)
+target_compile_definitions(00_second PUBLIC STB_IMAGE_IMPLEMENTATION)
