@@ -19,6 +19,7 @@ foreach(FILE
 endforeach()
 
 foreach(APP
+        00_quantinion
         01_first 02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
         11_renderable
         21_mouse

@@ -3,7 +3,6 @@
 
 #include <Eigen/Core>
 #include <igl/frustum.h>
-#include <igl/get_seconds.h>
 
 #include <chrono>
 #include <string>
@@ -157,7 +156,7 @@ int main(int argc, char *argv[]) {
 
     processKeyboardInput(window);
 
-    double tic = igl::get_seconds();
+    double tic = glfwGetTime();
 
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
@@ -182,7 +181,7 @@ int main(int argc, char *argv[]) {
     {
       glfwPollEvents();
       // In microseconds
-      double duration = 1000000. * (igl::get_seconds() - tic);
+      double duration = 1000000. * (glfwGetTime() - tic);
       const double min_duration = 1000000. / 60.;
       if (duration < min_duration) {
         std::this_thread::sleep_for(
