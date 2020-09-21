@@ -18,21 +18,6 @@
 #include "common/camera.hpp"
 #include "51_shapefile.hpp"
 
-void * operator new(size_t size)
-{
-  static int total_size = 0;
-  std::cout << "-- new " << size << " total_size " << size << std::endl;
-  total_size += size;
-  void * p = malloc(size);
-  return p;
-}
-
-void operator delete(void * p)
-{
-  std::cout << "-- delete " << std::endl;
-  free(p);
-}
-
 
 std::string vertex_shader = R"(
 #version 330 core

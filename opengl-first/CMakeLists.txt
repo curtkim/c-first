@@ -29,7 +29,7 @@ foreach(APP
         51_shapefile
         61_opengl_thread
         71_omega)
-  add_executable(${APP} ${APP}.cpp common/shader.cpp)
+  add_executable(${APP} ${APP}.cpp common/shader.cpp) # memory_tracking.cpp
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
