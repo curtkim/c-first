@@ -21,7 +21,7 @@
 void * operator new(size_t size)
 {
   static int total_size = 0;
-  std::cout << "new " << size << " total_size " << size << std::endl;
+  std::cout << "-- new " << size << " total_size " << size << std::endl;
   total_size += size;
   void * p = malloc(size);
   return p;
@@ -29,7 +29,7 @@ void * operator new(size_t size)
 
 void operator delete(void * p)
 {
-  std::cout << "delete " << std::endl;
+  std::cout << "-- delete " << std::endl;
   free(p);
 }
 
@@ -61,8 +61,8 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-auto load_model(std::vector<float> g_vertex_buffer_data) {
-
+// reference로 vector가 copy되는 것을 막는다.
+auto load_model(std::vector<float>& g_vertex_buffer_data) {
   GLuint vao;
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );

@@ -63,7 +63,7 @@ auto read_shapefile(const std::string& filename)
     std::cout << "g_vertex_buffer_data.size() = " << g_vertex_buffer_data.size() << std::endl;
     SHPClose(handle);
 
-    return std::make_tuple(counts, g_vertex_buffer_data);
+    return std::make_tuple(std::move(counts), std::move(g_vertex_buffer_data));
   }
   catch(const std::string& s)
   {
