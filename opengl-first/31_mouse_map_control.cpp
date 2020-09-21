@@ -1,14 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <glm/gtx/string_cast.hpp>
 
 #include <Eigen/Core>
-
 #include <igl/frustum.h>
 #include <igl/get_seconds.h>
-
-#include <pcl/point_types.h>
-#include <pcl/io/ply_io.h>
 
 #include <chrono>
 #include <string>
@@ -48,28 +43,16 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-//Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
 void processKeyboardInput(GLFWwindow *window) {
   float deltaTime = 0.1;
 
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
-
-  /*
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    camera.ProcessKeyboard(FORWARD, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    camera.ProcessKeyboard(BACKWARD, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    camera.ProcessKeyboard(LEFT, deltaTime);
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    camera.ProcessKeyboard(RIGHT, deltaTime);
-  */
 }
 
 double lastX = w / 2.0f;
 double lastY = h / 2.0f;
+
 bool panning = false;
 
 glm::vec3 camera_pos(0.0f, -5.0f, 2.0f);
@@ -99,29 +82,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
   }
-
-
-  /*
-  int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-  if (state == GLFW_PRESS){
-    std::cout << xpos << " " << ypos << std::endl;
-  }
-
-  if (firstMouse)
-  {
-    lastX = xpos;
-    lastY = ypos;
-    firstMouse = false;
-  }
-
-  float xoffset = xpos - lastX;
-  float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-  lastX = xpos;
-  lastY = ypos;
-
-  camera.ProcessMouseMovement(xoffset, yoffset);
-   */
 }
 
 int main(int argc, char *argv[]) {
