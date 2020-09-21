@@ -145,14 +145,14 @@ int main() {
     ourShader.use();
     glBindVertexArray(VAO);
     {
-      glViewport(0, height / 2, width / 2, height / 2);
+      glViewport(0, height/2, width/2, height/2);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture0);
 
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
     {
-      glViewport(0, 0, width / 2, height / 2);
+      glViewport(0, 0, width/2, height/2);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture1);
 

@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "common/shader.hpp"
-#include "camera.hpp"
+#include "common/camera.hpp"
 #include "common/utils.hpp"
 
 #include "10_grid_renderable.hpp"

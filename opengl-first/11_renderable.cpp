@@ -11,9 +11,10 @@
 #include <string>
 #include <thread>
 #include <iostream>
+#include <variant>
 
 #include "common/shader.hpp"
-#include "camera.hpp"
+#include "common/camera.hpp"
 #include "common/utils.hpp"
 
 
@@ -149,6 +150,13 @@ int main(int argc, char *argv[]) {
     0.0f,  0.7f, 0.0f  // top
   };
 
+
+  std::cout << "sizeof(std::vector<float>): " << sizeof(std::vector<float>) << std::endl;
+  std::cout << "sizeof(std::vector<unsigned int>): " << sizeof(std::vector<unsigned int>) << std::endl;
+  std::cout << "sizeof(GLuint): " << sizeof(GLuint) << std::endl;
+  std::cout << "sizeof(GridRenderable) : " << sizeof(GridRenderable) << std::endl;
+  std::cout << "sizeof(PointsRenderable) : " << sizeof(PointsRenderable) << std::endl;
+  std::cout << "sizeof(std::variant<GridRenderable, PointsRenderable>) : " << sizeof(std::variant<PointsRenderable, GridRenderable>) << std::endl;
 
   // 3. model
   auto grid = GridRenderable(g_vertex_buffer_data, indices);

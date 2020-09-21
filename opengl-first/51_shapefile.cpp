@@ -16,7 +16,7 @@
 
 #include "common/shader.hpp"
 #include "common/utils.hpp"
-#include "camera.hpp"
+#include "common/camera.hpp"
 #include "51_shapefile.hpp"
 
 

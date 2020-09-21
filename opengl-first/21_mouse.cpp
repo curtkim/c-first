@@ -85,7 +85,9 @@ int main(void) {
   }
 
 
-  glViewport(0.0f, 0.0f, screenWidth, screenHeight);
+  glViewport(0, 0, screenWidth, screenHeight);
+  // viewport는 mouse coordinate에 영향을 주지않는다.
+  //glViewport(0, 0, screenWidth/2, screenHeight/2);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT, 0, 1);
