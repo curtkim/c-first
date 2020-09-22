@@ -1,8 +1,9 @@
 #include <iostream>
 
+static int total_size = 0;
+
 void * operator new(size_t size)
 {
-  static int total_size = 0;
   std::cout << "-- new " << size << " total_size " << size << std::endl;
   total_size += size;
   void * p = malloc(size);

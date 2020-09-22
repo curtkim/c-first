@@ -4,15 +4,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <Eigen/Core>
-
-#include <igl/frustum.h>
 
 #include <chrono>
 #include <string>
 #include <thread>
 #include <iostream>
-#include <variant>
+#include <fstream>
+#include <algorithm>
 
 #include "common/shader.hpp"
 #include "common/camera.hpp"
@@ -45,13 +43,41 @@ void main() {
 }
 )";
 
+std::vector<float> parse_ply(const std::string& filename) {
+  std::ifstream infile(filename);
+
+  std::string line;
+  std::getline(infile, line);
+  std::getline(infile, line);
+  std::getline(infile, line);
+  int count = std::stoi(line.substr(15));
+  std::getline(infile, line);
+  std::getline(infile, line);
+  std::getline(infile, line);
+  std::getline(infile, line);
+
+  std::vector<float> results;
+  results.reserve(count*3);
+
+  while (std::getline(infile, line))
+  {
+    std::istringstream iss(line);
+    float x, y, z;
+    iss >> x >> y >> z;
+    results.push_back(x);
+    results.push_back(y);
+    results.push_back(z);
+    // process pair (a,b)
+  }
+  return results;
+}
 
 int w = 1024, h = 768;
 
 using namespace std;
 
 
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
+Camera camera(glm::vec3(0.0f, 0.0f, 200.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90, 00);
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;
@@ -103,7 +129,7 @@ int main(int argc, char *argv[]) {
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
-  static const std::vector<float> g_vertex_buffer_data = {
+  static std::vector<float> g_vertex_buffer_data = {
     // bottom
     -2.0f, -2.0f, 0.0f,
     -1.0f, -2.0f, 0.0f,
@@ -129,6 +155,9 @@ int main(int argc, char *argv[]) {
     -2.0f,  -1.0f, 0.0f,
   };
 
+  std::transform(g_vertex_buffer_data.begin(), g_vertex_buffer_data.end(),
+                 g_vertex_buffer_data.begin(), [](float v) -> float { return v*100; });
+
   static const std::vector<unsigned int> indices = {
     // horizontal
     0, 4,
@@ -145,34 +174,20 @@ int main(int argc, char *argv[]) {
     4, 8,
   };
 
-  static const std::vector<float> vertices = {
-    -0.7f, -0.7f, 0.0f, // left
-    0.7f, -0.7f, 0.0f, // right
-    0.0f,  0.7f, 0.0f  // top
-  };
-
-
-  std::cout << "sizeof(std::vector<float>): " << sizeof(std::vector<float>) << std::endl;
-  std::cout << "sizeof(std::vector<unsigned int>): " << sizeof(std::vector<unsigned int>) << std::endl;
-  std::cout << "sizeof(GLuint): " << sizeof(GLuint) << std::endl;
-  std::cout << "sizeof(GridRenderable) : " << sizeof(GridRenderable) << std::endl;
-  std::cout << "sizeof(PointsRenderable) : " << sizeof(PointsRenderable) << std::endl;
-  std::cout << "sizeof(std::variant<GridRenderable, PointsRenderable>) : " << sizeof(std::variant<PointsRenderable, GridRenderable>) << std::endl;
+  auto pointcloud = parse_ply("00000_lidar.ply");
 
   // 3. model
   auto grid = GridRenderable(g_vertex_buffer_data, indices);
   grid.init();
-  auto points = PointsRenderable(vertices);
+  auto points = PointsRenderable(pointcloud);
   points.init();
 
   // 6. projection
   float near = 0.01;
-  float far = 100;
+  float far = 500;
   float top = tan(35. / 360. * M_PI) * near;
   float right = top * (double)::w / (double)::h;
   auto proj = glm::frustum(-right, right, -top, top, near, far);
-  //Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
-  //igl::frustum(-right, right, -top, top, near, far, proj);
   std::cout << glm::to_string(proj) << std::endl;
 
   while (!glfwWindowShouldClose(window)) {
@@ -185,18 +200,14 @@ int main(int argc, char *argv[]) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 7. model
-    Eigen::Affine3f model = Eigen::Affine3f::Identity();
-    //model.translate(Eigen::Vector3f(0, 0, -1.5));
-    //model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
-    //std::cout << model.matrix() << std::endl;
-
-    glm::mat4 view = camera.GetViewMatrix();
+    auto model = glm::mat4{1.0f};
+    auto view = camera.GetViewMatrix();
 
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, glm::value_ptr(proj));
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
     grid.render();
     points.render();

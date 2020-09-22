@@ -8,7 +8,7 @@ private:
     GLuint vbo;
 
 public:
-    PointsRenderable(std::vector<float> g_vertex_buffer_data) :
+    PointsRenderable(const std::vector<float>& g_vertex_buffer_data) :
       g_vertex_buffer_data(g_vertex_buffer_data){
     }
 
@@ -41,7 +41,7 @@ public:
     void render() {
       // 9. Draw mesh as wireframe
       //glEnable(GL_POINT_SMOOTH); // make the point circular
-      glPointSize(15);
+      glPointSize(5);
       glBindVertexArray(vao);
       glDrawArrays(GL_POINTS, 0, g_vertex_buffer_data.size()/3);
       //glDisable(GL_POINT_SMOOTH);
