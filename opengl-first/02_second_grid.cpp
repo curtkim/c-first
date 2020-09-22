@@ -117,7 +117,7 @@ auto load_static_model_counter_clock_wise() {
 }
 
 
-Camera camera;
+Camera2 camera;
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;

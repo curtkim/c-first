@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <Eigen/Core>
 #include <igl/frustum.h>
@@ -77,6 +78,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     int state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
     if (state == GLFW_PRESS) {
       cout << "control pressed" << endl;
+
     }
 
     cout << xpos - lastX << " " << ypos - lastY << std::endl;
@@ -152,36 +154,31 @@ int main(int argc, char *argv[]) {
 
   while (!glfwWindowShouldClose(window)) {
 
+    double tic = glfwGetTime();
     processKeyboardInput(window);
 
-    // 6. projection
-    Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
+    // model
+    glm::mat4 model{1.0};
+
+    // view
+    glm::mat4 view = glm::lookAt(camera_pos, camera_target, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // projection
     float near = 0.01;
     float far = 100;
     float top = tan(fov / 360. * M_PI) * near;
     float right = top * (double)::w / (double)::h;
-    //std::cout << "top=" << top << " right=" << right << std::endl;
-    igl::frustum(-right, right, -top, top, near, far, proj);
-    //std::cout << proj << std::endl;
+    glm::mat4 proj = glm::frustum(-right, right, -top, top, near, far);
 
-
-    double tic = glfwGetTime();
+    // 8. select program and attach uniforms
+    glUseProgram(prog_id);
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, glm::value_ptr(proj));
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // 7. model
-    Eigen::Affine3f model = Eigen::Affine3f::Identity();
-    //glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 view = glm::lookAt(camera_pos, camera_target, glm::vec3(0.0f, 1.0f, 0.0f));
-    //std::cout << "view " << glm::to_string(view) << std::endl;
-
-    // 8. select program and attach uniforms
-    glUseProgram(prog_id);
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
     grid.render();
 

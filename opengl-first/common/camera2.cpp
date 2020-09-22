@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Camera::Camera() {
+Camera2::Camera2() {
   camera_mode = FREE;
   camera_up = glm::vec3(0, 1, 0);
   field_of_view = 45;
@@ -13,14 +13,14 @@ Camera::Camera() {
   max_heading_rate = 5;
   move_camera = false;
 }
-Camera::~Camera() {
+Camera2::~Camera2() {
 }
 
-void Camera::Reset() {
+void Camera2::Reset() {
   camera_up = glm::vec3(0, 1, 0);
 }
 
-void Camera::Update() {
+void Camera2::Update() {
   camera_direction = glm::normalize(camera_look_at - camera_position);
   //need to set the matrix state. this is only important because lighting doesn't work if this isn't done
   glViewport(viewport_x, viewport_y, window_width, window_height);
@@ -59,22 +59,22 @@ void Camera::Update() {
 }
 
 //Setting Functions
-void Camera::SetMode(CameraType cam_mode) {
+void Camera2::SetMode(CameraType cam_mode) {
   camera_mode = cam_mode;
   camera_up = glm::vec3(0, 1, 0);
 }
 
-void Camera::SetPosition(glm::vec3 pos) {
+void Camera2::SetPosition(glm::vec3 pos) {
   camera_position = pos;
 }
 
-void Camera::SetLookAt(glm::vec3 pos) {
+void Camera2::SetLookAt(glm::vec3 pos) {
   camera_look_at = pos;
 }
-void Camera::SetFOV(double fov) {
+void Camera2::SetFOV(double fov) {
   field_of_view = fov;
 }
-void Camera::SetViewport(int loc_x, int loc_y, int width, int height) {
+void Camera2::SetViewport(int loc_x, int loc_y, int width, int height) {
   viewport_x = loc_x;
   viewport_y = loc_y;
   window_width = width;
@@ -83,12 +83,12 @@ void Camera::SetViewport(int loc_x, int loc_y, int width, int height) {
   aspect = double(width) / double(height);
   ;
 }
-void Camera::SetClipping(double near_clip_distance, double far_clip_distance) {
+void Camera2::SetClipping(double near_clip_distance, double far_clip_distance) {
   near_clip = near_clip_distance;
   far_clip = far_clip_distance;
 }
 
-void Camera::Move(CameraDirection dir) {
+void Camera2::Move(CameraDirection dir) {
   if (camera_mode == FREE) {
     switch (dir) {
       case UP:
@@ -112,7 +112,7 @@ void Camera::Move(CameraDirection dir) {
     }
   }
 }
-void Camera::ChangePitch(float degrees) {
+void Camera2::ChangePitch(float degrees) {
   //Check bounds with the max pitch rate so that we aren't moving too fast
   if (degrees < -max_pitch_rate) {
     degrees = -max_pitch_rate;
@@ -128,7 +128,7 @@ void Camera::ChangePitch(float degrees) {
     camera_pitch += 360.0f;
   }
 }
-void Camera::ChangeHeading(float degrees) {
+void Camera2::ChangeHeading(float degrees) {
   //Check bounds with the max heading rate so that we aren't moving too fast
   if (degrees < -max_heading_rate) {
     degrees = -max_heading_rate;
@@ -149,7 +149,7 @@ void Camera::ChangeHeading(float degrees) {
     camera_heading += 360.0f;
   }
 }
-void Camera::Move2D(int x, int y) {
+void Camera2::Move2D(int x, int y) {
   //compute the mouse delta from the previous mouse position
   glm::vec3 mouse_delta = mouse_position - glm::vec3(x, y, 0);
   //if the camera is moving, meaning that the mouse was clicked and dragged, change the pitch and heading
@@ -160,7 +160,7 @@ void Camera::Move2D(int x, int y) {
   mouse_position = glm::vec3(x, y, 0);
 }
 
-void Camera::SetPos(int button, int state) {
+void Camera2::SetPos(int button, int state) {
   if (button == 3 && state == GLFW_PRESS) {
     camera_position_delta += camera_up * .05f;
   } else if (button == 4 && state == GLFW_PRESS) {
@@ -173,18 +173,18 @@ void Camera::SetPos(int button, int state) {
   //mouse_position = glm::vec3(x, y, 0);
 }
 
-CameraType Camera::GetMode() {
+CameraType Camera2::GetMode() {
   return camera_mode;
 }
 
-void Camera::GetViewport(int &loc_x, int &loc_y, int &width, int &height) {
+void Camera2::GetViewport(int &loc_x, int &loc_y, int &width, int &height) {
   loc_x = viewport_x;
   loc_y = viewport_y;
   width = window_width;
   height = window_height;
 }
 
-void Camera::GetMatricies(glm::mat4 &P, glm::mat4 &V, glm::mat4 &M) {
+void Camera2::GetMatricies(glm::mat4 &P, glm::mat4 &V, glm::mat4 &M) {
   P = projection;
   V = view;
   M = model;

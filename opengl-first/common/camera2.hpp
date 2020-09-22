@@ -14,10 +14,10 @@ enum CameraDirection {
   UP, DOWN, LEFT, RIGHT, FORWARD, BACK
 };
 
-class Camera {
+class Camera2 {
 public:
-  Camera();
-  ~Camera();
+  Camera2();
+  ~Camera2();
 
   void Reset();
   //This function updates the camera

@@ -25,7 +25,7 @@ foreach(APP
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
         21_renderable
         31_mouse
-        32_mouse_map_control
+        32_mouse_map_control_wo_camera
         41_load-model-libigl
         42_load_ply
         51_shapefile
