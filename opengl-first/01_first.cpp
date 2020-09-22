@@ -65,7 +65,7 @@ int main(void) {
   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
   // viewport
-  glViewport(512, 0, 512, 768);
+  glViewport(0, 0, 1024, 768);
 
   do {
 

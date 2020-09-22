@@ -56,7 +56,7 @@ bool panning = false;
 
 glm::vec3 camera_pos(0.0f, -5.0f, 2.0f);
 glm::vec3 camera_target(0.0f, 0.0f, 0.0f);
-
+float fov = 35.;
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -74,6 +74,11 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
   if( panning) {
+    int state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
+    if (state == GLFW_PRESS) {
+      cout << "control pressed" << endl;
+    }
+
     cout << xpos - lastX << " " << ypos - lastY << std::endl;
     glm::vec3 delta ((lastX- xpos)/250.0, (ypos-lastY)/250.0, 0.0f);
     camera_pos += delta;
@@ -83,12 +88,17 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
   }
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+  fov -= yoffset;
+}
+
 int main(int argc, char *argv[]) {
 
   // 1. init
   GLFWwindow * window = make_window(w, h);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetMouseButtonCallback(window, mouse_button_callback);
+  glfwSetScrollCallback(window, scroll_callback);
 
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
@@ -140,21 +150,20 @@ int main(int argc, char *argv[]) {
   grid.init();
 
 
-  // 6. projection
-  Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
-  float near = 0.01;
-  float far = 100;
-  float fov = 35.;
-  float top = tan(fov / 360. * M_PI) * near;
-  float right = top * (double)::w / (double)::h;
-  std::cout << "top=" << top << " right=" << right << std::endl;
-
-  igl::frustum(-right, right, -top, top, near, far, proj);
-  std::cout << proj << std::endl;
-
   while (!glfwWindowShouldClose(window)) {
 
     processKeyboardInput(window);
+
+    // 6. projection
+    Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
+    float near = 0.01;
+    float far = 100;
+    float top = tan(fov / 360. * M_PI) * near;
+    float right = top * (double)::w / (double)::h;
+    //std::cout << "top=" << top << " right=" << right << std::endl;
+    igl::frustum(-right, right, -top, top, near, far, proj);
+    //std::cout << proj << std::endl;
+
 
     double tic = glfwGetTime();
 

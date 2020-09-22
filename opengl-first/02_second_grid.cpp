@@ -160,6 +160,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
   camera.Move2D(xpos, ypos);
 }
+void mouseScrollCallback(GLFWwindow* window, double xoffset, double yoffset){
+  cout << xoffset << " " << yoffset << " " << camera.field_of_view << endl;
+  camera.SetFOV(camera.field_of_view - yoffset);
+}
 
 int main(int argc, char *argv[]) {
 
@@ -168,6 +172,7 @@ int main(int argc, char *argv[]) {
   //glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetCursorPosCallback(window, mouse_callback);
   glfwSetMouseButtonCallback(window, mouseButtonCallback);
+  glfwSetScrollCallback(window, mouseScrollCallback);
 
   camera.SetViewport(0, 0, w, h);
   camera.camera_scale = 0.1f;

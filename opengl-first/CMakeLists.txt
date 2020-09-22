@@ -20,8 +20,8 @@ foreach(FILE
 endforeach()
 
 foreach(APP
+        00_glm_quantinion
         01_first
-        02_glm_quantinion
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
         21_renderable
         31_mouse
@@ -37,7 +37,7 @@ foreach(APP
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
 
-add_executable(03_second 03_second_grid.cpp common/shader.cpp common/camera2.cpp)
-target_link_libraries(03_second ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(03_second PUBLIC cxx_std_17)
-target_compile_definitions(03_second PUBLIC STB_IMAGE_IMPLEMENTATION)
+add_executable(02_second_grid 02_second_grid.cpp common/shader.cpp common/camera2.cpp)
+target_link_libraries(02_second_grid ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(02_second_grid PUBLIC cxx_std_17)
+target_compile_definitions(02_second_grid PUBLIC STB_IMAGE_IMPLEMENTATION)
