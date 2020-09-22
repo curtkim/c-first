@@ -25,7 +25,7 @@ foreach(APP
         21_renderable
         31_mouse
         32_mouse_map_control
-        41_test-libigl
+        41_load-model-libigl
         51_shapefile
         61_opengl_thread
         71_omega)

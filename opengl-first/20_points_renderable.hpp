@@ -8,7 +8,8 @@ private:
     GLuint vbo;
 
 public:
-    PointsRenderable(std::vector<float> g_vertex_buffer_data) : g_vertex_buffer_data(g_vertex_buffer_data){
+    PointsRenderable(std::vector<float> g_vertex_buffer_data) :
+      g_vertex_buffer_data(g_vertex_buffer_data){
     }
 
     ~PointsRenderable() {
@@ -40,12 +41,10 @@ public:
     void render() {
       // 9. Draw mesh as wireframe
       //glEnable(GL_POINT_SMOOTH); // make the point circular
-      glPointSize(15);      // must be added before glDrawArrays is called
-
+      glPointSize(15);
       glBindVertexArray(vao);
       glDrawArrays(GL_POINTS, 0, g_vertex_buffer_data.size()/3);
-
-      glDisable(GL_POINT_SMOOTH); // stop the smoothing to make the points circular
+      //glDisable(GL_POINT_SMOOTH);
       //glBindVertexArray(0);
     }
 

@@ -10,8 +10,9 @@ private:
     GLuint ebo;
 
 public:
-    GridRenderable(std::vector<float> g_vertex_buffer_data, std::vector<unsigned int> indices) : g_vertex_buffer_data(g_vertex_buffer_data), indices(indices){
-    }
+    GridRenderable(std::vector<float> g_vertex_buffer_data, std::vector<unsigned int> indices) :
+      g_vertex_buffer_data(g_vertex_buffer_data),
+      indices(indices){ }
 
     ~GridRenderable() {
       glDeleteVertexArrays(1, &vao);
