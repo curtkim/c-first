@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <Eigen/Core>
 
 #include <igl/frustum.h>
@@ -192,7 +193,7 @@ int main(int argc, char *argv[]) {
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
     grid.render();
