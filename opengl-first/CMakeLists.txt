@@ -19,12 +19,12 @@ foreach(FILE
 endforeach()
 
 foreach(APP
-        00_quantinion
-        00_first
-        02_point 03_point_multi 04_grid 05_polylines 06_triangle_animation
-        11_renderable
-        21_mouse
-        31_mouse_map_control
+        02_quantinion
+        01_first
+        12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
+        21_renderable
+        31_mouse
+        32_mouse_map_control
         41_test-libigl
         51_shapefile
         61_opengl_thread
@@ -35,7 +35,7 @@ foreach(APP
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
 
-add_executable(00_second 00_second_grid.cpp common/shader.cpp common/camera2.cpp)
-target_link_libraries(00_second ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(00_second PUBLIC cxx_std_17)
-target_compile_definitions(00_second PUBLIC STB_IMAGE_IMPLEMENTATION)
+add_executable(03_second 03_second_grid.cpp common/shader.cpp common/camera2.cpp)
+target_link_libraries(03_second ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(03_second PUBLIC cxx_std_17)
+target_compile_definitions(03_second PUBLIC STB_IMAGE_IMPLEMENTATION)
