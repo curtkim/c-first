@@ -4,11 +4,10 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <glm/gtx/norm.hpp>
 
-using namespace glm;
+glm::quat RotationBetweenVectors(glm::vec3 start, glm::vec3 dest){
+  using namespace glm;
 
-quat RotationBetweenVectors(vec3 start, vec3 dest){
   start = normalize(start);
   dest = normalize(dest);
 
@@ -41,26 +40,39 @@ quat RotationBetweenVectors(vec3 start, vec3 dest){
 
 }
 
+void assertSimilar(glm::vec3 a, glm::vec3 b){
+  assert(glm::length(a-b) < 0.00001);
+}
+void assertSimilar(glm::quat a, glm::quat b){
+  assert(glm::length(a-b) < 0.00001);
+}
+
 int main() {
   // Creates an identity quaternion (no rotation)
-  glm::quat MyQuaternion;
+  glm::quat quat1;
 
   // Direct specification of the 4 components
   // You almost never use this directly
   //MyQuaternion = glm::quat(w,x,y,z);
 
-  // Conversion from Euler angles (in radians) to Quaternion
-  glm::vec3 EulerAngles(90, 45, 0);
-  MyQuaternion = glm::quat(EulerAngles);
-  std::cout << glm::to_string(MyQuaternion) << std::endl;
+  // 180도 회전, z축으로
+  glm::vec3 EulerAngles(0, 0, M_PI);
+  quat1 = glm::quat(EulerAngles);
+  glm::quat quat2 = glm::angleAxis(glm::radians(180.0f), glm::vec3(0,0,1));
+  assertSimilar({-1,0,0}, quat1 * glm::vec3{1,0,0});
+  assertSimilar(quat1, quat2);
 
-  glm::mat4 RotationMatrix = glm::toMat4(MyQuaternion);
+
+  glm::mat4 RotationMatrix = glm::toMat4(quat1);
   std::cout << glm::to_string(RotationMatrix) << std::endl;
 
   auto Quat2 = RotationBetweenVectors(glm::vec3{1,0,0}, glm::vec3{0,1,0});
   std::cout << glm::to_string(Quat2) << std::endl;
+
   auto rotated_point = Quat2 * glm::vec3{1,0,0};
   std::cout << glm::to_string(rotated_point) << std::endl;
+
+
 
   return 0;
 }

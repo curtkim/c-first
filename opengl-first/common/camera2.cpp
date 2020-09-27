@@ -32,6 +32,7 @@ void Camera2::Update() {
     projection = glm::ortho(-1.5f * float(aspect), 1.5f * float(aspect), -1.5f, 1.5f, -10.0f, 10.f);
   } else if (camera_mode == FREE) {
     projection = glm::perspective(field_of_view, aspect, near_clip, far_clip);
+
     //detmine axis for pitch rotation
     glm::vec3 axis = glm::cross(camera_direction, camera_up);
     //compute quaternion for pitch based on the camera pitch angle
@@ -41,12 +42,16 @@ void Camera2::Update() {
     //add the two quaternions
     glm::quat temp = glm::cross(pitch_quat, heading_quat);
     temp = glm::normalize(temp);
+
     //update the direction from the quaternion
     camera_direction = glm::rotate(temp, camera_direction);
+
     //add the camera delta
     camera_position += camera_position_delta;
+
     //set the look at to be infront of the camera
     camera_look_at = camera_position + camera_direction * 1.0f;
+
     //damping for smooth camera
     camera_heading *= .5;
     camera_pitch *= .5;

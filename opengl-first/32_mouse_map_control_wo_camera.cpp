@@ -1,10 +1,14 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <Eigen/Core>
 #include <igl/frustum.h>
 
+#include <cmath>
 #include <chrono>
 #include <string>
 #include <thread>
@@ -55,7 +59,10 @@ double lastY = h / 2.0f;
 
 bool panning = false;
 
-glm::vec3 camera_pos(0.0f, -5.0f, 2.0f);
+const float RADIUS = 5* sqrt(2);
+float angle1 = 45;
+
+glm::vec3 camera_pos(0.0f, -1*RADIUS, RADIUS);
 glm::vec3 camera_target(0.0f, 0.0f, 0.0f);
 float fov = 35.;
 
@@ -75,16 +82,21 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
   if( panning) {
+    cout << xpos - lastX << " " << ypos - lastY << std::endl;
+
     int state = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL);
     if (state == GLFW_PRESS) {
-      cout << "control pressed" << endl;
-
+      angle1 += 0.001 * (ypos - lastY);
+      //auto quat1 = glm::angleAxis(glm::radians(angle1), glm::vec3(1,0,0));
+      auto quat1 = glm::quat({glm::radians(angle1), 0, 0});
+      camera_pos = quat1 * camera_pos;
+      cout << "control pressed " << (ypos - lastY) << " " << angle1 << " " << glm::to_string(camera_pos) << endl;
     }
-
-    cout << xpos - lastX << " " << ypos - lastY << std::endl;
-    glm::vec3 delta ((lastX- xpos)/250.0, (ypos-lastY)/250.0, 0.0f);
-    camera_pos += delta;
-    camera_target += delta;
+    else {
+      glm::vec3 delta((lastX - xpos) / 250.0, (ypos - lastY) / 250.0, 0.0f);
+      camera_pos += delta;
+      camera_target += delta;
+    }
     lastX = xpos;
     lastY = ypos;
   }
@@ -161,7 +173,7 @@ int main(int argc, char *argv[]) {
     glm::mat4 model{1.0};
 
     // view
-    glm::mat4 view = glm::lookAt(camera_pos, camera_target, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 view = glm::lookAt(camera_pos, camera_target, glm::vec3(0.0f, 0.0f, 1.0f));
 
     // projection
     float near = 0.01;
