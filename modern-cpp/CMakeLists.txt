@@ -67,6 +67,7 @@ foreach(APP
         attribute_pure
         lambda
         lambda2
+        reflection_test
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
