@@ -316,7 +316,7 @@ int main(int argc, char **argv)
   checkCudaErrors(cudaEventCreateWithFlags(&start_event, eventflags));
   checkCudaErrors(cudaEventCreateWithFlags(&stop_event, eventflags));
 
-  // time memcopy from device 
+  // time memcopy from device
   checkCudaErrors(cudaEventRecord(start_event, 0));     // record in stream-0, to ensure that all previous CUDA calls have completed
   checkCudaErrors(cudaMemcpyAsync(hAligned_a, d_a, nbytes, cudaMemcpyDeviceToHost, streams[0]));
   checkCudaErrors(cudaEventRecord(stop_event, 0));
