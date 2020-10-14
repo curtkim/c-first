@@ -3,9 +3,13 @@ import os
 from conans import ConanFile, CMake, tools
 
 
-class AsioTestConan(ConanFile):
+class PlMpegTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
+
+    requires = (
+        "stb/20200203",
+    )
 
     def build(self):
         cmake = CMake(self)

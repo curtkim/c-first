@@ -3,6 +3,10 @@
 #define PL_MPEG_IMPLEMENTATION
 #include <pl_mpeg.h>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
+
 int main(int argc, char *argv[]) {	
 	if (argc < 2) {
 		printf("Usage: pl_mpeg_extract_frames <file.mpg>\n");
@@ -29,6 +33,7 @@ int main(int argc, char *argv[]) {
 
 		sprintf(png_name, "%04d.png", i);
 		printf("Writing %s\n", png_name);
+		stbi_write_png(png_name, w, h, 3, rgb_buffer, w * 3);
 	}
 	
   return 0;
