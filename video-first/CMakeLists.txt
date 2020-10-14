@@ -1,9 +1,25 @@
 cmake_minimum_required(VERSION 3.15)
-project(range-first)
+project(video-first LANGUAGES CXX CUDA)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(pl_mpeg_extract_frames pl_mpeg_extract_frames.cpp)
-target_link_libraries(pl_mpeg_extract_frames PUBLIC ${CONAN_LIBS}) # header only library
-target_compile_features(pl_mpeg_extract_frames PUBLIC cxx_std_17)
+
+include_directories(/home/curt/projects/c/Video_Codec_SDK_10.0.26/Interface)
+
+foreach(APP pl_mpeg_extract_frames )
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+endforeach()
+
+
+add_executable(nv_extract_frames nv_extract_frames.cpp common/NvDecoder/NvDecoder.cpp)
+target_link_directories(nv_extract_frames PUBLIC /home/curt/projects/c/Video_Codec_SDK_10.0.26/Lib/linux/stubs/x86_64)
+target_link_directories(nv_extract_frames PUBLIC /usr/local/cuda/lib64)
+target_link_libraries(nv_extract_frames PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart avcodec avformat avutil)
+target_compile_features(nv_extract_frames PUBLIC cxx_std_17)
+target_include_directories(nv_extract_frames PRIVATE /usr/local/cuda/include)
