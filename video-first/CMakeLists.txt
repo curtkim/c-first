@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(video-first LANGUAGES CXX CUDA)
+project(video-first LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -23,3 +23,21 @@ target_link_directories(nv_extract_frames PUBLIC /usr/local/cuda/lib64)
 target_link_libraries(nv_extract_frames PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart avcodec avformat avutil)
 target_compile_features(nv_extract_frames PUBLIC cxx_std_17)
 target_include_directories(nv_extract_frames PRIVATE /usr/local/cuda/include)
+
+add_executable(simple_ffmpeg_info simple_ffmpeg_info.cpp)
+target_link_libraries(simple_ffmpeg_info PUBLIC ${CONAN_LIBS} avcodec avformat avutil avfilter)
+target_compile_features(simple_ffmpeg_info PUBLIC cxx_std_17)
+
+
+add_executable(simple_ffmpeg_decode_pure simple_ffmpeg_decode_pure.cpp)
+target_link_libraries(simple_ffmpeg_decode_pure PUBLIC ${CONAN_LIBS} avcodec avutil)
+target_compile_features(simple_ffmpeg_decode_pure PUBLIC cxx_std_17)
+
+file(COPY resources/bigbuckbunny_480x272.h264 DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY resources/bigbuckbunny_480x272.hevc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+file(COPY resources/bigbuckbunny_480x272.m2v DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+add_executable(simple_ffmpeg_decode simple_ffmpeg_decode.cpp)
+target_link_libraries(simple_ffmpeg_decode PUBLIC ${CONAN_LIBS} avcodec avformat avutil swscale)
+target_compile_features(simple_ffmpeg_decode PUBLIC cxx_std_17)
+file(COPY resources/Titanic.mkv DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)

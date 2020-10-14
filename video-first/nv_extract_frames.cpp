@@ -81,7 +81,7 @@ void DecodeMediaFile(CUcontext cuContext, const char *szInFilePath, const char *
 
 int main(int argc, char **argv)
 {
-  char szInFilePath[256] = "", szOutFilePath[256] = "";
+  char szInFilePath[256] = "/data/projects/research/lift-splat-shoot/eval_nvenc.mp4", szOutFilePath[256] = "/data/Downloads/test.mp4";
   bool bOutPlanar = false;
   int iGpu = 0;
   Rect cropRect = {};
