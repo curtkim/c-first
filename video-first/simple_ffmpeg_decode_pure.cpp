@@ -34,11 +34,13 @@ int main(int argc, char* argv[])
   FILE *fp_in;
   FILE *fp_out;
   AVFrame	*pFrame;
+  // width, height, data[8], linesize[8]
 
   const int in_buffer_size=4096;
   unsigned char in_buffer[in_buffer_size + FF_INPUT_BUFFER_PADDING_SIZE]={0};
   unsigned char *cur_ptr;
   int cur_size;
+
   AVPacket packet;
   int ret, got_picture;
 
@@ -56,7 +58,6 @@ int main(int argc, char* argv[])
 
   char filepath_out[]="bigbuckbunny_480x272.yuv";
   int first_time=1;
-
 
   //av_log_set_level(AV_LOG_DEBUG);
 
@@ -86,12 +87,14 @@ int main(int argc, char* argv[])
     printf("Could not open codec\n");
     return -1;
   }
+
   //Input File
   fp_in = fopen(filepath_in, "rb");
   if (!fp_in) {
     printf("Could not open input stream\n");
     return -1;
   }
+
   //Output File
   fp_out = fopen(filepath_out, "wb");
   if (!fp_out) {
@@ -109,7 +112,7 @@ int main(int argc, char* argv[])
       break;
     cur_ptr=in_buffer;
 
-    while (cur_size>0){
+    while (cur_size > 0){
 
       int len = av_parser_parse2(
         pCodecParserCtx, pCodecCtx,
@@ -138,30 +141,30 @@ int main(int argc, char* argv[])
         printf("Decode Error.\n");
         return ret;
       }
+
       if (got_picture) {
         if(first_time){
           printf("\nCodec Full Name:%s\n",pCodecCtx->codec->long_name);
           printf("width:%d\nheight:%d\n\n",pCodecCtx->width,pCodecCtx->height);
           first_time=0;
         }
+
         //Y, U, V
         for(int i=0;i<pFrame->height;i++){
-          fwrite(pFrame->data[0]+pFrame->linesize[0]*i,1,pFrame->width,fp_out);
+          fwrite(pFrame->data[0]+pFrame->linesize[0]*i, 1, pFrame->width, fp_out);
         }
         for(int i=0;i<pFrame->height/2;i++){
-          fwrite(pFrame->data[1]+pFrame->linesize[1]*i,1,pFrame->width/2,fp_out);
+          fwrite(pFrame->data[1]+pFrame->linesize[1]*i, 1, pFrame->width/2, fp_out);
         }
         for(int i=0;i<pFrame->height/2;i++){
-          fwrite(pFrame->data[2]+pFrame->linesize[2]*i,1,pFrame->width/2,fp_out);
+          fwrite(pFrame->data[2]+pFrame->linesize[2]*i, 1, pFrame->width/2, fp_out);
         }
-
         printf("Succeed to decode 1 frame!\n");
       }
     }
-
   }
 
-  //Flush Decoder
+  // Flush Decoder
   packet.data = NULL;
   packet.size = 0;
   while(1){
@@ -170,18 +173,19 @@ int main(int argc, char* argv[])
       printf("Decode Error.\n");
       return ret;
     }
+
     if (!got_picture){
       break;
     }else {
       //Y, U, V
-      for(int i=0;i<pFrame->height;i++){
-        fwrite(pFrame->data[0]+pFrame->linesize[0]*i,1,pFrame->width,fp_out);
+      for(int i=0; i<pFrame->height; i++){
+        fwrite(pFrame->data[0]+pFrame->linesize[0]*i, 1, pFrame->width, fp_out);
       }
-      for(int i=0;i<pFrame->height/2;i++){
-        fwrite(pFrame->data[1]+pFrame->linesize[1]*i,1,pFrame->width/2,fp_out);
+      for(int i=0; i<pFrame->height/2; i++){
+        fwrite(pFrame->data[1]+pFrame->linesize[1]*i, 1, pFrame->width/2, fp_out);
       }
-      for(int i=0;i<pFrame->height/2;i++){
-        fwrite(pFrame->data[2]+pFrame->linesize[2]*i,1,pFrame->width/2,fp_out);
+      for(int i=0; i<pFrame->height/2; i++){
+        fwrite(pFrame->data[2]+pFrame->linesize[2]*i, 1, pFrame->width/2, fp_out);
       }
 
       printf("Flush Decoder: Succeed to decode 1 frame!\n");
@@ -190,7 +194,6 @@ int main(int argc, char* argv[])
 
   fclose(fp_in);
   fclose(fp_out);
-
 
   av_parser_close(pCodecParserCtx);
 

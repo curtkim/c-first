@@ -1,5 +1,8 @@
 // from https://github.com/leixiaohua1020/simplest_ffmpeg_player/blob/master/simplest_ffmpeg_helloworld/simplest_ffmpeg_helloworld.cpp
 #include <stdio.h>
+#include <string>
+#include <fmt/core.h>
+#include <sstream>
 
 #define __STDC_CONSTANT_MACROS
 
@@ -27,57 +30,68 @@ extern "C"
 
 //FIX
 struct URLProtocol;
+
+
+/**
+ * Configuration Information
+ */
+std::vector<std::string> get_configuration_infos() {
+  av_register_all();
+  std::vector<std::string> results;
+  std::stringstream ss(avcodec_configuration());
+  std::string buf;
+
+  while (ss >> buf)
+    results.emplace_back(buf);
+  return results;
+}
+
 /**
  * Protocol Support Information
  */
-char * urlprotocolinfo(){
-
-  char *info=(char *)malloc(40000);
-  memset(info,0,40000);
-
+std::vector<std::string> get_urlprotocol_infos(bool is_out) {
   av_register_all();
+  std::vector<std::string> results;
 
   struct URLProtocol *pup = NULL;
-  //Input
   struct URLProtocol **p_temp = &pup;
-  avio_enum_protocols((void **)p_temp, 0);
-  while ((*p_temp) != NULL){
-    sprintf(info, "%s[In ][%10s]\n", info, avio_enum_protocols((void **)p_temp, 0));
-  }
-  pup = NULL;
-  //Output
-  avio_enum_protocols((void **)p_temp, 1);
-  while ((*p_temp) != NULL){
-    sprintf(info, "%s[Out][%10s]\n", info, avio_enum_protocols((void **)p_temp, 1));
-  }
 
-  return info;
+  do {
+    const char* buf = avio_enum_protocols((void **)p_temp, is_out ? 1 : 0);
+    if( buf != nullptr)
+      results.emplace_back(buf);
+  } while((*p_temp) != NULL);
+
+  pup = NULL;
+  return results;
 }
 
 /**
  * AVFormat Support Information
  */
-char * avformatinfo(){
-
-  char *info=(char *)malloc(40000);
-  memset(info,0,40000);
-
+std::vector<std::string> get_av_in_format() {
   av_register_all();
+  std::vector<std::string> results;
 
   AVInputFormat *if_temp = av_iformat_next(NULL);
-  AVOutputFormat *of_temp = av_oformat_next(NULL);
-  //Input
   while(if_temp!=NULL){
-    sprintf(info, "%s[In ] %10s\n", info, if_temp->name);
+    results.emplace_back(if_temp->name);
     if_temp=if_temp->next;
   }
-  //Output
-  while (of_temp != NULL){
-    sprintf(info, "%s[Out] %10s\n", info, of_temp->name);
-    of_temp = of_temp->next;
-  }
-  return info;
+  return results;
 }
+std::vector<std::string> get_av_out_format() {
+  av_register_all();
+  std::vector<std::string> results;
+
+  AVOutputFormat *if_temp = av_oformat_next(NULL);
+  while(if_temp!=NULL){
+    results.emplace_back(if_temp->name);
+    if_temp=if_temp->next;
+  }
+  return results;
+}
+
 
 /**
  * AVCodec Support Information
@@ -136,35 +150,36 @@ char * avfilterinfo()
   return info;
 }
 
-/**
- * Configuration Information
- */
-char * configurationinfo()
-{
-  char *info=(char *)malloc(40000);
-  memset(info,0,40000);
-
-  av_register_all();
-
-  sprintf(info, "%s\n", avcodec_configuration());
-
-  return info;
-}
 
 int main(int argc, char* argv[])
 {
-  char *infostr=NULL;
-  infostr=configurationinfo();
-  printf("\n<<Configuration>>\n%s",infostr);
-  free(infostr);
+  auto config_infos = get_configuration_infos();
 
-  infostr=urlprotocolinfo();
-  printf("\n<<URLProtocol>>\n%s",infostr);
-  free(infostr);
+  fmt::print("<<Configuration>>\n");
+  for(auto info : config_infos)
+    fmt::print("{}\n", info);
 
-  infostr=avformatinfo();
-  printf("\n<<AVFormat>>\n%s",infostr);
-  free(infostr);
+  fmt::print("<<in url protocol>>\n");
+  auto in_protocol_infos = get_urlprotocol_infos(false);
+  for(auto info : in_protocol_infos)
+    fmt::print("[In ][{:>10}]\n", info);
+
+  fmt::print("<<out url protocol>>\n");
+  auto out_protocol_infos = get_urlprotocol_infos(true);
+  for(auto info : out_protocol_infos)
+    fmt::print("[Out ][{:>10}]\n", info);
+
+  fmt::print("<<in format>>\n");
+  auto in_format = get_av_in_format();
+  for(auto info : in_format)
+    fmt::print("[In ]{:>20}\n", info);
+
+  fmt::print("<<out format>>\n");
+  auto out_format = get_av_out_format();
+  for(auto info : out_format)
+    fmt::print("[Out ]{:>20}\n", info);
+
+  /*
 
   infostr=avcodecinfo();
   printf("\n<<AVCodec>>\n%s",infostr);
@@ -173,6 +188,6 @@ int main(int argc, char* argv[])
   infostr=avfilterinfo();
   printf("\n<<AVFilter>>\n%s",infostr);
   free(infostr);
-
+  */
   return 0;
 }
