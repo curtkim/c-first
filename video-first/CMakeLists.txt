@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
-project(video-first LANGUAGES CXX)
+project(video-first LANGUAGES CXX C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+find_package(OpenGL REQUIRED)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -41,3 +43,8 @@ add_executable(simple_ffmpeg_decode simple_ffmpeg_decode.cpp)
 target_link_libraries(simple_ffmpeg_decode PUBLIC ${CONAN_LIBS} avcodec avformat avutil swscale)
 target_compile_features(simple_ffmpeg_decode PUBLIC cxx_std_17)
 file(COPY resources/Titanic.mkv DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
+
+add_executable(webcam_opengl webcam_opengl.c)
+target_link_libraries(webcam_opengl PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
+target_compile_features(webcam_opengl PUBLIC cxx_std_17)
