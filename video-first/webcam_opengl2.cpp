@@ -89,10 +89,7 @@ int main(int argc, char *argv[]) {
   // 3. model
   auto [VAO, VBO, EBO, length] = load_model();
 
-  CommonV4l2 common_v4l2;
-  CommonV4l2_init(&common_v4l2, COMMON_V4L2_DEVICE, width, height);
-  void *image;
-
+  // 4. texture
   GLuint texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -100,21 +97,32 @@ int main(int argc, char *argv[]) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glActiveTexture(GL_TEXTURE0);
 
+  glUseProgram(prog_id);
+  glUniform1i(glGetUniformLocation(prog_id, "myTextureSampler"), 0);
+
+
+  // 5. webcam init
+  CommonV4l2 common_v4l2;
+  CommonV4l2_init(&common_v4l2, COMMON_V4L2_DEVICE, width, height);
+  void *image;
+
 
   while (!glfwWindowShouldClose(window)) {
 
     double tic = glfwGetTime();
+
+    // 6. get image
+    CommonV4l2_updateImage(&common_v4l2);
+    image = CommonV4l2_getImage(&common_v4l2);
+
+    // 7. load texture
+    // glTexImage2D(target, level, internalFormat, width, height, border, format, type, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    CommonV4l2_updateImage(&common_v4l2);
-    image = CommonV4l2_getImage(&common_v4l2);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,0, GL_RGB, GL_UNSIGNED_BYTE, image);
-
-    glUseProgram(prog_id);
-    glUniform1i(glGetUniformLocation(prog_id, "myTextureSampler"), 0);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -133,6 +141,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  glDeleteTextures(1, &texture);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
