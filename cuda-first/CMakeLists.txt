@@ -3,6 +3,11 @@ project(cuda-first LANGUAGES CUDA CXX)
 
 add_executable(cuda-version main.cc gpu.cu)
 
+add_executable(nvtx_first nvtx_first.cpp)
+target_include_directories(nvtx_first PUBLIC /usr/local/cuda/include)
+target_link_directories(nvtx_first PUBLIC /usr/local/cuda/lib64)
+target_link_libraries(nvtx_first PUBLIC nvToolsExt)
+
 add_executable(do_cpu do_cpu.cpp)
 add_executable(do_gpu do_gpu.cu)
 
