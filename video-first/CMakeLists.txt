@@ -54,3 +54,11 @@ target_compile_features(webcam_opengl PUBLIC cxx_std_17)
 add_executable(webcam_opengl2 webcam_opengl2.cpp)
 target_link_libraries(webcam_opengl2 PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
 target_compile_features(webcam_opengl2 PUBLIC cxx_std_17)
+
+
+# 5. ffmpeg - opegnl
+foreach(APP ffmpeg_extract_ppm)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} avcodec avformat avutil avfilter swscale) # ${OPENGL_LIBRARY} X11
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
