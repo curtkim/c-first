@@ -44,18 +44,32 @@ void DecodeMediaFile(CUcontext cuContext, const char *szInFilePath, const char *
   }
 
   FFmpegDemuxer demuxer(szInFilePath);
+  // CUcontext cuContext, bool bUseDeviceFrame, cudaVideoCodec eCodec
+  // bool bLowLatency, bool bDeviceFramePitched
+  // const Rect *pCropRect, const Dim *pResizeDim
   NvDecoder dec(cuContext, false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()), false, false, &cropRect, &resizeDim);
+  // Decode
+  // GetOutputFormat() -> cudaVideoSurfaceFormat
+  // GetFrame()
+  // GetWidth(), GetHeight(), GetBitDepth()
+  // GetFrameSize()
 
-  int nVideoBytes = 0, nFrameReturned = 0, nFrame = 0;
+  int nVideoBytes = 0, nFrame = 0;
   uint8_t *pVideo = NULL, *pFrame;
-  bool bDecodeOutSemiPlanar = false;
   do {
+    // Demux(unit8_t*, int nBytes);
     demuxer.Demux(&pVideo, &nVideoBytes);
-    nFrameReturned = dec.Decode(pVideo, nVideoBytes);
-    if (!nFrame && nFrameReturned)
-      std::cout << dec.GetVideoInfo();
 
-    bDecodeOutSemiPlanar = (dec.GetOutputFormat() == cudaVideoSurfaceFormat_NV12) || (dec.GetOutputFormat() == cudaVideoSurfaceFormat_P016);
+    // Decode(unit8_t*, int nBytes);
+    int nFrameReturned = dec.Decode(pVideo, nVideoBytes);
+    if (!nFrame && nFrameReturned) {
+      std::cout << dec.GetVideoInfo();
+      std::cout << "dec.GetOutputFormat() " << dec.GetOutputFormat() << std::endl;
+    }
+
+    bool bDecodeOutSemiPlanar =
+      (dec.GetOutputFormat() == cudaVideoSurfaceFormat_NV12)
+      || (dec.GetOutputFormat() == cudaVideoSurfaceFormat_P016);
 
     for (int i = 0; i < nFrameReturned; i++) {
       pFrame = dec.GetFrame();
@@ -67,9 +81,10 @@ void DecodeMediaFile(CUcontext cuContext, const char *szInFilePath, const char *
     nFrame += nFrameReturned;
   } while (nVideoBytes);
 
-  std::vector <std::string> aszDecodeOutFormat = { "NV12", "P016", "YUV444", "YUV444P16" };
+  std::vector<std::string> aszDecodeOutFormat = { "NV12", "P016", "YUV444", "YUV444P16" };
   if (bOutPlanar) {
-    aszDecodeOutFormat[0] = "iyuv";   aszDecodeOutFormat[1] = "yuv420p16";
+    aszDecodeOutFormat[0] = "iyuv";
+    aszDecodeOutFormat[1] = "yuv420p16";
   }
   std::cout << "Total frame decoded: " << nFrame << std::endl
             << "Saved in file " << szOutFilePath << " in "
@@ -81,8 +96,10 @@ void DecodeMediaFile(CUcontext cuContext, const char *szInFilePath, const char *
 
 int main(int argc, char **argv)
 {
-  char szInFilePath[256] = "/data/projects/research/lift-splat-shoot/eval_nvenc.mp4", szOutFilePath[256] = "/data/Downloads/test.mp4";
-  bool bOutPlanar = false;
+  char szInFilePath[256] = "Titanic.mkv";
+  char szOutFilePath[256] = "Titanic_out_nv.yuv";
+
+  bool bOutPlanar = true;
   int iGpu = 0;
   Rect cropRect = {};
   Dim resizeDim = {};

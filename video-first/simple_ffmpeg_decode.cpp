@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         fwrite(pFrameYUV->data[0], 1, y_size, fp_yuv);    //Y
         fwrite(pFrameYUV->data[1], 1, y_size/4, fp_yuv);  //U
         fwrite(pFrameYUV->data[2], 1, y_size/4, fp_yuv);  //V
-        printf("Succeed to decode 1 frame!\n");
+        //printf("Succeed to decode 1 frame!\n");
       }
     }
     av_free_packet(packet);

@@ -207,11 +207,12 @@ private:
     *   @return Pointer to AVFormatContext
     */
      AVFormatContext *CreateFormatContext(const char *szFilePath) {
-        avformat_network_init();
+      av_register_all();
+      avformat_network_init();
 
-        AVFormatContext *ctx = NULL;
-        ck(avformat_open_input(&ctx, szFilePath, NULL, NULL));
-        return ctx;
+      AVFormatContext *ctx = NULL;
+      ck(avformat_open_input(&ctx, szFilePath, NULL, NULL));
+      return ctx;
     }
 
 public:
