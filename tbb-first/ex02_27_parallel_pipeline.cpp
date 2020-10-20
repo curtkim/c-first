@@ -14,8 +14,10 @@ void writeCaseString(std::ofstream &f, CaseStringPtr s);
 
 
 void fig_2_27(int num_tokens, std::ofstream &caseBeforeFile, std::ofstream &caseAfterFile) {
+
   tbb::parallel_pipeline(
     num_tokens,
+
     tbb::make_filter<void, CaseStringPtr>(
       tbb::filter::serial_in_order,
       [&](tbb::flow_control &fc) -> CaseStringPtr {
@@ -24,6 +26,7 @@ void fig_2_27(int num_tokens, std::ofstream &caseBeforeFile, std::ofstream &case
           fc.stop();
         return s_ptr;
       }) & // concatenation operation
+
     /* make the change case filter */
     tbb::make_filter<CaseStringPtr, CaseStringPtr>(
       tbb::filter::parallel,
@@ -40,6 +43,7 @@ void fig_2_27(int num_tokens, std::ofstream &caseBeforeFile, std::ofstream &case
                        });
         return s_ptr;
       }) & // concatenation operation
+
     /* make the write filter */
     tbb::make_filter<CaseStringPtr, void>(
       tbb::filter::serial_in_order,

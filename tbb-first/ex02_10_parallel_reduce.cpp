@@ -39,12 +39,14 @@ static void warmupTBB() {
 int main() {
   const int N = INT_MAX;
   std::vector<int> a(N, 0);
+  std::cout << a.size() << " " << a.capacity() << std::endl;
   for (int i = 0; i < N; ++i) {
     a[i] = std::abs(i - N / 2);
   }
 
   double serial_time = 0.0, parallel_time = 0.0;
   {
+    std::cout << "serial" << std::endl;
     tbb::tick_count t0 = tbb::tick_count::now();
     int max_value = serialImpl(a);
     serial_time = (tbb::tick_count::now() - t0).seconds();
@@ -55,6 +57,7 @@ int main() {
 
   warmupTBB();
   {
+    std::cout << "parallel" << std::endl;
     tbb::tick_count t0 = tbb::tick_count::now();
     int max_value = fig_2_10(a);
     parallel_time = (tbb::tick_count::now() - t0).seconds();

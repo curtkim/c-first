@@ -12,7 +12,9 @@ foreach(APP
         ex00_function_multifunction
         ex00_service_join ex00_service_join_key_match ex00_service_indexer ex00_service_split_node ex00_service_broadcast
 
-        ex01_04_parallel_invoke ex01_05_for_each_par ex01_07_plain_loop
+        ex01_04_parallel_invoke ex01_05_for_each_par
+        ex01_07_12_tilt_gamma_all
+        ex01_07_plain_loop
         ex01_10_flow ex01_11_flow_parallel_for ex01_12_flow_parallel_for_unseq
         ex02_10_parallel_reduce ex02_27_parallel_pipeline ex02_30_parallel_pipeline
         ex03_03 ex03_05_join_by_queueing ex03_06_source_or_try_put ex03_10_join_tag_match
