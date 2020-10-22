@@ -21,10 +21,19 @@ foreach(APP producer_consumer test_async test_async2 thread_main condition_varia
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
+### c++17
+foreach(APP cpp17 from_chars set_extract map_try_emplace map_insert_or_assign sampling math_fun array_shared_ptr)
+    add_executable(${APP} cpp17/${APP}.cpp)
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
+
+### c++20
 foreach(APP utility)
     add_executable(${APP} cpp20/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
+
 
 add_executable(thread_pool_executor_example thread_async/thread_pool_executor_example.cpp thread_async/thread_pool_executor.hpp thread_async/concurrent_queue.hpp)
 set_property(TARGET thread_pool_executor_example PROPERTY CXX_STANDARD 11)
@@ -57,7 +66,6 @@ foreach(APP
         struct_test
         allocator_test
         main
-        cpp17
         test_string_view_remove_prefix_subfix
         test_string_view_small
         test_string_view_long

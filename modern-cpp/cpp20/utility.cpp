@@ -24,6 +24,8 @@ void to_array() {
 
   auto arr2 = std::to_array({ 0, 2, 1, 3 });
   static_assert(std::is_same<decltype(arr2), std::array<int, 4>>::value);
+  // simple version
+  static_assert(std::is_same_v<decltype(arr2), std::array<int, 4>>);
 
   auto arr3 = std::to_array<long>({ 0, 1, 3 });      // (3)
   static_assert(std::is_same<decltype(arr3), std::array<long, 3>>::value);
