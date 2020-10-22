@@ -21,6 +21,11 @@ foreach(APP producer_consumer test_async test_async2 thread_main condition_varia
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
+foreach(APP utility)
+    add_executable(${APP} cpp20/${APP}.cpp)
+    target_compile_features(${APP} PUBLIC cxx_std_20)
+endforeach()
+
 add_executable(thread_pool_executor_example thread_async/thread_pool_executor_example.cpp thread_async/thread_pool_executor.hpp thread_async/concurrent_queue.hpp)
 set_property(TARGET thread_pool_executor_example PROPERTY CXX_STANDARD 11)
 target_link_libraries( thread_pool_executor_example pthread )
