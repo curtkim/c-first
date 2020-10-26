@@ -105,6 +105,9 @@ int main(int, char **) {
     if (state.show_demo_window)
       ImGui::ShowDemoWindow(&state.show_demo_window);
 
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Always);
+
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
     {
       ImGui::Begin("Hello world");
