@@ -6,6 +6,7 @@
 #include "bindings/imgui_impl_glfw.h"
 #include "bindings/imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <iostream>
 
 #include <glad/glad.h>  // Initialize with gladLoadGL()
 // Include glfw3.h after our OpenGL definitions
@@ -56,6 +57,7 @@ int main(int, char **) {
   (void) io;
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
   //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
   // Setup Dear ImGui style
   ImGui::StyleColorsDark();
@@ -72,16 +74,7 @@ int main(int, char **) {
   // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
   // - Read 'docs/FONTS.txt' for more instructions and details.
   // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-  //io.Fonts->AddFontDefault();
-
-  ImFont* font = io.Fonts->AddFontFromFileTTF("../../etc/NanumGothic.ttf", 16.0f, NULL, io.Fonts->GetGlyphRangesKorean());
-  IM_ASSERT(font != NULL);
-  /*
-  io.Fonts->AddFontFromFileTTF("../../fonts/Roboto-Medium.ttf", 16.0f);
-  io.Fonts->AddFontFromFileTTF("../../fonts/Cousine-Regular.ttf", 15.0f);
-  io.Fonts->AddFontFromFileTTF("../../fonts/DroidSans.ttf", 16.0f);
-  io.Fonts->AddFontFromFileTTF("../../fonts/ProggyTiny.ttf", 10.0f);
-  */
+  io.Fonts->AddFontDefault();
 
   //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
   //IM_ASSERT(font != NULL);
@@ -91,6 +84,8 @@ int main(int, char **) {
 
   // Main loop
   while (!glfwWindowShouldClose(window)) {
+    //std::cout << io.DisplaySize.x << " " << io.DisplaySize.y << std::endl;
+
     // Poll and handle events (inputs, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
     // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -103,6 +98,8 @@ int main(int, char **) {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    //ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
     // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()!
     // You can browse its code to learn more about Dear ImGui!).
     if (state.show_demo_window)
@@ -110,9 +107,7 @@ int main(int, char **) {
 
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
     {
-      // http://koreanstudies.com/unicode-converter.html
-      //ImGui::Begin("\ud55c\uae00\uc774 \uc9c0\uc6d0\ub418\ub098\u003f"); // Create a window called "한글이 지원되나?" and append into it.
-      ImGui::Begin("한글이 지원되나?");
+      ImGui::Begin("Hello world");
 
       ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
       ImGui::Checkbox("Demo Window", &state.show_demo_window); // Edit bools storing our window open/close state

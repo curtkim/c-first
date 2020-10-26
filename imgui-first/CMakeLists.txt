@@ -21,6 +21,7 @@ foreach(APP
 		11_opengl_background
 		12_opengl_framebuffer
 		13_model
+		31_imgui_window
 		41_docking
 		43_docking_init
 		99_test
