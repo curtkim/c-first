@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
@@ -7,7 +7,6 @@
 #include <Eigen/Core>
 
 #include <igl/frustum.h>
-#include <igl/get_seconds.h>
 
 #include <chrono>
 #include <string>
@@ -15,7 +14,8 @@
 #include <iostream>
 
 #include "common/shader.hpp"
-#include "camera.hpp"
+#include "common/utils.hpp"
+#include "common/camera.hpp"
 #include "51_shapefile.hpp"
 
 
@@ -46,61 +46,8 @@ int w = 1024, h = 768;
 
 using namespace std;
 
-GLFWwindow * make_window() {
-  GLFWwindow * window;
-  // Initialise GLFW
-  if (!glfwInit()) {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
-    throw "Failed to initialize GLFW";
-  }
-
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,
-                 GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(w, h, "model viewer", NULL, NULL);
-  if (window == NULL) {
-    fprintf(stderr,
-            "Failed to open GLFW window. If you have an Intel GPU, they are "
-            "not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to open GLFW window";
-  }
-  glfwMakeContextCurrent(window);
-
-  // Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    throw "Failed to initialize GLEW";
-  }
-
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-  const auto &reshape = [](GLFWwindow *window, int w, int h) {
-      ::w = w, ::h = h;
-  };
-  glfwSetWindowSizeCallback(window, reshape);
-
-  {
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-    int width_window, height_window;
-    glfwGetWindowSize(window, &width_window, &height_window);
-    reshape(window, width_window, height_window);
-  }
-  return window;
-}
-
-auto load_static_model(std::vector<float> g_vertex_buffer_data) {
-
+// reference로 vector가 copy되는 것을 막는다.
+auto load_model(std::vector<float>& g_vertex_buffer_data) {
   GLuint vao;
   glGenVertexArrays( 1, &vao );
   glBindVertexArray( vao );
@@ -114,6 +61,7 @@ auto load_static_model(std::vector<float> g_vertex_buffer_data) {
   glEnableVertexAttribArray( 0 );
   glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
+  std::cout << "return std::make_tuple(vao, vbo)" << std::endl;
   return std::make_tuple(vao, vbo);
 }
 
@@ -163,13 +111,13 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 int main(int argc, char *argv[]) {
 
   // 1. init
-  GLFWwindow * window = make_window();
+  GLFWwindow * window = make_window(w,h);
   //glfwSetCursorPosCallback(window, mouse_callback);
 
   // 2. shader
   GLuint prog_id = LoadShadersFromString(vertex_shader, fragment_shader);
 
-  auto [counts, vertex_buffer_data] = read_shapefile("../../carla_town05_link.shp");
+  auto [counts, vertex_buffer_data] = read_shapefile("carla_town05_link.shp");
   std::vector<GLint> firsts(counts.size());
 
   firsts[0] = 0;
@@ -179,6 +127,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "counts.size()=" << counts.size() << " vertex_buffer_data.size()=" << vertex_buffer_data.size() << std::endl;
 
+  /*
   std::cout << "firsts: ";
   for(auto const& value: firsts) {
     std::cout << value << " ";
@@ -195,25 +144,31 @@ int main(int argc, char *argv[]) {
     std::cout << vertex_buffer_data[i] << " ";
   }
   std::cout << std::endl;
+  */
 
-
-  // 3. model
-  auto [VAO, VBO] = load_static_model(vertex_buffer_data);
+  // 3. buffer
+  std::cout << "load_model" << std::endl;
+  auto [VAO, VBO] = load_model(vertex_buffer_data);
+  std::cout << "load_model done" << std::endl;
 
   // 6. projection
-  Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
   float near = 0.01;
   float far = 1000;
   float top = tan(35. / 360. * M_PI) * near;
   float right = top * (double)::w / (double)::h;
+  /*
+  Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
   igl::frustum(-right, right, -top, top, near, far, proj);
   std::cout << proj << std::endl;
+  */
+  auto proj2 = glm::frustum(-right, right, -top, top, near, far);
 
+  std::cout << "loop" << std::endl;
   while (!glfwWindowShouldClose(window)) {
 
     processInput(window);
 
-    double tic = igl::get_seconds();
+    double tic = glfwGetTime();
     // clear screen and set viewport
     glClearColor(0.0, 0.0, 0.0, 0.);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -229,7 +184,8 @@ int main(int argc, char *argv[]) {
 
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
+    //glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, &proj2[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
@@ -248,7 +204,7 @@ int main(int argc, char *argv[]) {
     {
       glfwPollEvents();
       // In microseconds
-      double duration = 1000000. * (igl::get_seconds() - tic);
+      double duration = 1000000. * (glfwGetTime() - tic);
       const double min_duration = 1000000. / 60.;
       if (duration < min_duration) {
         std::this_thread::sleep_for(

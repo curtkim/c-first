@@ -6,7 +6,7 @@
 #include "liburing.h"
  
 #define QD  4
- 
+
 int main(int argc, char *argv[])
 {
     struct io_uring ring;
@@ -21,7 +21,8 @@ int main(int argc, char *argv[])
         printf("%s: file\n", argv[0]);
         return 1;
     }
- 
+
+    // 1. io_uring_queue_init
     ret = io_uring_queue_init(QD, &ring, 0);
     if (ret < 0) {
         fprintf(stderr, "queue_init: %s\n", strerror(-ret));

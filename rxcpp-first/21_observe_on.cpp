@@ -14,6 +14,7 @@ using namespace Rx;
 
 // 각각 별도의 thread 생성해서 사용하는 것 같다.
 // main, s1, s2, merge 모두 다른 thread를 사용한다.
+// 그러나 s1, s2, merge 하나의 thread를 계속사용한다.
 void test_observe_on_event_loop() {
 
   // rxcpp::observe_on_one_worker coordination = rxcpp::observe_on_event_loop();

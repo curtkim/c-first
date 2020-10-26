@@ -50,8 +50,8 @@ int main(int argc, const char *argv[]) {
 
   auto[world, vehicle] = init_carla(MAP_NAME);
   auto lidar_transform = cg::Transform{
-    cg::Location{0.0f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{0.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+    cg::Location{0.0f, 0.0f, 2.8f},     // x, y, z.
+    cg::Rotation{0.0f, 0.0f, 0.0f}};    // pitch, yaw, roll.
   std::map<std::string, std::string> lidar_attributes = {
      {"sensor_tick", "0.1"},
      {"range", "200"},
@@ -84,11 +84,11 @@ int main(int argc, const char *argv[]) {
 
   frame$
     .with_latest_from(lidar$)
-    .tap([&spectator, &vehicle](std::tuple<int, boost::shared_ptr<csd::LidarMeasurement>> v) {
+    .tap([&spectator](std::tuple<int, boost::shared_ptr<csd::LidarMeasurement>> v) {
 
-      auto tf = vehicle->GetTransform();
-      tf.location.z += 2.0f;
-      spectator->SetTransform(tf);
+//      auto tf = vehicle->GetTransform();
+//      tf.location.z += 2.0f;
+//      spectator->SetTransform(tf);
 
       auto[frame, lidar_measure] = v;
       auto [VAO, VBO, point_length] = load_model(lidar_measure);

@@ -92,6 +92,7 @@ void test_reduce() {
       []() { printf("\nOnCompleted\n"); });
 }
 
+<<<<<<< HEAD
 void test_repeat() {
   cout << "---" << __FUNCTION__ << endl;
 
@@ -115,23 +116,23 @@ void test_repeat_count() {
     [](){printf("OnCompleted\n");});
 }
 
-int main() {
-
-  test_with_latest_from_and_pairwise();
-  test_with_latest_from();
-  test_concat();
-  test_concat_map();
-  test_scan();
-  test_reduce();
-  test_repeat();
-  test_repeat_count();
-
+void test_publish() {
   rxcpp::sources::from("a", "B")
     .publish()
     .ref_count()
     .subscribe([](std::string a){
-      cout << a;
+      cout << a << " ";
     });
+}
 
+int main() {
+
+//  test_with_latest_from_and_pairwise();
+//  test_with_latest_from();
+//  test_concat();
+//  test_concat_map();
+//  test_scan();
+//  test_reduce();
+  test_publish();
   return 0;
 }

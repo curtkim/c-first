@@ -1,9 +1,5 @@
 [requires]
-boost_asio/1.69.0@bincrafters/stable
-boost_program_options/1.69.0@bincrafters/stable
-boost_date_time/1.69.0@bincrafters/stable
-boost_fiber/1.69.0@bincrafters/stable
-
+boost/1.74.0
 
 [generators]
 cmake

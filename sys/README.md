@@ -16,4 +16,8 @@
     9740
     9669
     9709
-    Average exec time: 9690    
+    Average exec time: 9690
+    
+    
+## Reference
+Linux AsyncIO : https://blog.cloudflare.com/io_submit-the-epoll-alternative-youve-never-heard-about/        

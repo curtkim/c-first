@@ -15,6 +15,9 @@ RUN apt-get update \
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
+RUN useradd -ms /bin/bash  curt
+USER curt
+
 WORKDIR /app
 COPY cmake-build-debug/bin /app
 

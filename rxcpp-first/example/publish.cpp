@@ -13,7 +13,8 @@ int main() {
 
   auto values = rxcpp::observable<>::interval(std::chrono::milliseconds(50), rxcpp::observe_on_new_thread()).
       take(5).
-      publish_synchronized(rxcpp::observe_on_new_thread());
+      publish();
+      //publish_synchronized(rxcpp::observe_on_new_thread());
 
   // Subscribe from the beginning
   values.subscribe(

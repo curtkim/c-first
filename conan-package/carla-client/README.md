@@ -7,4 +7,4 @@
     conan export-pkg . demo/testing --package-folder=tmp/package
     conan test test_package carla-client/0.9.9@demo/testing
 
-    conan create . 0.9.9@demo/testing
+    conan create . demo/testing
