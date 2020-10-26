@@ -17,6 +17,7 @@ foreach(APP
 		03_show_image
 		04_multi_image
 		05_custom_shape
+		06_font_korea
 		11_opengl_background
 		12_opengl_framebuffer
 		13_model
