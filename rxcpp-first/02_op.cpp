@@ -92,6 +92,28 @@ void test_reduce() {
       []() { printf("\nOnCompleted\n"); });
 }
 
+void test_repeat() {
+  cout << "---" << __FUNCTION__ << endl;
+
+  auto values = rxcpp::observable<>::from(1, 2)
+    .repeat()
+    .take(5);
+
+  values.subscribe(
+    [](int v){printf("OnNext: %d\n", v);},
+    [](){printf("OnCompleted\n");});
+}
+
+void test_repeat_count() {
+  cout << "---" << __FUNCTION__ << endl;
+
+  auto values = rxcpp::observable<>::from(1, 2)
+    .repeat(3);
+
+  values.subscribe(
+    [](int v){printf("OnNext: %d\n", v);},
+    [](){printf("OnCompleted\n");});
+}
 
 int main() {
 
@@ -101,6 +123,8 @@ int main() {
   test_concat_map();
   test_scan();
   test_reduce();
+  test_repeat();
+  test_repeat_count();
 
   rxcpp::sources::from("a", "B")
     .publish()

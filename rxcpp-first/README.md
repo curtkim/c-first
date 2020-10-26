@@ -15,11 +15,23 @@ scheduler is also a factory for workers in that timeline.
 since a scheduler owns a timeline it is possible to build schedulers that time-travel.
 the virtual-scheduler is a base for the test-scheduler that uses this to make multi-second tests complete in ms.
 
+- make_event_loop
+- make_new_thread
+- make_same_worker
+- make_run_loop
+- make_immediate
+- make_current_thread
+
+- virtual clock_type::time_point now() const
+- virtual void schedule(const schedulable& scbl) const
+- virtual void schedule(clock_type::time_point when, const schedulable& scbl) const
+
 ## Worker
 worker owns a queue of pending schedulables for the timeline and has a lifetime
 The queue maintains insertion order so that when N schedulables have the same target time they are run in the order that they were inserted into the queue
 The worker guarantees that each schedulable completes before the next schedulable is started
-when the worker's lifetime is unsubscribed all pending schedulables are discarded.
+when the worker's lifetime is unsubscribed 
+all pending schedulables are discarded.
 
 ## Schedulable
 schedulable owns a function and has a worker and a lifetime

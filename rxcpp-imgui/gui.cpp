@@ -76,6 +76,7 @@ void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::functi
 
   int frame = 0;
   while (!glfwWindowShouldClose(window)) {
+    std::cout << std::this_thread::get_id() << " === while start " << frame << std::endl;
     glfwPollEvents();
 
     // Start the Dear ImGui frame
@@ -84,12 +85,12 @@ void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::functi
     ImGui::NewFrame();
 
     sendFrame(frame); // main의 tap이 여기서 실행된다.
-    std::cout << std::this_thread::get_id() << " " << frame << " sendFrame after" << std::endl;
+    std::cout << std::this_thread::get_id() << " sendFrame after " << frame << std::endl;
     while (!rl.empty() && rl.peek().when < rl.now()) {
       // 왜 그런지 모르겠지만 60 frame(1초)마다 실행된다.
-      std::cout << "dispatch before" << std::endl;
+      std::cout << std::this_thread::get_id() << " dispatch before" << std::endl;
       rl.dispatch();
-      std::cout << "dispatch after" << std::endl;
+      std::cout << std::this_thread::get_id() << " dispatch after" << std::endl;
     }
 
     // Rendering
@@ -105,7 +106,7 @@ void loop_imgui(GLFWwindow *window, rxcpp::schedulers::run_loop &rl, std::functi
     }
 
     glfwSwapBuffers(window);
-    std::cout << std::this_thread::get_id() << " " << frame << " in loop" << " frame rate: " << io.Framerate << std::endl;
+    std::cout << std::this_thread::get_id() << " --- while end " << frame << " frame rate: " << io.Framerate << std::endl;
     frame++;
   }
 }

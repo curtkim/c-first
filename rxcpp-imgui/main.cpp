@@ -26,10 +26,10 @@ int main(int, char **) {
 
   frame$
     .with_latest_from(interval$)
-//    .observe_on(rxcpp::observe_on_new_thread())
+//    .observe_on(rxcpp::synchronize_event_loop())
 //    .tap([](std::tuple<int, int> v){
 //      auto [frame, second] = v;
-//      std::cout << std::this_thread::get_id() << " " << frame << " in tap1" << std::endl;
+//      std::cout << std::this_thread::get_id() << " tap1 " << frame << std::endl;
 //    })
     .observe_on(rxcpp::observe_on_run_loop(rl))
     .tap([](std::tuple<int, int> v) {
@@ -41,7 +41,7 @@ int main(int, char **) {
       ImGui::Text("second = %d", second);
       ImGui::End();
 
-      std::cout << std::this_thread::get_id() << " " << frame << " in tap2" << std::endl;
+      std::cout << std::this_thread::get_id() << " tap2 " << frame << std::endl;
     })
     .subscribe();
 
