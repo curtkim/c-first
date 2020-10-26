@@ -4,7 +4,7 @@ project(torch-first LANGUAGES CUDA CXX)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-include_directories(/usr/local/cuda-10.1/include)
+include_directories(/usr/local/cuda/include)
 
 message(STATUS "------------------")
 foreach(A ${CONAN_LIBS})
