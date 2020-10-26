@@ -49,9 +49,14 @@ std::ostream& operator<< (std::ostream& o, const cg::GeoLocation& a)
   o << "lng: " << a.longitude << " lat: " << a.latitude << " alt: " << a.altitude;
   return o;
 }
-std::ostream& operator<< (std::ostream& o, const carla::sensor::s11n::RadarDetection& a)
+std::ostream& operator<< (std::ostream& o, const carla::sensor::data::RadarDetection& a)
 {
   o << "azi: " << a.azimuth << " alt: " << a.altitude << " depth: " << a.depth << " vel:" << a.velocity;
+  return o;
+}
+std::ostream& operator<< (std::ostream& o, const carla::sensor::data::LidarDetection& a)
+{
+  o << "point: " << a.point << " intensity: " << a.intensity ;
   return o;
 }
 std::ostream& operator<< (std::ostream& o, const carla::sensor::data::Color& a)

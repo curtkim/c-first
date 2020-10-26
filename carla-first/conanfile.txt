@@ -1,5 +1,5 @@
 [requires]
-carla-client/0.9.10@demo/testing
+carla-client/0.9.10.1@demo/testing
 nlohmann_json/3.7.3
 rxcpp/4.1.0
 glfw/3.3.2@demo/testing
