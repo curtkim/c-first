@@ -21,10 +21,13 @@ foreach(ITEM ${TORCH_LIBRARIES})
 endforeach()
 
 
+file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+
 foreach(APP
 		04_cuda_detect
+		91_candy
 		)
-	add_executable(${APP} ${APP}.cpp)
+	add_executable(${APP} ${APP}.cpp utils/image_io.cpp)
 	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
 	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
 	target_compile_features(${APP} PUBLIC cxx_std_17)

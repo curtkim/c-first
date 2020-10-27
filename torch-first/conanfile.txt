@@ -1,5 +1,6 @@
 [requires]
 torch/1.6.0@curt/prebuilt
+stb/20200203
 #opencv/4.1.1@conan/stable
 #boost/1.73.0
 
