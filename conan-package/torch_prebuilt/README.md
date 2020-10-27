@@ -1,3 +1,4 @@
+## HOWTO
 
     conan source . --source-folder=tmp/source
     conan install . --install-folder=tmp/build
@@ -7,3 +8,8 @@
     conan export-pkg . curt/prebuilt --package-folder=tmp/package
     conan test test_package torch/1.6.0@curt/prebuilt
 
+## Debug
+
+    torch cxx11을 받았기 때문에 profile에 아래가 적용되어 있어야한다. 
+    
+    compiler.libcxx=libstdc++11

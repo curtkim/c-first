@@ -7,15 +7,8 @@ using namespace std;
 
 int main() {
 
-  assert(torch::cuda::is_available());
-  if( torch::cuda::is_available()){
-    cout << "cuda available" << endl;
-  }
-  else {
-    cout << "cuda unavailable" << endl;
-    return 1;
-  }
-
+  cout << "CUDA: " << (torch::cuda::is_available() ? "Yes" : "No") << endl;
+  cout << "cuDNN: " << (torch::cuda::cudnn_is_available() ? "Yes" : "No") << endl;
 
   at::Tensor a = at::ones({2, 2}, at::kInt);
   at::Tensor b = at::randn({2, 2}); // float type

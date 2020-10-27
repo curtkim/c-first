@@ -10,7 +10,7 @@
     -Wl,-rpath,
         /home/curt/.conan/data/torch/1.6.0/curt/prebuilt/package/06cb18a658a30c9ee232f93db1f894f286607974/lib:/usr/local/cuda/lib64/stubs:/usr/local/cuda/lib64 
         /usr/local/cuda/lib64/stubs/libcuda.so 
-        /usr/local/cuda/lib64/libnvrtc.so           -- Runtime Compile
+        /usr/local/cuda/lib64/libnvrtc.so
         /usr/local/cuda/lib64/libnvToolsExt.so 
         /usr/local/cuda/lib64/libcudart.so 
         /home/curt/.conan/data/torch/1.6.0/curt/prebuilt/package/06cb18a658a30c9ee232f93db1f894f286607974/lib/libc10.so
