@@ -1,15 +1,10 @@
-// dear imgui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// If you are new to dear imgui, see examples/README.txt and documentation at the top of imgui.cpp.
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-
 #include <imgui.h>
 #include "bindings/imgui_impl_glfw.h"
 #include "bindings/imgui_impl_opengl3.h"
 #include <stdio.h>
 #include <iostream>
 
-#include <glad/glad.h>  // Initialize with gladLoadGL()
-// Include glfw3.h after our OpenGL definitions
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 struct OurState {
@@ -22,6 +17,14 @@ struct OurState {
 
 static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+int WIDTH = 1280;
+int HEIGHT = 720;
+
+void window_size_callback(GLFWwindow* window, int width, int height) {
+  WIDTH = width;
+  HEIGHT = height;
 }
 
 int main(int, char **) {
@@ -38,11 +41,12 @@ int main(int, char **) {
   //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 
   // Create window with graphics context
-  GLFWwindow *window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
   if (window == NULL)
     return 1;
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1); // Enable vsync
+  glfwSetWindowSizeCallback(window, window_size_callback);
 
   bool err = gladLoadGL() == 0;
   if (err) {
@@ -63,6 +67,9 @@ int main(int, char **) {
   ImGui::StyleColorsDark();
   //ImGui::StyleColorsClassic();
 
+  ImGuiStyle& style = ImGui::GetStyle();
+  style.WindowRounding = 0;
+
   // Setup Platform/Renderer bindings
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init(glsl_version);
@@ -74,8 +81,8 @@ int main(int, char **) {
   // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
   // - Read 'docs/FONTS.txt' for more instructions and details.
   // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-  io.Fonts->AddFontDefault();
-
+  //io.Fonts->AddFontDefault();
+  io.Fonts->AddFontFromFileTTF("../../fonts/Cousine-Regular.ttf", 18.0f);
   //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
   //IM_ASSERT(font != NULL);
 
@@ -105,12 +112,13 @@ int main(int, char **) {
     if (state.show_demo_window)
       ImGui::ShowDemoWindow(&state.show_demo_window);
 
-    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(WIDTH - 300, 0), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(300, HEIGHT), ImGuiCond_Always);
 
+    bool OPEN = false;
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
     {
-      ImGui::Begin("Hello world");
+      ImGui::Begin("Hello world", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse );
 
       ImGui::Text("This is some useful text."); // Display some text (you can use a format strings too)
       ImGui::Checkbox("Demo Window", &state.show_demo_window); // Edit bools storing our window open/close state
