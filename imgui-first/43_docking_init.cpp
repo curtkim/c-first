@@ -21,6 +21,7 @@ void make_window() {
 
   ImGuiWindowFlags flags = ImGuiWindowFlags_NoDocking;
 
+  /*
   ImGuiViewport* viewport = ImGui::GetMainViewport();
 
   std::cout << "viewport->Pos " << viewport->Pos.x << " " << viewport->Pos.y << std::endl; // 0 0
@@ -29,6 +30,7 @@ void make_window() {
   ImGui::SetNextWindowSize(viewport->Size);
   std::cout << "viewport->ID " << viewport->ID << std::endl;
   ImGui::SetNextWindowViewport(viewport->ID);
+  */
 
   // PushStyle 1
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -42,22 +44,6 @@ void make_window() {
   ImGui::PopStyleVar();
   // PushStyle 2
 
-  /*
-  if (ImGui::BeginMenuBar())
-  {
-    if (initialized == 0)
-    {
-      if (ImGui::Button("1. Initialize"))
-        initialized = 1;
-    }
-    if (initialized > 0 && new_window == 0)
-    {
-      if (ImGui::Button("2. New Window"))
-        new_window = 1;
-    }
-    ImGui::EndMenuBar();
-  }
-  */
 
   ImGuiIO& io = ImGui::GetIO();
   ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
@@ -76,22 +62,23 @@ void make_window() {
     ImGui::DockBuilderFinish(ctx, dockspace_id);
      */
 
-  ImGui::DockSpace(dockspace_id);
+  ImGui::DockSpace(dockspace_id); // , ImVec2(0, 0), ImGuiDockNodeFlags_AutoHideTabBar
 
   {
-    ImGui::Begin("Properties");
+    ImGui::Begin("Left", NULL);
+    ImGui::Text("Left: This is some useful text.");
     ImGui::End();
 
-    ImGui::Begin("Log");
+    ImGui::Begin("Bottom", NULL);
+    ImGui::Text("Bottom: This is some useful text.");
     ImGui::End();
   }
 
-  {
-    // Should dock window to empty space, instead window is not docked anywhere.
-    ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_Always);
-    ImGui::Begin("New Window");
-    ImGui::End();
-  }
+  // Should dock window to empty space, instead window is not docked anywhere.
+  ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_Always);
+  ImGui::Begin("Body");
+  ImGui::Text("Body: This is some useful text.");
+  ImGui::End();
 
   ImGui::End();
   ImGui::PopStyleVar();
