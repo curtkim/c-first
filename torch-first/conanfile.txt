@@ -1,5 +1,5 @@
 [requires]
-torch/1.6.0@curt/prebuilt
+torch/1.7.0@curt/prebuilt
 stb/20200203
 #opencv/4.1.1@conan/stable
 #boost/1.73.0
@@ -8,4 +8,4 @@ stb/20200203
 cmake
 
 [options]
-torch:cuda=10.2
+#torch:cuda=10.1

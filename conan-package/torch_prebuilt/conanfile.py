@@ -4,7 +4,7 @@ import tempfile
 
 class TorchConan(ConanFile):
     name = "torch"
-    version = "1.6.0"
+    version = "1.7.0"
     settings = "os", "compiler", "build_type", "arch"
     options = {"cuda": ["9.2", "10.1", "10.2", "None"]}
     default_options = {"cuda": "10.1"}
