@@ -10,6 +10,7 @@
 
 ## Reference
 - https://leixiaohua1020.github.io/
+- https://developer.nvidia.com/nvidia-video-codec-sdk/download
 
 ## Install
 
