@@ -9,7 +9,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 
-include_directories(/home/curt/projects/c/Video_Codec_SDK_10.0.26/Interface)
+include_directories(/home/curt/projects/nvidia/Video_Codec_SDK_10.0.26/Interface)
 
 # 1
 foreach(APP pl_mpeg_extract_frames )
@@ -21,7 +21,7 @@ endforeach()
 
 # 2 nvidia env/dec
 add_executable(nv_extract_frames nv_extract_frames.cpp common/NvDecoder/NvDecoder.cpp)
-target_link_directories(nv_extract_frames PUBLIC /home/curt/projects/c/Video_Codec_SDK_10.0.26/Lib/linux/stubs/x86_64)
+target_link_directories(nv_extract_frames PUBLIC /home/curt/projects/nvidia/Video_Codec_SDK_10.0.26/Lib/linux/stubs/x86_64)
 target_link_directories(nv_extract_frames PUBLIC /usr/local/cuda/lib64)
 target_link_libraries(nv_extract_frames PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart avcodec avformat avutil)
 target_compile_features(nv_extract_frames PUBLIC cxx_std_17)

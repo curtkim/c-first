@@ -13,10 +13,30 @@
 
 ## Install
 
-    apt-get install libavcodec-dev
-    apt-get install libavformat-dev
-    apt-get install libavfilter-dev
-    apt-get install libv4l-dev
+    apt-get install -y libavcodec-dev libavformat-dev libavfilter-dev
+    apt-get install -y libv4l-dev
+
+    # ubuntu 16.04
+    libavcodec-dev/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed]
+    libavcodec-ffmpeg56/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed]
+    libavdevice-ffmpeg56/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed,automatic]
+    libavfilter-dev/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed]
+    libavfilter-ffmpeg5/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed,automatic]
+    libavformat-dev/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed]
+    libavformat-ffmpeg56/xenial-updates,xenial-security,now 7:2.8.17-0ubuntu0.1 amd64 [installed]
+
+    # ubuntu 18.04
+    libavcodec-dev/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed]
+    libavcodec57/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavfilter-dev/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed]
+    libavfilter6/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavformat-dev/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed]
+    libavformat57/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavresample-dev/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavresample3/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavutil-dev/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+    libavutil55/bionic-updates,bionic-security,now 7:3.4.8-0ubuntu0.2 amd64 [installed,automatic]
+
 
 ## ETC
 
