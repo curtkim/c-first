@@ -1,0 +1,12 @@
+[requires]
+torch/1.7.0@curt/prebuilt
+stb/20200203
+#torchvision/0.7.0@demo/testing
+#opencv/4.1.1@conan/stable
+
+[generators]
+cmake
+
+[options]
+torch:cuda=10.2
+torchvision:with_cuda=True
