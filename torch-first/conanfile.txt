@@ -8,4 +8,4 @@ stb/20200203
 cmake
 
 [options]
-#torch:cuda=10.1
+torch:cuda=10.2
