@@ -1,0 +1,15 @@
+CC=gcc
+CFLAGS=-I.
+DEPS = hellomake.h 
+#macro DEPS, which is the set of .h files on which the .c files depend
+
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+# -o $@ says to put the output of the compilation in the file named on the left side of the :
+# the $< is the first item in the dependencies list
+
+hellomake: hellomake.o hellofunc.o 
+	$(CC) -o hellomake hellomake.o hellofunc.o 
+
+clean:
+	rm -f *.o hellomake
