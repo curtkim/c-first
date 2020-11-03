@@ -5,3 +5,6 @@
 ## prepare image
  
     convert frame0000.jpg -crop 1066x800+300+300 frame0000_crop.jpg
+
+## Reference
+https://github.com/facebookresearch/detr/issues/238    
