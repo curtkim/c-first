@@ -6,9 +6,15 @@ using namespace torch;
 
 void create() {
   // eye
-  torch::Tensor tensor = torch::eye(3);
+  Tensor tensor = at::eye(2);
   std::cout << tensor << std::endl;
   std::cout << tensor.options().dtype() << " " << tensor.size(0) << " " << tensor.size(1) << std::endl;
+
+  assert(tensor.equal(torch::tensor({
+    {1, 0},
+    {0, 1}
+  })));
+
 
   // rand
   std::cout << torch::rand({3,2}) << std::endl;
@@ -18,18 +24,20 @@ void create() {
 
   // direct
   std::cout << torch::tensor({5.5f, 3.f}) << std::endl;
+
+
 }
 
 void op() {
   cout << "\n================= op" << endl;
   auto a = torch::eye(3);
   auto b = torch::zeros({3,3});
-  auto c = torch::tensor({1, 1, 1});
-  auto d = torch::tensor({1, 2, 3}, at::kDouble);
+  auto c = tensor({1, 1, 1});
+  auto d = tensor({1, 2, 3}, at::kDouble);
 
 
   std::cout << a+b << std::endl;
-  std::cout << torch::add(a,b) << std::endl;
+  std::cout << add(a,b) << std::endl;
 
   a.add_(c);
   std::cout << a << std::endl;
