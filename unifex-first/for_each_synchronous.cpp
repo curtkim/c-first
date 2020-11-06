@@ -12,14 +12,18 @@ int main() {
 
   int finalResult;
 
-  sync_wait(transform(
-    reduce_stream(
-      transform_stream(
-        range_stream{0, 10},
-        [](int value) { return value * value; }),
-      0,
-      [](int state, int value) { return state + value; }),
-    [&](int result) { finalResult = result; }));
+  sync_wait(
+    transform(
+      reduce_stream(
+        transform_stream(
+          range_stream{0, 10},
+          [](int v) { return v * v; }),
+        0,
+        [](int state, int value) { return state + value; }
+      ),
+      [&](int result) { finalResult = result; }
+    )
+  );
 
   std::printf("result = %i\n", finalResult);
 

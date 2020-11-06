@@ -10,12 +10,14 @@ using namespace unifex;
 int main() {
   sync_wait(
     via(
-      transform(just(1), [](int a) { // Successor
-        std::printf("%d\n", a);
-      }),
-      transform(just(2), [](int b) { // Predecessor
-        std::printf("%d\n", b);
-      })
+      transform(
+        just(1),
+        [](int a) { std::printf("%d\n", a); }
+      ),  // Successor
+      transform(
+        just(2),
+        [](int b) { std::printf("%d\n", b);}
+      ) // Predecessor
     )
   );
   return 0;

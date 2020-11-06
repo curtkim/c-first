@@ -17,14 +17,20 @@ int main() {
 
   single_thread_context context2;
 
-  sync_wait(transform(
-    for_each(
-      on_stream(
-        context2.get_scheduler(), // scheduler
-        range_stream{0, 10}       // stream_sender
+  sync_wait(
+    transform(
+      for_each(
+        on_stream(
+          context2.get_scheduler(), // scheduler
+          range_stream{0, 5}        // stream_sender
+        ),
+        [](int value) {
+          std::printf("got %i %ld\n", value, std::this_thread::get_id());
+        }
       ),
-      [](int value) { std::printf("got %i %ld\n", value, std::this_thread::get_id()); }),
-    []() { std::printf("done %ld\n", std::this_thread::get_id()); }));
+      []() { std::printf("done %ld\n", std::this_thread::get_id()); }
+    )
+  );
 
   return 0;
 }

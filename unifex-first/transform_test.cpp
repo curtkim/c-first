@@ -15,6 +15,7 @@ using namespace std::chrono_literals;
 int main() {
   int count = 0;
 
+  // no return, parameter 1개
   just()
   | transform([&]{ ++count; })
   | sync_wait();
@@ -26,10 +27,15 @@ int main() {
   );
   assert(count == 2);
 
+  // parameter 2개
   transform(
-    transform(just(1), [](int i){ return i+1;}),
-    [](auto a){
-      std::cout << a << std::endl;
-    }) | sync_wait();
+    transform(
+      just(1),
+      [](int i){ return i+1;}
+    ),
+    [](int a){
+      assert(a == 2);
+    }
+  ) | sync_wait();
 
 }

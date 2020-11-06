@@ -14,7 +14,9 @@ int main() {
       schedule_with_subscheduler(scheduler),
       [&](auto subScheduler) noexcept {
         return subScheduler == scheduler;
-      }));
+      }
+    )
+  );
 
   if (result.has_value() && result.value()) {
     // Success
