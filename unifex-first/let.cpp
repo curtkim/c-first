@@ -35,6 +35,21 @@ int main() {
     });
   };
 
+  std::optional<int> result2 = sync_wait(
+    let(
+      async([] { return 42; }),
+      [&](int& x) {
+        printf("addressof x = %p, val = %i\n", (void*)&x, x);
+        return async([&]() -> int {
+          printf("successor tranform\n");
+          printf("addressof x = %p, val = %i\n", (void*)&x, x);
+          return x;
+        });
+      }
+    )
+  );
+
+
   title("1. Simple usage of 'let()'");
   // defines an async scope
   // in which the result of one async operation is in-scope for the duration of a second operation.

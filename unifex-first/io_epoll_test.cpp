@@ -77,11 +77,8 @@ int main() {
           });
       })
       | typed_via(scheduler)
-      // Repeat the reads:
       | repeat_effect()
-      // stop reads after requested time
       | stop_when(schedule_at(scheduler, now(scheduler) + std::chrono::seconds(seconds)))
-      // complete with void when requested time expires
       | transform_done([]{
         std::cout << std::this_thread::get_id() << " transform_done in pipe_bench" << std::endl;
         return just();

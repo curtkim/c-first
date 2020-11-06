@@ -3,8 +3,10 @@
 #include <unifex/sync_wait.hpp>
 #include <unifex/trampoline_scheduler.hpp>
 #include <unifex/transform.hpp>
+#include <unifex/let.hpp>
 #include <unifex/transform_stream.hpp>
 #include <unifex/typed_via_stream.hpp>
+#include <unifex/via_stream.hpp>
 
 #include <cstdio>
 
@@ -21,7 +23,7 @@ int main() {
           trampoline_scheduler{},
           transform_stream(
             range_stream{0, 100'000},
-            [](int value) { return value ; }
+            [](int value) { return value; }
           )
         ),
         0,

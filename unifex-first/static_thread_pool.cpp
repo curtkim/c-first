@@ -10,7 +10,10 @@ using namespace unifex;
 
 template <typename Scheduler, typename F>
 auto run_on(Scheduler&& s, F&& func) {
-  return transform(schedule((Scheduler &&) s), (F &&) func);
+  return transform(
+    schedule((Scheduler &&) s),
+    (F &&) func
+  );
 }
 
 int main() {
@@ -20,18 +23,14 @@ int main() {
 
   sync_wait(
     when_all(
-      run_on(
-        tp,
-        [&] {
-          ++x;
-          std::printf("task 1 %ld\n", std::this_thread::get_id());
-        }),
-      run_on(
-        tp,
-        [&] {
-          ++x;
-          std::printf("task 2 %ld\n", std::this_thread::get_id());
-        }),
+      run_on(tp, [&] {
+        ++x;
+        std::printf("task 1 %ld\n", std::this_thread::get_id());
+      }),
+      run_on(tp, [&] {
+        ++x;
+        std::printf("task 2 %ld\n", std::this_thread::get_id());
+      }),
       run_on(tp, [&] {
         ++x;
         std::printf("task 3 %ld\n", std::this_thread::get_id());

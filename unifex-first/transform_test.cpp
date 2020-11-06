@@ -13,6 +13,7 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 int main() {
+
   int count = 0;
 
   // no return, parameter 1개
@@ -26,6 +27,7 @@ int main() {
     transform([&](){ ++count; })
   );
   assert(count == 2);
+
 
   // parameter 2개
   transform(

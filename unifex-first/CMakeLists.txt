@@ -23,7 +23,12 @@ foreach(APP
         transform_test
         via
         on_stream
-        via_stream)
+        via_stream
+        repeat_effect
+        stop_immediately
+        type_erased_stream
+        stream_cancellation
+        materialize)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )
     target_compile_features(${APP} PUBLIC cxx_std_17)

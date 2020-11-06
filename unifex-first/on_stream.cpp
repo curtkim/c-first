@@ -4,8 +4,6 @@
 #include <unifex/single_thread_context.hpp>
 #include <unifex/sync_wait.hpp>
 #include <unifex/transform.hpp>
-#include <unifex/transform_stream.hpp>
-#include <unifex/typed_via_stream.hpp>
 
 #include <cstdio>
 #include <thread>

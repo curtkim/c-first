@@ -16,6 +16,7 @@ int main() {
 
   single_thread_context context;
 
+  // via_stream(Scheduler scheduler, Stream stream) -> Stream
   sync_wait(
     transform(
       for_each(
