@@ -1,0 +1,6 @@
+[requires]
+nlohmann_json/3.9.1
+asio/1.18.0
+
+[generators]
+cmake
