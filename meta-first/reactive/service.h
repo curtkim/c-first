@@ -25,19 +25,18 @@ namespace detail {
  * identifier instead, and have the central
  * server component keep track of all clients.
  */
-template <typename MessageType>
-struct with_client {
+  template<typename MessageType>
+  struct with_client {
     MessageType value;
     tcp::socket *socket;
 
-    void reply(const std::string& message) const
-    {
-        asio::async_write(
-                *socket,
-                asio::buffer(message, message.length()),
-                                 [](auto, auto) {});
+    void reply(const std::string &message) const {
+      asio::async_write(
+        *socket,
+        asio::buffer(message, message.length()),
+        [](auto, auto) {});
     }
-};
+  };
 
 } // namespace detail
 
@@ -45,23 +44,21 @@ struct with_client {
  * Function that constructs an instance of with_client given a
  * value and a socket
  */
-template <typename MessageType>
-auto make_with_client(MessageType&& value, tcp::socket* socket)
-{
-    return ::detail::with_client<MessageType>{
-        std::forward<MessageType>(value), socket};
+template<typename MessageType>
+auto make_with_client(MessageType &&value, tcp::socket *socket) {
+  return ::detail::with_client<MessageType>{
+    std::forward<MessageType>(value), socket};
 }
 
 /**
  * Lift any function from T1 to T2 to a function
  * from with_client<T1> to with_client<T2>
  */
-template <typename F>
-auto lift_with_client(F&& function)
-{
-    return [function = std::forward<F>(function)] (auto &&ws) {
-        return make_with_client(std::invoke(function, ws.value), ws.socket);
-    };
+template<typename F>
+auto lift_with_client(F &&function) {
+  return [function = std::forward<F>(function)](auto &&ws) {
+    return make_with_client(std::invoke(function, ws.value), ws.socket);
+  };
 }
 
 /**
@@ -72,14 +69,12 @@ auto lift_with_client(F&& function)
  * transformation on streams that emit values
  * with socket pointer
  */
-template <typename F>
-auto apply_with_client(F&& function)
-{
-    return [function = std::forward<F>(function)] (auto &&ws) {
-        return std::invoke(function, std::forward<decltype(ws)>(ws).value);
-    };
+template<typename F>
+auto apply_with_client(F &&function) {
+  return [function = std::forward<F>(function)](auto &&ws) {
+    return std::invoke(function, std::forward<decltype(ws)>(ws).value);
+  };
 }
-
 
 
 /**
@@ -88,49 +83,45 @@ auto apply_with_client(F&& function)
  * It reads the data sent by the client line by line,
  * and sends each line as a separate message.
  */
-template <typename EmitFunction>
-class session: public std::enable_shared_from_this<session<EmitFunction>> {
+template<typename EmitFunction>
+class session : public std::enable_shared_from_this<session<EmitFunction>> {
 public:
-    session(tcp::socket&& socket, EmitFunction emit)
-        : m_socket(std::move(socket))
-        , m_emit(emit)
-    {
-    }
+  session(tcp::socket &&socket, EmitFunction emit)
+    : m_socket(std::move(socket)), m_emit(emit) {
+  }
 
-    void start()
-    {
-        do_read();
-    }
+  void start() {
+    do_read();
+  }
 
 private:
-    using shared_session = std::enable_shared_from_this<session<EmitFunction>>;
+  using shared_session = std::enable_shared_from_this<session<EmitFunction>>;
 
-    void do_read()
-    {
-        // Getting a shared pointer to this instance
-        // to capture it in the lambda
-        auto self = shared_session::shared_from_this();
-        asio::async_read_until(
-            m_socket, m_data, '\n',
-            [this, self](const asio::error_code& error,
-                         std::size_t size) {
-                if (!error) {
-                    // Reading a line from the client and
-                    // passing it to whoever listens to us
-                    std::istream is(&m_data);
-                    std::string line;
-                    std::getline(is, line);
-                    m_emit(make_with_client(std::move(line), &m_socket));
+  void do_read() {
+    // Getting a shared pointer to this instance
+    // to capture it in the lambda
+    auto self = shared_session::shared_from_this();
+    asio::async_read_until(
+      m_socket, m_data, '\n',
+      [this, self](const asio::error_code &error,
+                   std::size_t size) {
+        if (!error) {
+          // Reading a line from the client and
+          // passing it to whoever listens to us
+          std::istream is(&m_data);
+          std::string line;
+          std::getline(is, line);
+          m_emit(make_with_client(std::move(line), &m_socket));
 
-                    // Scheduling the next line to be read
-                    do_read();
-                }
-            });
-    }
+          // Scheduling the next line to be read
+          do_read();
+        }
+      });
+  }
 
-    tcp::socket m_socket;
-    asio::streambuf m_data;
-    EmitFunction m_emit;
+  tcp::socket m_socket;
+  asio::streambuf m_data;
+  EmitFunction m_emit;
 };
 
 /**
@@ -138,12 +129,11 @@ private:
  * by the socket and sets the function which the session will
  * used for sending the messages
  */
-template <typename Socket, typename EmitFunction>
-auto make_shared_session(Socket&& socket, EmitFunction&& emit)
-{
-    return std::make_shared<session<EmitFunction>>(
-            std::forward<Socket>(socket),
-            std::forward<EmitFunction>(emit));
+template<typename Socket, typename EmitFunction>
+auto make_shared_session(Socket &&socket, EmitFunction &&emit) {
+  return std::make_shared<session<EmitFunction>>(
+    std::forward<Socket>(socket),
+    std::forward<EmitFunction>(emit));
 }
 
 /**
@@ -152,32 +142,31 @@ auto make_shared_session(Socket&& socket, EmitFunction&& emit)
  */
 class service {
 public:
-    using value_type = ::detail::with_client<std::string>;
+  using value_type = ::detail::with_client<std::string>;
 
-    explicit service(asio::io_service& service,
-                     unsigned short port = 42042);
+  explicit service(asio::io_service &service,
+                   unsigned short port = 42042);
 
-    service(const service &other) = delete;
-    service(service &&other) = default;
+  service(const service &other) = delete;
 
-    template <typename EmitFunction>
-    void on_message(EmitFunction emit)
-    {
-        m_emit = emit;
-        do_accept();
-    }
+  service(service &&other) = default;
+
+  template<typename EmitFunction>
+  void on_message(EmitFunction emit) {
+    m_emit = emit;
+    do_accept();
+  }
 
 private:
-    void do_accept();
+  void do_accept();
 
-    tcp::acceptor m_acceptor;
-    tcp::socket m_socket;
-    std::function<void(::detail::with_client<std::string>&&)> m_emit;
+  tcp::acceptor m_acceptor;
+  tcp::socket m_socket;
+  std::function<void(::detail::with_client<std::string> && )> m_emit;
 
-    friend std::ostream& operator<< (std::ostream& out, const service& service)
-    {
-        return out << "service object";
-    }
+  friend std::ostream &operator<<(std::ostream &out, const service &service) {
+    return out << "service object";
+  }
 };
 
 #endif
