@@ -1,0 +1,7 @@
+[requires]
+pipes/20201012@demo/testing
+
+[generators]
+cmake
+
+[options]
