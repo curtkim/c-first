@@ -8,3 +8,7 @@ foreach(APP 01_add 02_relaxNG 03_decay 04_enable_if 05_is_lvalue_reference
     #target_compile_definitions(${APP} PUBLIC _GNU_SOURCE)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
+
+
+add_executable(with_dsl dsl/main.cpp )
+target_compile_features(with_dsl PUBLIC cxx_std_17)
