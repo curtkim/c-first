@@ -156,10 +156,16 @@ int capture_image(int fd) {
   tv.tv_sec = 2;
   int r = select(fd + 1, &fds, NULL, NULL, &tv);
    */
-  struct pollfd fds[1];
+  struct pollfd fds[2];
   fds[0].fd = fd;
   fds[0].events = POLLIN;
+  fds[1].fd = STDIN_FILENO;
+  fds[1].events = POLLIN;
+
   int r = poll(fds, 1, 2 * 1000);
+
+  printf("fds[0].revents= %d\n", fds[0].revents);
+  printf("fds[1].revents= %d\n", fds[1].revents);
 
   if (-1 == r) {
     perror("Waiting for Frame");
