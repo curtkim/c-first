@@ -65,7 +65,7 @@ void from_blob() {
   cout << f.reshape({3,2}) << endl;
 }
 
-void index() {
+void index_slicing() {
   int data[] = { 1, 2, 3, 4, 5, 6};
   at::Tensor a = at::from_blob(data, {2, 3}, kInt);
 
@@ -75,11 +75,52 @@ void index() {
   cout << a.index({at::indexing::Slice(1, at::indexing::None, 2)}) << endl;
 }
 
+void index_slicing0() {
+  int data[] = { 1, 2, 3};
+  at::Tensor a = at::from_blob(data, {3}, kInt);
+  // a[0:2]
+  assert(
+    a.index({at::indexing::Slice(0, 2)}).equal(
+      tensor({1,2}, kInt)
+    )
+  );
+
+  int data2[] = { 1, 2, 3,
+                  4, 5, 6};
+  at::Tensor b = at::from_blob(data2, {2, 3}, kInt);
+  // b[0:2,1]
+  assert(
+    b.index({at::indexing::Slice(0, 2), 1}).equal(
+      tensor({2,5}, kInt)
+    )
+  );
+
+  // b[:1]
+  assert(
+    b.index({at::indexing::Slice(at::indexing::None, 1)}).equal(
+      tensor({1,2,3}, kInt).reshape({1,3})
+    )
+  );
+
+  auto c = at::arange(12, kInt).reshape({2,2,3});
+  // c[1,...]
+  assert(
+    c.index({1, at::indexing::Ellipsis}).equal(
+      tensor({6,7,8,9,10,11}, kInt).reshape({2,3})
+    )
+  );
+
+  // a[ : :-1]
+  //cout << a.index({at::indexing::Slice(at::indexing::None, at::indexing::None, -1)});
+}
+
+
 int main() {
   create();
   op();
   accessors();
   from_blob();
-  index();
+  index_slicing();
+  index_slicing0();
 }
 
