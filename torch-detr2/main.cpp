@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <memory>
+
 #include "image_io.hpp"
 
 using image_io::load_image;
@@ -26,13 +27,14 @@ int main(int argc, const char* argv[]) {
   }
 
 
-  auto image = load_image("../../frame0000_crop.jpg");
+  auto image = load_image("../../39769_fill.jpg");
   std::cout << image.sizes() << std::endl;
   auto image2 = image.
     to(torch::kFloat). // For inference
     //unsqueeze(-1). // Add batch
     //permute({3, 0, 1, 2}). // Fix order, now its {B,C,H,W}
     to(device_type);
+
   std::cout << image2.sizes() << std::endl;
 
   // TorchScript models require a List[IValue] as input
@@ -59,6 +61,24 @@ int main(int argc, const char* argv[]) {
     std::cout << value.sizes() << std::endl;
     //value.data_ptr()
   }
+  at::Tensor probas = dict.at("pred_logits").toTensor();
+  at::Tensor boxes = dict.at("pred_boxes").toTensor();
+
+  std::vector<torch::Tensor> tensorVec;
+  tensorVec.push_back(probas);
+  tensorVec.push_back(boxes);
+
+  torch::save(tensorVec, "output.tensor");
+  std::cout << "probas.softmax(-1).shape " << probas.softmax(-1).sizes() << std::endl;
+  at::Tensor probas2 = probas.softmax(-1).index({0, at::indexing::None, at::indexing::Slice(at::indexing::None, -1)});
+  std::cout << "probas2.shape " << probas2.sizes() << std::endl;
+
+  const auto [values, indices] = probas2.max(-1);
+  std::cout << "values.shape " << values.sizes() << std::endl;
+  at::Tensor keep = values.gt(0.9);
+  std::cout << "keep.shape " << keep.sizes() << std::endl;
+
+  //std::cout << boxes.index({0, keep}) << std::endl;
 
   /*
   auto value = module.forward({image2});

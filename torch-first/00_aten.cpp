@@ -75,6 +75,7 @@ void index_slicing() {
   cout << a.index({at::indexing::Slice(1, at::indexing::None, 2)}) << endl;
 }
 
+// https://pytorch.org/cppdocs/notes/tensor_indexing.html
 void index_slicing0() {
   int data[] = { 1, 2, 3};
   at::Tensor a = at::from_blob(data, {3}, kInt);
@@ -106,14 +107,27 @@ void index_slicing0() {
   // c[1,...]
   assert(
     c.index({1, at::indexing::Ellipsis}).equal(
-      tensor({6,7,8,9,10,11}, kInt).reshape({2,3})
+      tensor({6,7,8,
+              9,10,11}, kInt).reshape({2,3})
     )
   );
 
-  // a[ : :-1]
-  //cout << a.index({at::indexing::Slice(at::indexing::None, at::indexing::None, -1)});
+  assert(
+    c.index({0, at::indexing::Ellipsis, at::indexing::Slice(at::indexing::None, -1)}).equal(
+      tensor({0,1,
+              3,4}, kInt).reshape({2,2})
+    )
+  );
 }
 
+void max() {
+  int data2[] = { 1, 2, 3,
+                  4, 5, 6};
+  at::Tensor b = at::from_blob(data2, {2, 3}, kInt);
+  const auto [values, indices] = b.max(-1);
+  assert( values.equal(tensor({3,6}, kInt)) );
+  assert( indices.equal(tensor({2,2}, kLong)) );
+}
 
 int main() {
   create();
@@ -122,5 +136,6 @@ int main() {
   from_blob();
   index_slicing();
   index_slicing0();
+  max();
 }
 
