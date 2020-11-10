@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <sys/poll.h>
 
 uint8_t *buffer;
 
@@ -147,12 +148,19 @@ int capture_image(int fd) {
     return 1;
   }
 
+  /*
   fd_set fds;
   FD_ZERO(&fds);
   FD_SET(fd, &fds);
   struct timeval tv = {0};
   tv.tv_sec = 2;
   int r = select(fd + 1, &fds, NULL, NULL, &tv);
+   */
+  struct pollfd fds[1];
+  fds[0].fd = fd;
+  fds[0].events = POLLIN;
+  int r = poll(fds, 1, 2 * 1000);
+
   if (-1 == r) {
     perror("Waiting for Frame");
     return 1;
@@ -174,7 +182,7 @@ int capture_image(int fd) {
 int main() {
   int fd;
 
-  fd = open("/dev/video0", O_RDWR);
+  fd = open("/dev/video1", O_RDWR);
   if (fd == -1) {
     perror("Opening video device");
     return 1;

@@ -4,6 +4,15 @@
 
 #define TIMEOUT 5
 
+/*
+struct pollfd
+{
+  int fd;			        // File descriptor to poll.
+  short int events;		// Types of events poller cares about.
+  short int revents;	// Types of events that actually occurred.
+};
+*/
+
 int main (void)
 {
   struct pollfd fds[2];
