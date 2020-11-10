@@ -93,17 +93,20 @@ int main()
         ev.events = EPOLLIN | EPOLLET;
         ev.data.fd = client;
         epoll_ctl(epfd, EPOLL_CTL_ADD, client, &ev);
-      } else {
+      }
+      else {
         int client = events[i].data.fd;
         int n = read(client, buffer, sizeof buffer);
         if (n < 0) {
           perror("read");
           epoll_ctl(epfd, EPOLL_CTL_DEL, client, &ev);
           close(client);
-        } else if (n == 0) {
+        }
+        else if (n == 0) {
           epoll_ctl(epfd, EPOLL_CTL_DEL, client, &ev);
           close(client);
-        } else {
+        }
+        else {
           write(client, buffer, n);
         }
       }
