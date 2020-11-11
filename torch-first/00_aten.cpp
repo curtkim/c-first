@@ -65,6 +65,19 @@ void from_blob() {
   cout << f.reshape({3,2}) << endl;
 }
 
+void to_blob() {
+  float data[] = { 1.1, 2.2, 3.3, 4.4, 5.5, 6.6};
+  at::Tensor a = at::from_blob(data, {2, 3}, kFloat);
+
+  float* p = (float*)a.data_ptr();
+  for(int i = 0; i < 6; i++)
+    cout << p[i] << " ";
+  cout << endl;
+
+  printf("%p == %p\n", p, data);
+  assert(p == data);
+}
+
 void index_slicing() {
   int data[] = { 1, 2, 3, 4, 5, 6};
   at::Tensor a = at::from_blob(data, {2, 3}, kInt);
@@ -137,5 +150,6 @@ int main() {
   index_slicing();
   index_slicing0();
   max();
+  to_blob();
 }
 
