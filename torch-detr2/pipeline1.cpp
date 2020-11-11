@@ -38,6 +38,9 @@ unsigned int loadTexture(boost::shared_ptr<csd::Image> image) {
 
 int main(int argc, const char *argv[]) {
 
+  unsigned int WIDTH = 1024;
+  unsigned int HEIGHT = 800;
+
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
   ReaderWriterQueue<boost::shared_ptr<csd::Image>> q(2);
@@ -52,6 +55,9 @@ int main(int argc, const char *argv[]) {
   auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
   assert(camera_bp != nullptr);
   const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
+  const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("image_size_x", std::to_string(WIDTH));
+  const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("image_size_y", std::to_string(HEIGHT));
+
 
   auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, vehicle.get());
   auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
@@ -69,11 +75,11 @@ int main(int argc, const char *argv[]) {
   vehicle->SetAutopilot(true);
 
 
-  GLFWwindow *window = make_window();
+  GLFWwindow *window = make_window(WIDTH, HEIGHT);
   auto[VAO, VBO, EBO] = load_model();
   glBindVertexArray(VAO);
 
-  Shader ourShader(VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+  Shader ourShader(MyConstants::VERTEX_SHADER_SOURCE, MyConstants::FRAGMENT_SHADER_SOURCE);
   ourShader.use();
   //ourShader.setInt("texture1", GL_TEXTURE0);
 

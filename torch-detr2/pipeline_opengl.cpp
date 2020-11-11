@@ -2,6 +2,37 @@
 
 #include <tuple>
 
+namespace MyConstants
+{
+const char* VERTEX_SHADER_SOURCE = R"(
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aColor;
+layout (location = 2) in vec2 aTexCoord;
+out vec3 ourColor;
+out vec2 TexCoord;
+void main()
+{
+    gl_Position = vec4(aPos, 1.0);
+    ourColor = aColor;
+    TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+}
+)";
+
+const char* FRAGMENT_SHADER_SOURCE = R"(
+#version 330 core
+in vec3 ourColor;
+in vec2 TexCoord;
+out vec4 FragColor;
+// texture sampler
+uniform sampler2D texture1;
+void main()
+{
+    FragColor = texture(texture1, TexCoord);
+}
+)";
+}
+
 
 void processInput(GLFWwindow *window)
 {
@@ -19,10 +50,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 
-GLFWwindow* make_window() {
-  // settings
-  const unsigned int SCR_WIDTH = 800;
-  const unsigned int SCR_HEIGHT = 600;
+GLFWwindow* make_window(unsigned int width, unsigned int height) {
+//  // settings
+//  const unsigned int SCR_WIDTH = 800;
+//  const unsigned int SCR_HEIGHT = 600;
 
   // glfw: initialize and configure
   // ------------------------------
@@ -33,7 +64,7 @@ GLFWwindow* make_window() {
 
   // glfw window creation
   // --------------------
-  GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -90,3 +121,4 @@ std::tuple<unsigned int, unsigned int, unsigned int> load_model() {
 
   return std::make_tuple(VAO, VBO, EBO);
 }
+
