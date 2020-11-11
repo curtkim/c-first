@@ -76,6 +76,8 @@ void to_blob() {
 
   printf("%p == %p\n", p, data);
   assert(p == data);
+  assert(a.size(0) == 2);
+  assert(a.size(1) == 3);
 }
 
 void index_slicing() {
@@ -142,6 +144,22 @@ void max() {
   assert( indices.equal(tensor({2,2}, kLong)) );
 }
 
+void accessor() {
+  int data[] = { 1, 2, 3, 4, 5, 6};
+  at::Tensor a = at::from_blob(data, {2, 3}, kInt);
+
+  auto accessor = a.accessor<int,2>();
+  assert( accessor[0][0] == 1 );
+  assert( accessor[0][2] == 3 );
+  assert( accessor[1][0] == 4 );
+  assert( accessor[1][2] == 6 );
+
+//  for(int i = 0; i < accessor.size(0); i++)
+//    for(int j = 0; j < accessor.size(1); j++)
+//      cout << i << " " << j << " " << accessor[i][j] << endl;
+}
+
+
 int main() {
   create();
   op();
@@ -151,5 +169,6 @@ int main() {
   index_slicing0();
   max();
   to_blob();
+  accessor();
 }
 
