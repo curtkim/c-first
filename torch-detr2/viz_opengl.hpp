@@ -15,6 +15,9 @@ namespace viz
     unsigned int load_texture(unsigned int width, unsigned int height, void* data);
     void delete_model(unsigned int, unsigned int, unsigned int);
   }
+  namespace box {
+
+  }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly

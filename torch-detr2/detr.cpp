@@ -55,9 +55,10 @@ namespace detr {
 
     const auto [values, indices] = probas2.max(-1);
     at::Tensor keep = values.gt(0.9);
+    return boxes.index({0, keep});
     //std::cout << "keep.sizes() " << keep.sizes() << std::endl;
 
-
+    /*
     auto columns = boxes.index({0, keep}).unbind(1);
     torch::Tensor x_c = columns[0];
     torch::Tensor y_c = columns[1];
@@ -78,6 +79,7 @@ namespace detr {
     auto xyxy_rescale = xyxy.multiply(whwh);
 
     return xyxy_rescale;
+    */
   }
 
 }
