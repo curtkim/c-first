@@ -6,10 +6,15 @@
 #include "shader.hpp"
 
 // In header
-namespace MyGL
+namespace viz
 {
-  extern const char* BACKGROUND_VERTEX_SHADER_SOURCE;
-  extern const char* BACKGROUND_FRAGMENT_SHADER_SOURCE;
+  namespace bg {
+    extern const char* VERTEX_SHADER_SOURCE;
+    extern const char* FRAGMENT_SHADER_SOURCE;
+    std::tuple<unsigned int, unsigned int, unsigned int> load_model();
+    unsigned int load_texture(unsigned int width, unsigned int height, void* data);
+    void delete_model(unsigned int, unsigned int, unsigned int);
+  }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -21,4 +26,3 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 GLFWwindow* make_window(unsigned int width, unsigned int height);
-std::tuple<unsigned int, unsigned int, unsigned int> load_background_model();
