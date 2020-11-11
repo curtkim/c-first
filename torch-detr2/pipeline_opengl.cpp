@@ -2,9 +2,9 @@
 
 #include <tuple>
 
-namespace MyConstants
+namespace MyGL
 {
-const char* VERTEX_SHADER_SOURCE = R"(
+const char* BACKGROUND_VERTEX_SHADER_SOURCE = R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
@@ -19,7 +19,7 @@ void main()
 }
 )";
 
-const char* FRAGMENT_SHADER_SOURCE = R"(
+const char* BACKGROUND_FRAGMENT_SHADER_SOURCE = R"(
 #version 330 core
 in vec3 ourColor;
 in vec2 TexCoord;
@@ -82,7 +82,7 @@ GLFWwindow* make_window(unsigned int width, unsigned int height) {
   return window;
 }
 
-std::tuple<unsigned int, unsigned int, unsigned int> load_model() {
+std::tuple<unsigned int, unsigned int, unsigned int> load_background_model() {
   // set up vertex data (and buffer(s)) and configure vertex attributes
   // ------------------------------------------------------------------
   float vertices[] = {

@@ -72,10 +72,10 @@ int main(int argc, const char *argv[]) {
 
 
   GLFWwindow *window = make_window(WIDTH, HEIGHT);
-  auto[VAO, VBO, EBO] = load_model();
+  auto[VAO, VBO, EBO] = load_background_model();
   glBindVertexArray(VAO);
 
-  Shader ourShader(MyConstants::VERTEX_SHADER_SOURCE, MyConstants::FRAGMENT_SHADER_SOURCE);
+  Shader ourShader(MyGL::BACKGROUND_VERTEX_SHADER_SOURCE, MyGL::BACKGROUND_FRAGMENT_SHADER_SOURCE);
   ourShader.use();
   //ourShader.setInt("texture1", GL_TEXTURE0);
 
@@ -130,6 +130,7 @@ int main(int argc, const char *argv[]) {
     glBindTexture(GL_TEXTURE_2D, texture);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glDeleteTextures(1, &texture);
+
 
 
     glfwSwapBuffers(window);
