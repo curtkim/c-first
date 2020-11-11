@@ -42,3 +42,8 @@ add_executable(02_second_grid 02_second_grid.cpp common/shader.cpp common/camera
 target_link_libraries(02_second_grid ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(02_second_grid PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid PUBLIC STB_IMAGE_IMPLEMENTATION)
+
+#add_executable(81_egl common/shader.cpp)
+#target_link_libraries(81_egl gbm EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
+#target_compile_features(81_egl PUBLIC cxx_std_17)
+#target_compile_definitions(81_egl PUBLIC STB_IMAGE_IMPLEMENTATION)
