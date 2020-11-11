@@ -70,7 +70,11 @@ int main(int argc, const char* argv[]) {
 
   torch::save(tensorVec, "output.tensor");
   std::cout << "probas.softmax(-1).shape " << probas.softmax(-1).sizes() << std::endl;
-  at::Tensor probas2 = probas.softmax(-1).index({0, at::indexing::None, at::indexing::Slice(at::indexing::None, -1)});
+  at::Tensor probas2 = probas.softmax(-1).index({
+    0,
+    at::indexing::Ellipsis,
+    at::indexing::Slice(at::indexing::None, -1)
+  });
   std::cout << "probas2.shape " << probas2.sizes() << std::endl;
 
   const auto [values, indices] = probas2.max(-1);

@@ -7,10 +7,12 @@
 
 #include "carla_common.hpp"
 #include "pipeline_opengl.hpp"
+#include "detr.hpp"
 
 #include <carla/client/Sensor.h>
 #include <carla/sensor/data/Image.h>
 #include <carla/sensor/data/LidarMeasurement.h>
+
 
 
 using namespace moodycamel;
@@ -43,6 +45,12 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
+  auto torch_device = torch::Device(torch::kCUDA, 1);
+
+  torch::jit::script::Module detr_module = detr::load_module("../../wrapped_detr_resnet50.pt", torch_device);
+
+
+
   ReaderWriterQueue<boost::shared_ptr<csd::Image>> q(2);
 
   auto[world, vehicle] = init_carla(MAP_NAME);
@@ -62,6 +70,15 @@ int main(int argc, const char *argv[]) {
   auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, vehicle.get());
   auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
 
+
+  GLFWwindow *window = make_window(WIDTH, HEIGHT);
+  auto[VAO, VBO, EBO] = load_model();
+  glBindVertexArray(VAO);
+
+  Shader ourShader(MyConstants::VERTEX_SHADER_SOURCE, MyConstants::FRAGMENT_SHADER_SOURCE);
+  ourShader.use();
+  //ourShader.setInt("texture1", GL_TEXTURE0);
+
   // Register a callback to save images to disk.
   camera->Listen([&q](auto data) {
     auto image = boost::static_pointer_cast<csd::Image>(data);
@@ -71,17 +88,8 @@ int main(int argc, const char *argv[]) {
       std::cout << std::this_thread::get_id() << " fail enqueue frame=" << image->GetFrame() << std::endl;
     }
   });
-
   vehicle->SetAutopilot(true);
 
-
-  GLFWwindow *window = make_window(WIDTH, HEIGHT);
-  auto[VAO, VBO, EBO] = load_model();
-  glBindVertexArray(VAO);
-
-  Shader ourShader(MyConstants::VERTEX_SHADER_SOURCE, MyConstants::FRAGMENT_SHADER_SOURCE);
-  ourShader.use();
-  //ourShader.setInt("texture1", GL_TEXTURE0);
 
   int frame = 0;
   boost::shared_ptr<csd::Image> pImage;
@@ -97,6 +105,22 @@ int main(int argc, const char *argv[]) {
     // get from queue
     while(!q.try_dequeue(pImage)){}
 
+
+    auto img = torch::from_blob(pImage->data(), {HEIGHT, WIDTH, 4}, torch::kUInt8)
+      .clone()
+      .to(torch::kFloat32)
+      .permute({2, 0, 1})
+      .index({torch::indexing::Slice(0, 3), torch::indexing::Ellipsis})
+      .div_(255)
+      .to(torch_device);
+    //std::cout << img.sizes() << std::endl;
+    auto bounding_boxes = detr::detect(detr_module, img);
+    std::cout << bounding_boxes << std::endl;
+
+    auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+    long diff_detr = (end_time - start_time).count();
+
+
     // render
     // ------
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -111,11 +135,10 @@ int main(int argc, const char *argv[]) {
     glfwSwapBuffers(window);
     glfwPollEvents();
 
-    auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+    end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
 
     long diff = (end_time - start_time).count();
-    long duration = 1000/30;
-    std::cout << std::this_thread::get_id() << " " << diff << "ms frame=" << pImage->GetFrame() << std::endl;
+    std::cout << std::this_thread::get_id() << " " << diff << "ms " << diff_detr << "ms frame=" << pImage->GetFrame() << std::endl;
   }
 
   // glfw: terminate, clearing all previously allocated GLFW resources.
