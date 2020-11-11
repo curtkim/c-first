@@ -31,7 +31,9 @@ foreach(APP
         43_save_png
         51_shapefile
         61_opengl_thread
-        71_omega)
+        71_omega
+        72_omega_box
+        )
   add_executable(${APP} ${APP}.cpp common/shader.cpp ) # memory_tracking.cpp
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
   target_compile_features(${APP} PUBLIC cxx_std_17)

@@ -4,7 +4,8 @@
 
 #include "common/shader.hpp"
 #include "common/utils.hpp"
-
+#include <vector>
+#include <tuple>
 
 const char *BG_VERTEX_SHADER = R"(
 #version 330 core
@@ -34,6 +35,24 @@ void main()
 }
 )";
 
+const char *BOX_VERTEX_SHADER = R"(
+#version 330 core
+layout (location = 0) in vec2 position;
+
+void main()
+{
+  gl_Position = vec4(position, 0., 1.);
+}
+)";
+
+const char *BOX_FRAGMENT_SHADER = R"(
+#version 330
+out vec4 f_color;
+void main() {
+  f_color = vec4(1.0f, .0f, .0f, 1.0f);
+}
+)";
+
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -43,6 +62,36 @@ unsigned int width;
 unsigned int height;
 
 
+auto load_model() {
+
+  unsigned int VBO_BOX, VAO_BOX;
+
+  // set up vertex data (and buffer(s)) and configure vertex attributes
+  // ------------------------------------------------------------------
+  const float vertices[] = {
+    // positions
+    0.5f, 0.5f,   // top right
+    0.5f, -0.5f,  // bottom right
+    -0.5f, -0.5f, // bottom left
+    -0.5f, 0.5f, // top left
+    0.5f, 0.5f,  // top right
+  };
+
+  glGenVertexArrays(1, &VAO_BOX);
+  glGenBuffers(1, &VBO_BOX);
+
+  glBindVertexArray(VAO_BOX);
+
+  // 1. vertex
+  glBindBuffer(GL_ARRAY_BUFFER, VBO_BOX);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // position attribute
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *) 0);
+  glEnableVertexAttribArray(0);
+
+  return std::make_tuple(VBO_BOX, VAO_BOX, sizeof(vertices)/sizeof(vertices[0])/2);
+}
 
 int main() {
   // glfw: initialize and configure
@@ -117,16 +166,19 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
   }
 
+  auto [VBO_BOX, VAO_BOX, box_length] = load_model();
+
+  Shader boxShader(BOX_VERTEX_SHADER, BOX_FRAGMENT_SHADER); // you can name your shader files however you like
+
   // load and create a texture
   // -------------------------
   unsigned int texture0 = load_texture("00000_camera0.png", true, GL_RGBA);
-  unsigned int texture1 = load_texture("00000_camera1.png", true, GL_RGBA);
 
   // build and compile our shader zprogram
   // ------------------------------------
-  Shader ourShader(BG_VERTEX_SHADER, BG_FRAGMENT_SHADER); // you can name your shader files however you like
-  ourShader.use(); // don't forget to activate/use the shader before setting uniforms!
-  ourShader.setInt("texture0", 0);
+  Shader bgShader(BG_VERTEX_SHADER, BG_FRAGMENT_SHADER); // you can name your shader files however you like
+  bgShader.use(); // don't forget to activate/use the shader before setting uniforms!
+  bgShader.setInt("texture0", 0);
 
 
   // render loop
@@ -141,24 +193,26 @@ int main() {
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    glViewport(0, 0, width, height);
+
     // render container
-    ourShader.use();
+    bgShader.use();
     glBindVertexArray(VAO);
     {
-      glViewport(0, height/2, width/2, height/2);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture0);
-
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }
-    {
-      glViewport(0, 0, width/2, height/2);
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, texture1);
 
       // render container
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
+
+    boxShader.use();
+    glBindVertexArray(VAO_BOX);
+    {
+      glLineWidth(3);
+      glDrawArrays(GL_LINE_STRIP, 0, box_length);
+    }
+
 
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
     // -------------------------------------------------------------------------------
@@ -169,10 +223,12 @@ int main() {
   // optional: de-allocate all resources once they've outlived their purpose:
   // ------------------------------------------------------------------------
   glDeleteTextures(1, &texture0);
-  glDeleteTextures(1, &texture1);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
+
+  glDeleteVertexArrays(1, &VAO_BOX);
+  glDeleteBuffers(1, &VBO_BOX);
 
   // glfw: terminate, clearing all previously allocated GLFW resources.
   // ------------------------------------------------------------------
