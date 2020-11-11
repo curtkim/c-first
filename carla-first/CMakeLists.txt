@@ -41,7 +41,8 @@ endforeach()
 # opengl
 foreach(APP
         51_camera_opengl
-        52_lidar_opengl
+        52_camera_opengl_lockfree_queue
+        53_lidar_opengl
         62_sensor_client_sync
         72_sensor_client_sync_opengl)
   add_executable(${APP} ${APP}.cpp)

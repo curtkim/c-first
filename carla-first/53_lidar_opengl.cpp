@@ -12,7 +12,7 @@
 #include <carla/sensor/data/LidarMeasurement.h>
 #include <carla/pointcloud/PointCloudIO.h>
 
-#include "52_lidar_opengl.hpp"
+#include "53_lidar_opengl.hpp"
 
 
 namespace cc = carla::client;

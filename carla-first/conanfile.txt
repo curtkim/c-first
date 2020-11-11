@@ -7,6 +7,7 @@ glad/0.1.33
 glm/0.9.9.7
 lodepng/cci.20200615
 asio/1.17.0
+readerwriterqueue/1.0.2@demo/testing
 
 [generators]
 cmake
