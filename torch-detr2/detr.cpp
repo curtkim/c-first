@@ -7,7 +7,7 @@ namespace detr {
     detect(module, torch::rand({3, 800, 1024}, torch::kFloat32).to(device));
   }
 
-  torch::jit::script::Module load_module(std::string file, torch::Device device){
+  torch::jit::script::Module load_model(std::string file, torch::Device device){
     torch::jit::script::Module module;
     try {
       // Deserialize the ScriptModule from a file using torch::jit::load().
@@ -24,7 +24,7 @@ namespace detr {
   }
 
   //
-  torch::Tensor detect(torch::jit::script::Module module, torch::Tensor image){
+  torch::Tensor detect(torch::jit::script::Module model, torch::Tensor image){
     auto start_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
 
     int width = image.sizes().at(1);
@@ -35,7 +35,7 @@ namespace detr {
     images.push_back(image);
     inputs.push_back(images);
 
-    auto output = module.forward(inputs);
+    auto output = model.forward(inputs);
     auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
     long forward_time = (end_time - start_time).count();
     std::cout << "forward_time=" << forward_time << "ms" << std::endl;

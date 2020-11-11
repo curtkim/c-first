@@ -1,4 +1,4 @@
-#include "pipeline_opengl.hpp"
+#include "viz_opengl.hpp"
 
 #include <tuple>
 
@@ -8,21 +8,17 @@ namespace bg {
   const char *VERTEX_SHADER_SOURCE = R"(
   #version 330 core
   layout (location = 0) in vec3 aPos;
-  layout (location = 1) in vec3 aColor;
-  layout (location = 2) in vec2 aTexCoord;
-  out vec3 ourColor;
+  layout (location = 1) in vec2 aTexCoord;
   out vec2 TexCoord;
   void main()
   {
       gl_Position = vec4(aPos, 1.0);
-      ourColor = aColor;
       TexCoord = vec2(aTexCoord.x, aTexCoord.y);
   }
   )";
 
   const char *FRAGMENT_SHADER_SOURCE = R"(
   #version 330 core
-  in vec3 ourColor;
   in vec2 TexCoord;
   out vec4 FragColor;
   // texture sampler
@@ -37,11 +33,11 @@ namespace bg {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-      // positions          // colors           // texture coords
-      1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top right
-      1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // bottom right
-      -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // bottom left
-      -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f  // top left
+      // positions        // texture coords
+      1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // top right
+      1.0f, -1.0f, 0.0f,  1.0f, 1.0f, // bottom right
+      -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // bottom left
+      -1.0f, 1.0f, 0.0f,  0.0f, 0.0f  // top left
     };
     unsigned int indices[] = {
       0, 1, 3, // first triangle
@@ -61,14 +57,11 @@ namespace bg {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
     // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     return std::make_tuple(VAO, VBO, EBO);
   }

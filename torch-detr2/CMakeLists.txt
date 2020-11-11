@@ -22,7 +22,7 @@ endforeach()
 
 
 add_library(carla_common OBJECT carla_common.cpp)
-add_library(pipeline_opengl OBJECT pipeline_opengl.cpp)
+add_library(pipeline_opengl OBJECT viz_opengl.cpp)
 add_library(detr OBJECT detr.cpp)
 target_compile_features(detr PUBLIC cxx_std_17)
 

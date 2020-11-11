@@ -6,7 +6,7 @@
 #include <readerwriterqueue.h>
 
 #include "carla_common.hpp"
-#include "pipeline_opengl.hpp"
+#include "viz_opengl.hpp"
 #include "detr.hpp"
 
 #include <carla/client/Sensor.h>
@@ -33,7 +33,7 @@ int main(int argc, const char *argv[]) {
 
   auto torch_device = torch::Device(torch::kCUDA, 1);
 
-  torch::jit::script::Module detr_module = detr::load_module("../../wrapped_detr_resnet50.pt", torch_device);
+  torch::jit::script::Module detr_model = detr::load_model("../../wrapped_detr_resnet50.pt", torch_device);
 
 
 
@@ -99,7 +99,7 @@ int main(int argc, const char *argv[]) {
       .div_(255)
       .to(torch_device);
     //std::cout << img.sizes() << std::endl;
-    auto bounding_boxes = detr::detect(detr_module, img);
+    auto bounding_boxes = detr::detect(detr_model, img);
     std::cout << bounding_boxes << std::endl;
 
     auto end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
