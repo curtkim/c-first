@@ -57,8 +57,8 @@ int main(int argc, const char *argv[]) {
   auto blueprint_library = world.GetBlueprintLibrary();
 
   auto camera_transform = cg::Transform{
-    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-    cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
+    cg::Location{1.5f, 0.0f, 2.8f},   // x, y, z.
+    cg::Rotation{-1.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
 
   auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
   assert(camera_bp != nullptr);
