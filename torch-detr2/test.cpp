@@ -48,7 +48,7 @@ int main(int argc, const char* argv[]) {
   b.push_back(x_c - 0.5 * w);
   b.push_back(y_c - 0.5 * h);
   b.push_back(x_c + 0.5 * w);
-  b.push_back(y_c - 0.5 * h);
+  b.push_back(y_c + 0.5 * h);
   auto xyxy = torch::stack(b, 1);
   cout << "xyxy" << endl;
   cout << xyxy << endl;
@@ -57,16 +57,10 @@ int main(int argc, const char* argv[]) {
   auto xyxy_rescale = xyxy.multiply(whwh);
   cout << xyxy_rescale << endl;
 
+  cout << "probas2.index({keep}).shape" << endl;
+  cout << probas2.index({keep}).sizes() << endl;
 
-  /*
-  auto value = module.forward({image2});
-  std::cout << "after forward" << std::endl;
-
-  torch::Tensor out_tensor = value.toTensor();
-  out_tensor = out_tensor.to(torch::kFloat32).detach().cpu().squeeze(); //Remove batch dim, must convert back to torch::float
-  std::cout << out_tensor.sizes() << std::endl;
-  //save_image(out_tensor, "parrots_candy.png", 1, 0);
-  */
+  cout << "probas2.index({keep}).argmax(1)" << endl;
+  cout << probas2.index({keep}).argmax(1) << endl;
   std::cout << "ok\n";
-
 }
