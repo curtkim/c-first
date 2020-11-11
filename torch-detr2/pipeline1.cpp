@@ -150,6 +150,9 @@ int main(int argc, const char *argv[]) {
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
 
+  camera->Stop();
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
   // Remove actors from the simulation.
   camera->Destroy();
   vehicle->Destroy();

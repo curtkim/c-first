@@ -3,6 +3,10 @@
 
 namespace detr {
 
+  void warmup(torch::jit::script::Module module, torch::Device device) {
+    detect(module, torch::rand({3, 800, 1024}, torch::kFloat32).to(device));
+  }
+
   torch::jit::script::Module load_module(std::string file, torch::Device device){
     torch::jit::script::Module module;
     try {
@@ -14,6 +18,8 @@ namespace detr {
       std::cerr << "error loading the model\n";
       exit(-1); //TODO
     }
+    warmup(module, device);
+    std::cout << "warmup done" << std::endl;
     return module;
   }
 
