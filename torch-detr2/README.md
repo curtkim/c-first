@@ -8,4 +8,8 @@
     convert 39769.jpg -resize 1066x800 fill_39769.jpg
 
 ## Reference
-https://github.com/facebookresearch/detr/issues/238    
+https://github.com/facebookresearch/detr/issues/238
+
+## nsys profile
+
+    nsys profile -o pipeline1.qdstrm --force-overwrite=true --duration=10 --delay=35 ./pipeline1     
