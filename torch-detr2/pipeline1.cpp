@@ -5,6 +5,9 @@
 
 #include <readerwriterqueue.h>
 
+#include <sys/syscall.h>
+#include <nvToolsExt.h>
+
 #include "carla_common.hpp"
 #include "viz_opengl.hpp"
 #include "detr.hpp"
@@ -23,14 +26,17 @@ static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 
 int main(int argc, const char *argv[]) {
+
   using namespace moodycamel;
   using namespace std::chrono;
 
   unsigned int WIDTH = 1024;
   unsigned int HEIGHT = 800;
 
+  nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
+  // 0번 gpu는 carla가 쓰고있다.
   auto torch_device = torch::Device(torch::kCUDA, 1);
 
   torch::jit::script::Module detr_model = detr::load_model("../../wrapped_detr_resnet50.pt", torch_device);
@@ -59,10 +65,10 @@ int main(int argc, const char *argv[]) {
 
   GLFWwindow *window = make_window(WIDTH, HEIGHT);
   auto[VAO, VBO, EBO] = viz::bg::load_model();
-  glBindVertexArray(VAO);
 
-  Shader ourShader(viz::bg::VERTEX_SHADER_SOURCE, viz::bg::FRAGMENT_SHADER_SOURCE);
-  ourShader.use();
+  Shader bgShader(viz::bg::VERTEX_SHADER_SOURCE, viz::bg::FRAGMENT_SHADER_SOURCE);
+  Shader boxShader(viz::box::VERTEX_SHADER_SOURCE, viz::box::FRAGMENT_SHADER_SOURCE);
+
 
   // Register a callback to save images to disk.
   camera->Listen([&q](auto data) {
@@ -90,7 +96,7 @@ int main(int argc, const char *argv[]) {
     // get from queue
     while(!q.try_dequeue(pImage)){}
 
-
+    nvtxRangePush("detect");
     auto img = torch::from_blob(pImage->data(), {HEIGHT, WIDTH, 4}, torch::kUInt8)
       .clone()
       .to(torch::kFloat32)
@@ -100,23 +106,36 @@ int main(int argc, const char *argv[]) {
       .to(torch_device);
     //std::cout << img.sizes() << std::endl;
     auto bounding_boxes = detr::detect(detr_model, img);
-    std::cout << bounding_boxes << std::endl;
-
     auto end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     long diff_detr = (end_time - start_time).count();
+    nvtxRangePop();
 
-
+    nvtxRangePush("viz");
     // viz
     // ------
+    // bg
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    bgShader.use();
+    glBindVertexArray(VAO);
     unsigned int texture = viz::bg::load_texture(pImage->GetWidth(), pImage->GetHeight(), pImage->data());
     glBindTexture(GL_TEXTURE_2D, texture);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glDeleteTextures(1, &texture);
 
-
+    // box
+    auto bounding_boxes_cpu = bounding_boxes.to(torch::kCPU);
+    //std::cout << bounding_boxes_cpu.is_contiguous() << std::endl;
+    //std::cout << bounding_boxes_cpu << std::endl;
+    auto [VAO_BOX, VBO_BOX] = viz::box::load_model((float*)bounding_boxes_cpu.data_ptr(), bounding_boxes_cpu.size(0));
+    boxShader.use();
+    glBindVertexArray(VAO_BOX);
+    glLineWidth(3);
+    for(int i = 0; i < bounding_boxes_cpu.size(0); i++)
+      glDrawArrays(GL_LINE_STRIP, i*5, 5);
+    viz::box::delete_model(VAO_BOX, VBO_BOX);
+    nvtxRangePop();
 
     glfwSwapBuffers(window);
     glfwPollEvents();

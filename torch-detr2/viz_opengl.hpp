@@ -16,7 +16,10 @@ namespace viz
     void delete_model(unsigned int, unsigned int, unsigned int);
   }
   namespace box {
-
+    extern const char* VERTEX_SHADER_SOURCE;
+    extern const char* FRAGMENT_SHADER_SOURCE;
+    std::tuple<unsigned int, unsigned int> load_model(float* ptr, int count);
+    void delete_model(unsigned int, unsigned int);
   }
 }
 

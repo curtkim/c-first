@@ -1,6 +1,7 @@
 #include "viz_opengl.hpp"
 
 #include <tuple>
+#include <vector>
 
 namespace viz
 {
@@ -83,6 +84,68 @@ namespace bg {
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
+  }
+}
+
+namespace box {
+  const char *VERTEX_SHADER_SOURCE = R"(
+  #version 330 core
+  layout (location = 0) in vec2 position;
+  void main()
+  {
+    gl_Position = vec4(position, 0., 1.);
+  }
+  )";
+
+  const char *FRAGMENT_SHADER_SOURCE = R"(
+  #version 330
+  out vec4 f_color;
+  void main() {
+    f_color = vec4(1.0f, .0f, .0f, 1.0f);
+  }
+  )";
+
+  std::tuple<unsigned int, unsigned int> load_model(float* ptr, int count){
+    unsigned int VBO_BOX, VAO_BOX;
+
+    std::vector<float> vertices;
+
+    for(int i = 0; i < count; i++){
+      float x_c = ptr[4*i];
+      float y_c = ptr[4*i+1];
+      float w = ptr[4*i+2];
+      float h = ptr[4*i+3];
+
+      float x1 = (x_c - 0.5 * w)*2-1;
+      float y1 = ((y_c - 0.5 * h)*2-1)*-1;
+      float x2 = (x_c + 0.5 * w)*2-1;
+      float y2 = ((y_c + 0.5 * h)*2-1)*-1;
+
+      vertices.push_back(x1); vertices.push_back(y1);
+      vertices.push_back(x2); vertices.push_back(y1);
+      vertices.push_back(x2); vertices.push_back(y2);
+      vertices.push_back(x1); vertices.push_back(y2);
+      vertices.push_back(x1); vertices.push_back(y1);
+    }
+
+    glGenVertexArrays(1, &VAO_BOX);
+    glGenBuffers(1, &VBO_BOX);
+
+    glBindVertexArray(VAO_BOX);
+
+    // 1. vertex
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_BOX);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    return std::make_tuple(VAO_BOX, VBO_BOX);
+  }
+  void delete_model(unsigned int VAO_BOX, unsigned int VBO_BOX){
+    glDeleteVertexArrays(1, &VAO_BOX);
+    glDeleteBuffers(1, &VBO_BOX);
   }
 }
 }
