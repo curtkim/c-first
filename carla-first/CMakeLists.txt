@@ -16,6 +16,7 @@ foreach(APP
     31_rxcpp_image_one_file
     61_sensor_server
     62_sensor_client 62_sensor_client_rx
+    70_header_record_info
     71_sensor_server
     71_sensor_server_rx
     71_sensor_server_dummy

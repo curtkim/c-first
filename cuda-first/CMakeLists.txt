@@ -38,3 +38,5 @@ target_link_libraries(oceanFFT PUBLIC cufft glut GL GLU)
 target_include_directories(oceanFFT PRIVATE /usr/local/cuda/include)
 file(COPY 5_simulation/ocean.frag DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY 5_simulation/ocean.vert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_executable(template_function_pointer template_function_pointer.cu)
