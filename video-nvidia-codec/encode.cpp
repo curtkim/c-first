@@ -8,6 +8,8 @@
 void* gdevice;
 CUcontext cuContextCurr;
 
+using namespace std;
+
 NVENCSTATUS InitCuda(uint32_t deviceID)
 {
   CUresult cuResult;
@@ -29,6 +31,7 @@ NVENCSTATUS InitCuda(uint32_t deviceID)
     std::cout << "cuDeviceGetCount error: " << cuResult << std::endl;
     return NV_ENC_ERR_NO_ENCODE_DEVICE;
   }
+  cout << "deviceCount=" << deviceCount << endl;
 
   // If dev is negative value, we clamp to 0
   if ((int)deviceID < 0) deviceID = 0;
@@ -45,6 +48,7 @@ NVENCSTATUS InitCuda(uint32_t deviceID)
     std::cout << "cuDeviceGet error: " << cuResult << std::endl;
     return NV_ENC_ERR_NO_ENCODE_DEVICE;
   }
+  cout << "device=" << device << endl;
 
   cuResult = cuDeviceComputeCapability(&SMmajor, &SMminor, deviceID);
   if (cuResult != CUDA_SUCCESS)
@@ -147,7 +151,7 @@ int main() {
   nvstatus = encodeAPI.nvEncGetEncodePresetConfig(encoder, encinitparam.encodeGUID, encinitparam.presetGUID, &presetcfg);
   if (nvstatus != NV_ENC_SUCCESS)
   {
-    std::cout << "nvEncGetEncodePresetConfig failed" << std::endl;
+    std::cout << "nvEncGetEncodePresetConfig failed " << nvstatus << std::endl;
     return 1;
   }
 
