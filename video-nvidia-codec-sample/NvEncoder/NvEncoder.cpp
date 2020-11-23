@@ -59,6 +59,7 @@ void NvEncoder::LoadNvEncApi()
     uint32_t version = 0;
     uint32_t currentVersion = (NVENCAPI_MAJOR_VERSION << 4) | NVENCAPI_MINOR_VERSION;
     NVENC_API_CALL(NvEncodeAPIGetMaxSupportedVersion(&version));
+    std::cout << "currentVersion=" << currentVersion << " version=" << version << std::endl;
     if (currentVersion > version)
     {
         NVENC_THROW_ERROR("Current Driver Version does not support this NvEncodeAPI version, please upgrade driver", NV_ENC_ERR_INVALID_VERSION);

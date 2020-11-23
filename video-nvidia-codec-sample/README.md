@@ -4,7 +4,13 @@ yuv420p (p means planar)
 
 ## Howto
 
+    # cd cmake-build-debug
+    bin/decode -i ../origin_480x272.h264 -o origin_480x272.out
+
+    bin/encode -i origin_480x272.out -s 480x272 -if nv12 -codec h264 -o encode_480x272.h264
+     
     ./encode -i ../../../video-first/cmake-build-debug/bin/bigbuckbunny_480x272.yuv -o bigbuckbunny_480x272.h264 -s 480x272 -if yuv444 -codec h264  
+    
 
 ## options
 
