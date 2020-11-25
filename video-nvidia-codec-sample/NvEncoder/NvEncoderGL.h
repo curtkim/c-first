@@ -12,7 +12,8 @@
 #include <iostream>
 #include "NvEncoder/NvEncoder.h"
 #include <unordered_map>
-#include <GL/glew.h>
+#include <glad/glad.h>
+//#include <GL/glew.h>
 
 class NvEncoderGL : public NvEncoder
 {

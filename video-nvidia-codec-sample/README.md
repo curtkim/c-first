@@ -1,3 +1,13 @@
+## sample
+
+    wget https://developer.nvidia.com/heavy-hand -O heavy-hand.zip
+    unzip heavy-hand.zip
+    ffprobe -hide_banner -video_size 1920x1080 HeavyHand_1080p.yuv        
+    # Input #0, rawvideo, from 'HeavyHand_1080p.yuv':
+    #   Duration: 00:00:03.04, start: 0.000000, bitrate: 622080 kb/s
+    #     Stream #0:0: Video: rawvideo (I420 / 0x30323449), yuv420p, 1920x1080, 622080 kb/s, 25 tbr, 25 tbn, 25 tbc     
+
+
 ## Howto
 
     # cd cmake-build-debug
@@ -7,6 +17,12 @@
     
     ffprobe -hide_banner encoded_480x272.h264
     ffplay -i encoded_480x272.h264
+
+## misc
+ffmpeg -pix_fmts 
+yuv420p (p means planar)
+
+NV12 = YUV420sp
 
 
 ## encode options
@@ -127,6 +143,3 @@
     Codec  VP9    BitDepth  12  ChromaFormat  4:2:0  Supported  1  MaxWidth  8192   MaxHeight  8192   MaxMBCount  262144    MinWidth  128  MinHeight  128  SurfaceFormat  NV12 P016  
     
 
-## misc
-ffmpeg -pix_fmts 
-yuv420p (p means planar)

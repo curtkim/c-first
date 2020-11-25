@@ -62,10 +62,14 @@ void DecodeMediaFile(CUcontext cuContext, const char *szInFilePath, const char *
     }
 
     FFmpegDemuxer demuxer(szInFilePath);
+    if( demuxer.GetVideoCodec() == AV_CODEC_ID_H264)
+      std::cout << "demuxer.GetVideoCodec() = AV_CODEC_ID_H264" << std::endl;
     NvDecoder dec(cuContext, false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()), false, false, &cropRect, &resizeDim);
 
     int nVideoBytes = 0, nFrameReturned = 0, nFrame = 0;
-    uint8_t *pVideo = NULL, *pFrame;
+    uint8_t *pVideo = NULL;
+    uint8_t *pFrame;
+
     bool bDecodeOutSemiPlanar = false;
     do {
         demuxer.Demux(&pVideo, &nVideoBytes);

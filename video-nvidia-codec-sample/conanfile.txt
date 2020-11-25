@@ -1,8 +1,8 @@
 [requires]
 #pl_mpeg/20200510@demo/testing
 #stb/20200203
-#glad/0.1.29@bincrafters/stable
-#glfw/3.3.2@curt/testing
+glad/0.1.29@bincrafters/stable
+glfw/3.3.2@curt/testing
 #glm/0.9.9.7
 #fmt/7.0.3
 
