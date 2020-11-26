@@ -9,5 +9,8 @@ conan_basic_setup()
 add_executable(encode_videon encode_videon.c)
 target_link_libraries(encode_videon PUBLIC avcodec avutil) # avformat avfilter
 
+add_executable(encode_audio encode_audio.c)
+target_link_libraries(encode_audio PUBLIC m avcodec avutil) # avformat avfilter
+
 add_executable(muxing muxing.c)
 target_link_libraries(muxing PUBLIC m avcodec avformat avutil swscale swresample)

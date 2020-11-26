@@ -28,6 +28,11 @@ https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples
     cmake-build-debug/bin/encode_videon test.hevc libx265
     
 
+## encode_audio
+    
+    cmake-build-debug/bin/encode_audio encode.mp2
+
+
 ## muxing 
 
     cmake-build-debug/bin/muxing muxing.mp4
