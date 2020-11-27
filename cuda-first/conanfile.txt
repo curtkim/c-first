@@ -1,0 +1,5 @@
+[requires]
+stb/20200203
+
+[generators]
+cmake
