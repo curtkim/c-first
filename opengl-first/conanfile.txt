@@ -7,7 +7,7 @@ libigl/2.2.0@demo/testing
 shapelib/1.5.0
 readerwriterqueue/1.0.2@curt/testing
 stb/20200203
-
+#cairo/1.17.2
 
 [generators]
 cmake
