@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
   EGLint major, minor;
 
   eglInitialize(eglDpy, &major, &minor);
+  std::cout << major << " " << minor << std::endl;
 
   // 2. Select an appropriate configuration
   EGLint numConfigs;
