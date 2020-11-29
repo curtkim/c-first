@@ -43,7 +43,7 @@
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 
-#define STREAM_DURATION   10.0
+#define STREAM_DURATION   100.0
 #define STREAM_FRAME_RATE 25 /* 25 images/s */
 #define STREAM_PIX_FMT    AV_PIX_FMT_YUV420P /* default pix_fmt */
 
@@ -67,6 +67,7 @@ typedef struct OutputStream {
   struct SwrContext *swr_ctx;
 } OutputStream;
 
+
 static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 {
   AVRational *time_base = &fmt_ctx->streams[pkt->stream_index]->time_base;
@@ -78,8 +79,7 @@ static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
          pkt->stream_index);
 }
 
-static int write_frame(AVFormatContext *fmt_ctx, AVCodecContext *c,
-                       AVStream *st, AVFrame *frame)
+static int write_frame(AVFormatContext *fmt_ctx, AVCodecContext *c, AVStream *st, AVFrame *frame)
 {
   int ret;
 
@@ -120,9 +120,7 @@ static int write_frame(AVFormatContext *fmt_ctx, AVCodecContext *c,
 }
 
 /* Add an output stream. */
-static void add_stream(OutputStream *ost, AVFormatContext *oc,
-                       AVCodec **codec,
-                       enum AVCodecID codec_id)
+static void add_stream(OutputStream *ost, AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id)
 {
   AVCodecContext *c;
   int i;
@@ -214,9 +212,7 @@ static void add_stream(OutputStream *ost, AVFormatContext *oc,
 /**************************************************************/
 /* audio output */
 
-static AVFrame *alloc_audio_frame(enum AVSampleFormat sample_fmt,
-                                  uint64_t channel_layout,
-                                  int sample_rate, int nb_samples)
+static AVFrame *alloc_audio_frame(enum AVSampleFormat sample_fmt, uint64_t channel_layout, int sample_rate, int nb_samples)
 {
   AVFrame *frame = av_frame_alloc();
   int ret;
