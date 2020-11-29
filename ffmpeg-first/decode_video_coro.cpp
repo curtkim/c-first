@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <functional>
+#include <filesystem>
 
 #include "generator.h"
 
@@ -38,7 +39,7 @@ coro_exp::generator<std::tuple<AVFrame *, int>> decodePacket(AVCodecContext *cod
   while (ret >= 0) {
     ret = avcodec_receive_frame(codecContext, frame);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-      exit(1);
+      co_return;
     else if (ret < 0) {
       fprintf(stderr, "Error during decoding\n");
       exit(1);
@@ -135,6 +136,8 @@ coro_exp::generator<std::tuple<AVFrame *, int>> decodeFile(FILE *f, AVCodecID co
 
 int main(int argc, char **argv)
 {
+  std::cout << "Current path is " << std::filesystem::current_path() << '\n';
+
   if (argc <= 2) {
     fprintf(stderr, "Usage: %s <input file> <output file>\n"
                     "And check your input file is encoded by mpeg1video please.\n", argv[0]);
