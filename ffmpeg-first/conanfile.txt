@@ -2,5 +2,7 @@
 #glad/0.1.29@bincrafters/stable
 #glfw/3.3.2@curt/testing
 
+#sdl2/2.0.12@bincrafters/stable
+
 [generators]
 cmake

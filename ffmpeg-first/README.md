@@ -4,28 +4,28 @@ https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples
 
     ffmpeg -codecs | grep DEV
 
-    cmake-build-debug/bin/encode_videon test.mpeg mpeg1video
+    cmake-build-debug/bin/encode_video test.mpeg mpeg1video
     ffprobe test.mpeg
     #Input #0, mpegvideo, from 'test.mpeg':
     #  Duration: 00:00:00.01, bitrate: 104846 kb/s
     #    Stream #0:0: Video: mpeg1video, yuv420p(tv), 352x288 [SAR 1:1 DAR 11:9], 104857 kb/s, 25 fps, 25 tbr, 1200k tbn, 25 tbc    
     ffplay test.mpeg
 
-    cmake-build-debug/bin/encode_videon test.mp4 mpeg4
+    cmake-build-debug/bin/encode_video test.mp4 mpeg4
     ffprobe -hide_banner test.mp4
     #Input #0, m4v, from 'test.mp4':
     #  Duration: N/A, start: 0.000000, bitrate: N/A
     #    Stream #0:0: Video: mpeg4 (Advanced Simple Profile), yuv420p, 352x288 [SAR 1:1 DAR 11:9], 25 tbr, 1200k tbn, 25 tbc
     ffplay test.mp4
     
-    cmake-build-debug/bin/encode_videon test.h264 libx264
+    cmake-build-debug/bin/encode_video test.h264 libx264
     ffprobe -hide_banner test.h264
     #Input #0, h264, from 'test.h264':
     #  Duration: N/A, bitrate: N/A
     #    Stream #0:0: Video: h264 (High), yuv420p(progressive), 352x288, 25 fps, 25 tbr, 1200k tbn, 50 tbc
     ffplay test.h264
     
-    cmake-build-debug/bin/encode_videon test.hevc libx265
+    cmake-build-debug/bin/encode_video test.hevc libx265
     
 
 ## encode_audio
@@ -51,4 +51,7 @@ https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples
     #    Metadata:
     #      handler_name    : SoundHandler
     ffplay muxing.mp4
-    
+
+## demuxing
+
+    cmake-build-debug/demuxing muxing.mp4 demux_v demux_A    
