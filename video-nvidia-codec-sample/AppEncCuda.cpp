@@ -1,30 +1,24 @@
-/*
-* Copyright 2017-2020 NVIDIA Corporation.  All rights reserved.
-*
-* Please refer to the NVIDIA end user license agreement (EULA) associated
-* with this source code for terms and conditions that govern your use of
-* this software. Any use, reproduction, disclosure, or distribution of
-* this software and related documentation outside the terms of the EULA
-* is strictly prohibited.
-*
-*/
-
 /**
 *  This sample application illustrates encoding of frames in CUDA device buffers.
+*
 *  The application reads the image data from file and
 *  loads it to CUDA input buffers obtained from the encoder using NvEncoder::GetNextInputFrame().
+*
 *  The encoder subsequently maps the CUDA buffers for encoder using NvEncodeAPI
 *  and submits them to NVENC hardware for encoding as part of EncodeFrame() function.
+*
 *  The NVENC hardware output is written in system memory for this case.
 *
 *  This sample application also illustrates the use of video memory buffer allocated 
-*  by the application to get the NVENC hardware output. This feature can be used
-*  for H264 ME-only mode, H264 encode and HEVC encode. This application copies the NVENC output 
-*  from video memory buffer to host memory buffer in order to dump to a file, but this
-*  is not needed if application choose to use it in some other way.
+*  by the application to get the NVENC hardware output.
+*  This feature can be used for H264 ME-only mode, H264 encode and HEVC encode.
 *
-*  Since, encoding may involve CUDA pre-processing on the input and post-processing on 
-*  output, use of CUDA streams is also illustrated to pipeline the CUDA pre-processing 
+*  This application copies the NVENC output
+*  from video memory buffer to host memory buffer in order to dump to a file,
+*  but this is not needed if application choose to use it in some other way.
+*
+*  Since, encoding may involve CUDA pre-processing on the input and post-processing on output,
+*  use of CUDA streams is also illustrated to pipeline the CUDA pre-processing
 *  and post-processing tasks, for output in video memory case.
 *
 *  CUDA streams can be used for H.264 ME-only, HEVC ME-only, H264 encode and HEVC encode.

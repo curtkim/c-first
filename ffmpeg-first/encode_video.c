@@ -152,7 +152,6 @@ int main(int argc, char **argv)
       exit(1);
 
     fill_frame(c, frame, i);
-
     frame->pts = i;
 
     /* encode the image */
