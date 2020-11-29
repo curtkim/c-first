@@ -3,6 +3,8 @@
 #include <string.h>
 #include <functional>
 
+#include "generator.h"
+
 extern "C" {
 #include <libavcodec/avcodec.h>
 }
@@ -24,8 +26,29 @@ static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize, char *f
   fclose(f);
 }
 
+// [&codecContext, &frame, &callback]
+coro_exp::generator<std::tuple<AVFrame *, int>> decodePacket(AVCodecContext *codecContext, AVPacket *packet, AVFrame *frame){
+  int ret = avcodec_send_packet(codecContext, packet);
 
-void decodeFile(FILE *f, AVCodecID codecId, CALLBACK_TYPE callback) {
+  if (ret < 0) {
+    fprintf(stderr, "Error sending a packet for decoding\n");
+    exit(1);
+  }
+
+  while (ret >= 0) {
+    ret = avcodec_receive_frame(codecContext, frame);
+    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
+      exit(1);
+    else if (ret < 0) {
+      fprintf(stderr, "Error during decoding\n");
+      exit(1);
+    }
+    fflush(stdout);
+    co_yield std::make_tuple(frame, codecContext->frame_number);
+  }
+};
+
+coro_exp::generator<std::tuple<AVFrame *, int>> decodeFile(FILE *f, AVCodecID codecId) {
 
   uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
 
@@ -71,27 +94,6 @@ void decodeFile(FILE *f, AVCodecID codecId, CALLBACK_TYPE callback) {
     exit(1);
   }
 
-  auto decodePacket = [&codecContext, &frame, &callback](AVPacket *packet){
-    int ret = avcodec_send_packet(codecContext, packet);
-
-    if (ret < 0) {
-      fprintf(stderr, "Error sending a packet for decoding\n");
-      exit(1);
-    }
-
-    while (ret >= 0) {
-      ret = avcodec_receive_frame(codecContext, frame);
-      if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-        return;
-      else if (ret < 0) {
-        fprintf(stderr, "Error during decoding\n");
-        exit(1);
-      }
-      fflush(stdout);
-      callback(frame, codecContext->frame_number);
-    }
-  };
-
 
   while (!feof(f)) {
     /* read raw data from the input file */
@@ -111,13 +113,18 @@ void decodeFile(FILE *f, AVCodecID codecId, CALLBACK_TYPE callback) {
       data += ret;
       data_size -= ret;
 
-      if (packet->size)
-        decodePacket(packet);
+      if (packet->size) {
+        auto iter = decodePacket(codecContext, packet, frame);
+        while(iter.next())
+          co_yield iter.getValue();
+      }
     }
   }
 
   /* flush the decoder */
-  decodePacket(NULL);
+  auto iter = decodePacket(codecContext, packet, frame);
+  while(iter.next())
+    co_yield iter.getValue();
 
   av_parser_close(parser);
   avcodec_free_context(&codecContext);
@@ -144,15 +151,15 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  CALLBACK_TYPE callback = [&outfilename](const AVFrame * frame, int frame_number){
+  auto iter = decodeFile(f, AV_CODEC_ID_MPEG1VIDEO);
+  while(iter.next()){
+    auto [frame, frame_number] = iter.getValue();
     printf("saving frame %3d\n", frame_number);
     /* the picture is allocated by the decoder. no need to free it */
     char buf[1024];
     snprintf(buf, sizeof(buf), "%s-%d", outfilename, frame_number);
     pgm_save(frame->data[0], frame->linesize[0], frame->width, frame->height, buf);
-  };
-
-  decodeFile(f, AV_CODEC_ID_MPEG1VIDEO, callback);
+  }
   fclose(f);
 
   return 0;

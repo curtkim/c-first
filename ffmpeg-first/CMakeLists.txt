@@ -21,7 +21,11 @@ target_link_libraries(decode_video PUBLIC avcodec avutil) # avformat avfilter
 add_executable(decode_video_cpp decode_video.cpp)
 target_link_libraries(decode_video_cpp PUBLIC avcodec avutil) # avformat avfilter
 
+add_executable(decode_video_coro decode_video_coro.cpp)
+target_link_libraries(decode_video_coro PUBLIC avcodec avutil) # avformat avfilter
+target_compile_features(decode_video_coro PUBLIC cxx_std_20)
+target_compile_options(decode_video_coro PRIVATE -fcoroutines)
 
 add_executable(demuxing demuxing.c)
 target_link_libraries(demuxing PUBLIC m avcodec avformat avutil swscale swresample)
-target_compile_features(demuxing PUBLIC cxx_std_17)
+
