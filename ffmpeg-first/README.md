@@ -52,6 +52,11 @@ https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples
     #      handler_name    : SoundHandler
     ffplay muxing.mp4
 
+## decode_video
+
+    cmake-build-debug/bin/decode_video test.mpeg test.pgm
+    
+    
 ## demuxing
 
-    cmake-build-debug/demuxing muxing.mp4 demux_v demux_A    
+    cmake-build-debug/bin/demuxing muxing.mp4 demux_v demux_A    

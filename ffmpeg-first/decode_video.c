@@ -19,8 +19,7 @@ static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize,
   fclose(f);
 }
 
-static void decode(AVCodecContext *dec_ctx, AVFrame *frame, AVPacket *pkt,
-                   const char *filename)
+static void decode(AVCodecContext *dec_ctx, AVFrame *frame, AVPacket *pkt, const char *filename)
 {
   char buf[1024];
   int ret;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(video-nvidia-codec LANGUAGES C )
+project(video-nvidia-codec LANGUAGES C CXX )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -18,5 +18,10 @@ target_link_libraries(muxing PUBLIC m avcodec avformat avutil swscale swresample
 add_executable(decode_video decode_video.c)
 target_link_libraries(decode_video PUBLIC avcodec avutil) # avformat avfilter
 
+add_executable(decode_video_cpp decode_video.cpp)
+target_link_libraries(decode_video_cpp PUBLIC avcodec avutil) # avformat avfilter
+
+
 add_executable(demuxing demuxing.c)
 target_link_libraries(demuxing PUBLIC m avcodec avformat avutil swscale swresample)
+target_compile_features(demuxing PUBLIC cxx_std_17)
