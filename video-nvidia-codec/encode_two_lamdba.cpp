@@ -5,14 +5,14 @@
 #include <cuda.h>
 #include <nvEncodeAPI.h>
 #include "utils.h"
+#include <functional>
 
 using namespace std;
 
-int main() {
-  const char * input_file = "../../target_1280.yuv";
-  const char * output_file = "target_1280.h264";
-  const int WIDTH = 2048;
-  const int HEIGHT = 4096;
+const int WIDTH = 2048;
+const int HEIGHT = 4096;
+
+int encode(std::function<void(char*)> reader, std::function<void(const char*, uint32_t)> writer) {
 
   NVENCSTATUS nvstatus;
   void* encoder        = nullptr;
@@ -150,9 +150,7 @@ int main() {
     return 1;
   }
 
-  std::ifstream fs(input_file, std::ifstream::in | std::ifstream::binary);
-  fs.read(reinterpret_cast<char*>(inputBufferLocker.bufferDataPtr), WIDTH * HEIGHT * 1.5);  // 2048*4096*1.5
-  fs.close();
+  reader((char*)inputBufferLocker.bufferDataPtr);
 
   nvstatus = encodeAPI.nvEncUnlockInputBuffer(encoder, inputBuffer);
   if (nvstatus != NV_ENC_SUCCESS)
@@ -194,12 +192,7 @@ int main() {
     return 1;
   }
 
-  std::cout << "Encoded size: " << outputBufferLocker.bitstreamSizeInBytes << std::endl;
-  std::ofstream ofs(output_file, std::ofstream::out | std::ofstream::binary);
-  ofs.write(
-    reinterpret_cast<const char*>(outputBufferLocker.bitstreamBufferPtr),
-    outputBufferLocker.bitstreamSizeInBytes);
-  ofs.close();
+  writer((const char*)outputBufferLocker.bitstreamBufferPtr, outputBufferLocker.bitstreamSizeInBytes);
 
   nvstatus = encodeAPI.nvEncUnlockBitstream(encoder, outputBuffer);
   if (nvstatus != NV_ENC_SUCCESS)
@@ -237,6 +230,24 @@ int main() {
     std::cout << "nvEncDestroyEncoder failed" << std::endl;
     return 1;
   }
+}
 
-  return 0;
+int main() {
+  const char * input_file = "../../target_1280.yuv";
+  const char * output_file = "target_1280.h264";
+
+  auto reader = [&input_file](char * buffer){
+    std::ifstream fs(input_file, std::ifstream::in | std::ifstream::binary);
+    fs.read(buffer, WIDTH * HEIGHT * 1.5);  // 2048*4096*1.5
+    fs.close();
+  };
+
+  auto writer = [&output_file](const char* buffer, uint32_t length) {
+    std::cout << "Encoded size: " << length << std::endl;
+    std::ofstream ofs(output_file, std::ofstream::out | std::ofstream::binary);
+    ofs.write(buffer, length);
+    ofs.close();
+  };
+
+  return encode(reader, writer);
 }
