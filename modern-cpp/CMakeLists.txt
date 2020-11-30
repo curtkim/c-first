@@ -80,6 +80,7 @@ foreach(APP
         lambda
         lambda2
         reflection_test
+        vector_2d
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
