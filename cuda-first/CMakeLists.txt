@@ -31,13 +31,15 @@ foreach(APP simpleGL)
     target_link_libraries(${APP} PUBLIC glut GL GLU)
 endforeach()
 
-foreach(APP cannyEdgeDetect)
+foreach(APP cannyEdgeDetect freeImageInteropNPP jpegNPP)
     add_executable(${APP} 7_library/${APP}.cpp)
     #target_link_libraries(${APP} PUBLIC glut GL GLU)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
     target_link_libraries(${APP} PRIVATE cuda cudart
-            nppc nppisu nppif ) # nppc nppicom nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist
+            nppc nppicom nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist)
+            #nppc nppisu nppif ) # nppc nppicom nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist
 endforeach()
 
 

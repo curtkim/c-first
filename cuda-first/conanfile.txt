@@ -1,5 +1,6 @@
 [requires]
 stb/20200203
+freeimage/3.18.0@curt/testing
 
 [generators]
 cmake
