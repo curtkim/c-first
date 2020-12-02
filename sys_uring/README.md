@@ -5,10 +5,12 @@
 ## HOWTO
 
     vagrant up
+    vagrant provision
     vagrant ssh
     cd /data
-    gcc -Wall -O2 -D_GNU_SOURCE -o uring-test uring-test.c -luring
-    gcc -Wall -O2 -D_GNU_SOURCE -o uring-cp uring-cp.c -luring
+    cmake -S . -B build
+    cd build && make
+    
     
 ## cat_uring
 
@@ -20,3 +22,7 @@
         io_uring_wait_cqe()
             io_uring_cqe_get_data()  -- get_data
     io_uring_queue_exit()
+
+## uring-cp
+    
+    
