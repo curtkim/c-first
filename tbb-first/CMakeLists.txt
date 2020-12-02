@@ -37,7 +37,7 @@ foreach(APP
         ex06_01_concurrent_map ex06_02_concurrent_queue ex06_10
         ex07_09_parallel_for
         ex10_04_parallel_invoke ex10_06_task_group ex10_08 ex10_11 ex10_11_bypass ex10_15_recycle)
-    add_executable(${APP} ${APP}.cpp)
+    add_executable(${APP} protbb/${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()

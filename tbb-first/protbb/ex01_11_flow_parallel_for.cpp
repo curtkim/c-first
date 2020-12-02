@@ -1,9 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <tbb/tbb.h>
-#include <pstl/algorithm>
-#include <pstl/execution>
-#include "ch01.h"
+#include "../ch01.h"
 
 using ImagePtr = std::shared_ptr<ch01::Image>;
 
@@ -21,15 +19,13 @@ ImagePtr applyGamma(ImagePtr image_ptr, double gamma) {
   tbb::parallel_for(
     0, height,
     [&in_rows, &out_rows, width, gamma](int i) {
-      auto in_row = in_rows[i];
-      auto out_row = out_rows[i];
-      std::transform(pstl::execution::unseq, in_row, in_row + width,
-                     out_row, [gamma](const ch01::Image::Pixel &p) {
-          double v = 0.3 * p.bgra[2] + 0.59 * p.bgra[1] + 0.11 * p.bgra[0];
-          double res = pow(v, gamma);
-          if (res > ch01::MAX_BGR_VALUE) res = ch01::MAX_BGR_VALUE;
-          return ch01::Image::Pixel(res, res, res);
-        });
+      for (int j = 0; j < width; ++j) {
+        const ch01::Image::Pixel &p = in_rows[i][j];
+        double v = 0.3 * p.bgra[2] + 0.59 * p.bgra[1] + 0.11 * p.bgra[0];
+        double res = pow(v, gamma);
+        if (res > ch01::MAX_BGR_VALUE) res = ch01::MAX_BGR_VALUE;
+        out_rows[i][j] = ch01::Image::Pixel(res, res, res);
+      }
     }
   );
   return output_image_ptr;
@@ -47,25 +43,27 @@ ImagePtr applyTint(ImagePtr image_ptr, const double *tints) {
   tbb::parallel_for(
     0, height,
     [&in_rows, &out_rows, width, tints](int i) {
-      auto in_row = in_rows[i];
-      auto out_row = out_rows[i];
-      std::transform(pstl::execution::unseq, in_row, in_row + width,
-                     out_row, [tints](const ch01::Image::Pixel &p) {
-          std::uint8_t b = (double) p.bgra[0] +(ch01::MAX_BGR_VALUE - p.bgra[0]) * tints[0];
-          std::uint8_t g = (double) p.bgra[1] +(ch01::MAX_BGR_VALUE - p.bgra[1]) * tints[1];
-          std::uint8_t r = (double) p.bgra[2] +(ch01::MAX_BGR_VALUE - p.bgra[2]) * tints[2];
-          return ch01::Image::Pixel(
+      for (int j = 0; j < width; ++j) {
+        const ch01::Image::Pixel &p = in_rows[i][j];
+        std::uint8_t b = (double) p.bgra[0] +
+                         (ch01::MAX_BGR_VALUE - p.bgra[0]) * tints[0];
+        std::uint8_t g = (double) p.bgra[1] +
+                         (ch01::MAX_BGR_VALUE - p.bgra[1]) * tints[1];
+        std::uint8_t r = (double) p.bgra[2] +
+                         (ch01::MAX_BGR_VALUE - p.bgra[2]) * tints[2];
+        out_rows[i][j] =
+          ch01::Image::Pixel(
             (b > ch01::MAX_BGR_VALUE) ? ch01::MAX_BGR_VALUE : b,
             (g > ch01::MAX_BGR_VALUE) ? ch01::MAX_BGR_VALUE : g,
             (r > ch01::MAX_BGR_VALUE) ? ch01::MAX_BGR_VALUE : r
           );
-        });
+      }
     }
   );
   return output_image_ptr;
 }
 
-void fig_1_12(std::vector<ImagePtr> &image_vector) {
+void fig_1_11(std::vector<ImagePtr> &image_vector) {
   const double tint_array[] = {0.75, 0, 0};
 
   tbb::flow::graph g;
@@ -124,15 +122,13 @@ int main(int argc, char *argv[]) {
     image_vector.push_back(ch01::makeFractalImage(i));
 
   // warmup the scheduler
-  tbb::parallel_for(0, tbb::task_scheduler_init::default_num_threads(),
-                    [](int) {
-                      tbb::tick_count t0 = tbb::tick_count::now();
-                      while ((tbb::tick_count::now() - t0).seconds() < 0.01);
-                    }
-  );
+  tbb::parallel_for(0, tbb::task_scheduler_init::default_num_threads(), [](int) {
+    tbb::tick_count t0 = tbb::tick_count::now();
+    while ((tbb::tick_count::now() - t0).seconds() < 0.01);
+  });
 
   tbb::tick_count t0 = tbb::tick_count::now();
-  fig_1_12(image_vector);
+  fig_1_11(image_vector);
   std::cout << "Time : " << (tbb::tick_count::now() - t0).seconds()
             << " seconds" << std::endl;
   return 0;
