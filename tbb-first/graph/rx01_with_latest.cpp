@@ -37,6 +37,7 @@ int main() {
   // 10 1만 출력
   tbb::flow::join_node<std::tuple<int, int>, tbb::flow::reserving> my_join_node{g};
 
+  // Edge
   tbb::flow::make_edge(overwrite_storage, tbb::flow::input_port<0>(my_join_node));
   tbb::flow::make_edge(data_generator, tbb::flow::input_port<1>(my_join_node));
   tbb::flow::make_edge(my_join_node, process);
