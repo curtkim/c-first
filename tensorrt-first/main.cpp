@@ -11,8 +11,8 @@
 #include "common.h"
 #include "logger.h"
 
-#include "NvCaffeParser.h"
-#include "NvInfer.h"
+#include <NvCaffeParser.h>
+#include <NvInfer.h>
 
 #include <cassert>
 #include <cmath>

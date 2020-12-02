@@ -16,9 +16,10 @@ foreach(APP chrono_duration chrono_timepoint chrono_to_time_t clock_steady)
 endforeach()
 
 ### thread_async
-foreach(APP producer_consumer test_async test_async2 thread_main condition_variable_test)
+foreach(APP producer_consumer test_async test_async2 thread_main condition_variable_test condition_variable_test2 async_pipeline)
     add_executable(${APP} thread_async/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
+    target_link_libraries(${APP} PUBLIC pthread)
 endforeach()
 
 ### c++17
@@ -80,6 +81,7 @@ foreach(APP
         lambda
         lambda2
         reflection_test
+        vector_2d
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)

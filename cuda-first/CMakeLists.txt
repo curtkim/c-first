@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(cuda-first LANGUAGES CUDA CXX)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 add_executable(cuda-version main.cc gpu.cu)
 
 add_executable(nvtx_first nvtx_first.cpp)
@@ -27,6 +30,18 @@ foreach(APP simpleGL)
     add_executable(${APP} 2_graphic/${APP}.cu)
     target_link_libraries(${APP} PUBLIC glut GL GLU)
 endforeach()
+
+foreach(APP cannyEdgeDetect freeImageInteropNPP jpegNPP)
+    add_executable(${APP} 7_library/${APP}.cpp)
+    #target_link_libraries(${APP} PUBLIC glut GL GLU)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+    target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_link_libraries(${APP} PRIVATE cuda cudart
+            nppc nppicom nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist)
+            #nppc nppisu nppif ) # nppc nppicom nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist
+endforeach()
+
 
 add_executable(simpleTexture3D 2_graphic/simpleTexture3D.cpp 2_graphic/simpleTexture3D_kernel.cu)
 target_link_libraries(simpleTexture3D PUBLIC glut GL GLU)
