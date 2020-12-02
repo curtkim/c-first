@@ -42,6 +42,14 @@ foreach(APP
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
+foreach(APP
+        fifo_by_sequencer fifo_by_priority_queue send_one_successor)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} ${CONAN_LIBS})
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
+
+
 #add_executable(ex07_09_tbbmalloc ex07_09.cpp)
 #target_link_libraries(ex07_09_tbbmalloc ${CONAN_LIBS} tbbmalloc_proxy)
 #target_compile_features(ex07_09_tbbmalloc PUBLIC cxx_std_17)
