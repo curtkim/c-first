@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <tbb/tbb.h>
-#include "ch01.h"
+#include "../ch01.h"
 
 using ImagePtr = std::shared_ptr<ch01::Image>;
 

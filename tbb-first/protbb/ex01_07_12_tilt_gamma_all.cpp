@@ -6,7 +6,7 @@
 #include <pstl/algorithm>
 #include <pstl/execution>
 
-#include "ch01.h"
+#include "../ch01.h"
 
 using ImagePtr = std::shared_ptr<ch01::Image>;
 
