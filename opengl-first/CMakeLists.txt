@@ -33,6 +33,7 @@ foreach(APP
         61_opengl_thread
         71_omega
         72_omega_box
+        82_thread_another
         )
   add_executable(${APP} ${APP}.cpp common/shader.cpp ) # memory_tracking.cpp
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
