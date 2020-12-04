@@ -59,13 +59,17 @@ foreach(APP crtp_mixin crtp_static_polymorphism tag_invoke_test static_assert_te
     target_link_libraries( ${APP} PUBLIC pthread )
 endforeach()
 
+### allocator
+foreach(APP allocator_test temporary_allocations)
+    add_executable(${APP} allocator/${APP}.cpp)
+    target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
 
 foreach(APP
         debug_release
         generic
         cast
         struct_test
-        allocator_test
         main
         test_string_view_remove_prefix_subfix
         test_string_view_small
