@@ -10,6 +10,8 @@ using namespace std;
 // 왜 priority_queue_node의 compare가 호출되지 않는지 모르겠다.
 int main() {
 
+  std::cout << std::this_thread::get_id() << " main " << std::endl;
+
   tbb::flow::graph g;
 
   tbb::flow::function_node<tuple<int, int>, int> process(
