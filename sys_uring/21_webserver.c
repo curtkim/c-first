@@ -1,11 +1,8 @@
 // https://unixism.net/2020/04/io-uring-by-example-part-3-a-web-server-with-io-uring/
 
-
-
 #include <stdio.h>
 #include <netinet/in.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -24,7 +21,6 @@
 #define EVENT_TYPE_READ         1
 #define EVENT_TYPE_WRITE        2
 
-
 struct request {
   int event_type;
   int iovec_count;
@@ -34,36 +30,6 @@ struct request {
 
 struct io_uring ring;
 
-/*
- * This function is responsible for setting up the main listening socket used by the
- * web server.
- * */
-int setup_listening_socket(int port) {
-  int sock;
-  struct sockaddr_in srv_addr;
-  sock = socket(PF_INET, SOCK_STREAM, 0);
-  if (sock == -1)
-    fatal_error("socket()");
-  int enable = 1;
-  if (setsockopt(sock,
-                 SOL_SOCKET, SO_REUSEADDR,
-                 &enable, sizeof(int)) < 0)
-    fatal_error("setsockopt(SO_REUSEADDR)");
-  memset(&srv_addr, 0, sizeof(srv_addr));
-  srv_addr.sin_family = AF_INET;
-  srv_addr.sin_port = htons(port);
-  srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  /* We bind to a port and turn this socket into a listening
-   * socket.
-   * */
-  if (bind(sock,
-           (const struct sockaddr *)&srv_addr,
-           sizeof(srv_addr)) < 0)
-    fatal_error("bind()");
-  if (listen(sock, 10) < 0)
-    fatal_error("listen()");
-  return (sock);
-}
 int add_accept_request(int server_socket, struct sockaddr_in *client_addr,
                        socklen_t *client_addr_len) {
   printf("add_accept_request port=%d\n", client_addr->sin_port);

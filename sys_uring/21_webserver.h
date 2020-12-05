@@ -35,6 +35,7 @@ const char *http_404_content = \
         "</body>"
         "</html>";
 
+
 /*
  * Utility function to convert a string to lower case.
  * */
@@ -91,6 +92,37 @@ const char *get_filename_ext(const char *filename) {
   if (!dot || dot == filename)
     return "";
   return dot + 1;
+}
+
+/*
+ * This function is responsible for setting up the main listening socket used by the
+ * web server.
+ * */
+int setup_listening_socket(int port) {
+  int sock;
+  struct sockaddr_in srv_addr;
+  sock = socket(PF_INET, SOCK_STREAM, 0);
+  if (sock == -1)
+    fatal_error("socket()");
+  int enable = 1;
+  if (setsockopt(sock,
+                 SOL_SOCKET, SO_REUSEADDR,
+                 &enable, sizeof(int)) < 0)
+    fatal_error("setsockopt(SO_REUSEADDR)");
+  memset(&srv_addr, 0, sizeof(srv_addr));
+  srv_addr.sin_family = AF_INET;
+  srv_addr.sin_port = htons(port);
+  srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  /* We bind to a port and turn this socket into a listening
+   * socket.
+   * */
+  if (bind(sock,
+           (const struct sockaddr *)&srv_addr,
+           sizeof(srv_addr)) < 0)
+    fatal_error("bind()");
+  if (listen(sock, 10) < 0)
+    fatal_error("listen()");
+  return (sock);
 }
 
 /*
