@@ -48,6 +48,14 @@ target_link_libraries(simpleTexture3D PUBLIC glut GL GLU)
 target_include_directories(simpleTexture3D PRIVATE /usr/local/cuda/include)
 file(COPY 2_graphic/Bucky.raw DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+find_package(Vulkan)
+add_executable(vulkanCUDASinewave 2_graphic/vulkanCUDASinewave.cu)
+target_link_libraries(vulkanCUDASinewave ${CONAN_LIBS} X11 Vulkan::Vulkan)
+target_compile_features(vulkanCUDASinewave PUBLIC cxx_std_17)
+file(COPY 2_graphic/shader_sine.frag DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY 2_graphic/shader_sine.vert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+
 add_executable(oceanFFT 5_simulation/oceanFFT.cpp 5_simulation/oceanFFT_kernel.cu)
 target_link_libraries(oceanFFT PUBLIC cufft glut GL GLU)
 target_include_directories(oceanFFT PRIVATE /usr/local/cuda/include)
