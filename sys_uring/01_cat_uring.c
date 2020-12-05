@@ -1,3 +1,4 @@
+// 파일을 block으로 나누어 scatter read하는 요청을 한개 submit한다
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -92,13 +93,15 @@ int submit_read_request(char *file_path, struct io_uring *ring) {
   int current_block = 0;
   int blocks = (int) file_sz / BLOCK_SZ;
   if (file_sz % BLOCK_SZ) blocks++;
-  struct file_info *fi = malloc(sizeof(*fi) +
-                                (sizeof(struct iovec) * blocks));
+  struct file_info *fi = malloc(sizeof(*fi) + (sizeof(struct iovec) * blocks));
+
+  /*
   char *buff = malloc(file_sz);
   if (!buff) {
     fprintf(stderr, "Unable to allocate memory.\n");
     return 1;
   }
+  */
 
   /*
    * For each block of the file we need to read, we allocate an iovec struct
@@ -124,6 +127,12 @@ int submit_read_request(char *file_path, struct io_uring *ring) {
     bytes_remaining -= bytes_to_read;
   }
   fi->file_sz = file_sz;
+
+  printf("total_size=%d\n", file_sz);
+  for(int i = 0; i < blocks; i++){
+    struct iovec iv = fi->iovecs[i];
+    printf("%d %d\n", i, iv.iov_len);
+  }
 
   /* Get an SQE */
   struct io_uring_sqe *sqe = io_uring_get_sqe(ring);

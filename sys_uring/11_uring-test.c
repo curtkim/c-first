@@ -1,3 +1,6 @@
+// BLOCK_SIZE만큼 4번 읽는다.
+// io_uring_prep_readv를 4번 호출한다.??
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
@@ -6,6 +9,7 @@
 #include "liburing.h"
 
 #define QD  4
+#define MY_BLOCK_SIZE 4096
 
 int main(int argc, char *argv[]) {
   struct io_uring ring;
@@ -28,22 +32,24 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("1. %s\n", argv[1]);
+  printf("filename= %s\n", argv[1]);
 
   fd = open(argv[1], O_RDONLY); //  | O_DIRECT
   if (fd < 0) {
     perror("open");
     return 1;
   }
-  printf("2. %d\n", fd);
+  printf("fid= %d\n", fd);
 
+  // calloc(size_t num, size_t size)
   iovecs = calloc(QD, sizeof(struct iovec));
   for (i = 0; i < QD; i++) {
-    if (posix_memalign(&buf, 4096, 4096))
+    if (posix_memalign(&buf, MY_BLOCK_SIZE, MY_BLOCK_SIZE))
       return 1;
     iovecs[i].iov_base = buf;
-    iovecs[i].iov_len = 4096;
+    iovecs[i].iov_len = MY_BLOCK_SIZE;
   }
+
 
   offset = 0;
   i = 0;
@@ -74,7 +80,7 @@ int main(int argc, char *argv[]) {
     done++;
     printf("cqe->res= %d\n", cqe->res);
     ret = 0;
-    if (cqe->res != 4096) {
+    if (cqe->res != MY_BLOCK_SIZE) {
       fprintf(stderr, "ret=%d, wanted 4096\n", cqe->res);
       ret = 1;
     }

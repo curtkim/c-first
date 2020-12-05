@@ -41,20 +41,18 @@ static const char *op_strs[] = {
 };
 
 int main() {
-  struct utsname u;
-  uname(&u);
-  printf("You are running kernel version: %s\n", u.release);
-  struct io_uring_probe *probe = io_uring_get_probe();
-  printf("Report of your kernel's list of supported io_uring operations:\n");
-
-  for (char i = 0; i < IORING_OP_LAST; i++ ) {
-    printf("%s: ", op_strs[i]);
-    if(io_uring_opcode_supported(probe, i))
-      printf("yes.\n");
-    else
-      printf("no.\n");
-
+  {
+    struct utsname u;
+    uname(&u);
+    printf("You are running kernel version: %s\n", u.release);
   }
-  free(probe);
+
+  printf("Report of your kernel's list of supported io_uring operations:\n");
+  {
+    struct io_uring_probe *probe = io_uring_get_probe();
+    for (int i = 0; i < IORING_OP_LAST; i++)
+      printf("%s: %s\n", op_strs[i], io_uring_opcode_supported(probe, i) ? "yes" : "no");
+    free(probe);
+  }
   return 0;
 }

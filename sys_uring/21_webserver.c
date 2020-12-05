@@ -1,5 +1,7 @@
 // https://unixism.net/2020/04/io-uring-by-example-part-3-a-web-server-with-io-uring/
 
+
+
 #include <stdio.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -11,13 +13,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define SERVER_STRING           "Server: zerohttpd/0.1\r\n"
+#include "21_webserver.h"
+
+
 #define DEFAULT_SERVER_PORT     8000
 #define QUEUE_DEPTH             256
 #define READ_SZ                 8192
+
 #define EVENT_TYPE_ACCEPT       0
 #define EVENT_TYPE_READ         1
 #define EVENT_TYPE_WRITE        2
+
 
 struct request {
   int event_type;
@@ -28,58 +34,6 @@ struct request {
 
 struct io_uring ring;
 
-const char *unimplemented_content = \
-        "HTTP/1.0 400 Bad Request\r\n"
-        "Content-type: text/html\r\n"
-        "\r\n"
-        "<html>"
-        "<head>"
-        "<title>ZeroHTTPd: Unimplemented</title>"
-        "</head>"
-        "<body>"
-        "<h1>Bad Request (Unimplemented)</h1>"
-        "<p>Your client sent a request ZeroHTTPd did not understand and it is probably not your fault.</p>"
-        "</body>"
-        "</html>";
-const char *http_404_content = \
-        "HTTP/1.0 404 Not Found\r\n"
-        "Content-type: text/html\r\n"
-        "\r\n"
-        "<html>"
-        "<head>"
-        "<title>ZeroHTTPd: Not Found</title>"
-        "</head>"
-        "<body>"
-        "<h1>Not Found (404)</h1>"
-        "<p>Your client is asking for an object that was not found on this server.</p>"
-        "</body>"
-        "</html>";
-/*
- * Utility function to convert a string to lower case.
- * */
-void strtolower(char *str) {
-  for (; *str; ++str)
-    *str = (char)tolower(*str);
-}
-/*
- One function that prints the system call and the error details
- and then exits with error code 1. Non-zero meaning things didn't go well.
- */
-void fatal_error(const char *syscall) {
-  perror(syscall);
-  exit(1);
-}
-/*
- * Helper function for cleaner looking code.
- * */
-void *zh_malloc(size_t size) {
-  void *buf = malloc(size);
-  if (!buf) {
-    fprintf(stderr, "Fatal error: unable to allocate memory.\n");
-    exit(1);
-  }
-  return buf;
-}
 /*
  * This function is responsible for setting up the main listening socket used by the
  * web server.
@@ -112,6 +66,7 @@ int setup_listening_socket(int port) {
 }
 int add_accept_request(int server_socket, struct sockaddr_in *client_addr,
                        socklen_t *client_addr_len) {
+  printf("add_accept_request port=%d\n", client_addr->sin_port);
   struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
   io_uring_prep_accept(sqe, server_socket, (struct sockaddr *) client_addr,
                        client_addr_len, 0);
@@ -143,6 +98,7 @@ int add_write_request(struct request *req) {
   io_uring_submit(&ring);
   return 0;
 }
+
 void _send_static_string_content(const char *str, int client_socket) {
   struct request *req = zh_malloc(sizeof(*req) + sizeof(struct iovec));
   unsigned long slen = strlen(str);
@@ -153,6 +109,7 @@ void _send_static_string_content(const char *str, int client_socket) {
   memcpy(req->iov[0].iov_base, str, slen);
   add_write_request(req);
 }
+
 /*
  * When ZeroHTTPd encounters any other HTTP method other than GET or POST, this function
  * is used to inform the client.
@@ -167,100 +124,8 @@ void handle_unimplemented_method(int client_socket) {
 void handle_http_404(int client_socket) {
   _send_static_string_content(http_404_content, client_socket);
 }
-/*
- * Once a static file is identified to be served, this function is used to read the file
- * and write it over the client socket using Linux's sendfile() system call. This saves us
- * the hassle of transferring file buffers from kernel to user space and back.
- * */
-void copy_file_contents(char *file_path, off_t file_size, struct iovec *iov) {
-  int fd;
-  char *buf = zh_malloc(file_size);
-  fd = open(file_path, O_RDONLY);
-  if (fd < 0)
-    fatal_error("read");
-  /* We should really check for short reads here */
-  int ret = read(fd, buf, file_size);
-  if (ret < file_size) {
-    fprintf(stderr, "Encountered a short read.\n");
-  }
-  close(fd);
-  iov->iov_base = buf;
-  iov->iov_len = file_size;
-}
-/*
- * Simple function to get the file extension of the file that we are about to serve.
- * */
-const char *get_filename_ext(const char *filename) {
-  const char *dot = strrchr(filename, '.');
-  if (!dot || dot == filename)
-    return "";
-  return dot + 1;
-}
-/*
- * Sends the HTTP 200 OK header, the server string, for a few types of files, it can also
- * send the content type based on the file extension. It also sends the content length
- * header. Finally it send a '\r\n' in a line by itself signalling the end of headers
- * and the beginning of any content.
- * */
-void send_headers(const char *path, off_t len, struct iovec *iov) {
-  char small_case_path[1024];
-  char send_buffer[1024];
-  strcpy(small_case_path, path);
-  strtolower(small_case_path);
-  char *str = "HTTP/1.0 200 OK\r\n";
-  unsigned long slen = strlen(str);
-  iov[0].iov_base = zh_malloc(slen);
-  iov[0].iov_len = slen;
-  memcpy(iov[0].iov_base, str, slen);
-  slen = strlen(SERVER_STRING);
-  iov[1].iov_base = zh_malloc(slen);
-  iov[1].iov_len = slen;
-  memcpy(iov[1].iov_base, SERVER_STRING, slen);
-  /*
-   * Check the file extension for certain common types of files
-   * on web pages and send the appropriate content-type header.
-   * Since extensions can be mixed case like JPG, jpg or Jpg,
-   * we turn the extension into lower case before checking.
-   * */
-  const char *file_ext = get_filename_ext(small_case_path);
-  if (strcmp("jpg", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: image/jpeg\r\n");
-  if (strcmp("jpeg", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: image/jpeg\r\n");
-  if (strcmp("png", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: image/png\r\n");
-  if (strcmp("gif", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: image/gif\r\n");
-  if (strcmp("htm", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: text/html\r\n");
-  if (strcmp("html", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: text/html\r\n");
-  if (strcmp("js", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: application/javascript\r\n");
-  if (strcmp("css", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: text/css\r\n");
-  if (strcmp("txt", file_ext) == 0)
-    strcpy(send_buffer, "Content-Type: text/plain\r\n");
-  slen = strlen(send_buffer);
-  iov[2].iov_base = zh_malloc(slen);
-  iov[2].iov_len = slen;
-  memcpy(iov[2].iov_base, send_buffer, slen);
-  /* Send the content-length header, which is the file size in this case. */
-  sprintf(send_buffer, "content-length: %ld\r\n", len);
-  slen = strlen(send_buffer);
-  iov[3].iov_base = zh_malloc(slen);
-  iov[3].iov_len = slen;
-  memcpy(iov[3].iov_base, send_buffer, slen);
-  /*
-   * When the browser sees a '\r\n' sequence in a line on its own,
-   * it understands there are no more headers. Content may follow.
-   * */
-  strcpy(send_buffer, "\r\n");
-  slen = strlen(send_buffer);
-  iov[4].iov_base = zh_malloc(slen);
-  iov[4].iov_len = slen;
-  memcpy(iov[4].iov_base, send_buffer, slen);
-}
+
+
 void handle_get_method(char *path, int client_socket) {
   char final_path[1024];
   /*
@@ -317,16 +182,7 @@ void handle_http_method(char *method_buffer, int client_socket) {
     handle_unimplemented_method(client_socket);
   }
 }
-int get_line(const char *src, char *dest, int dest_sz) {
-  for (int i = 0; i < dest_sz; i++) {
-    dest[i] = src[i];
-    if (src[i] == '\r' && src[i+1] == '\n') {
-      dest[i] = '\0';
-      return 0;
-    }
-  }
-  return 1;
-}
+
 int handle_client_request(struct request *req) {
   char http_request[1024];
   /* Get the first line, which will be the request */

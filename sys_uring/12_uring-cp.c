@@ -1,3 +1,7 @@
+// no batch
+// read, write를 pair로 처리함
+// 동시에 처리되는 요청의 개수(inflight)를 최대 QD로 제한함.
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
@@ -11,8 +15,8 @@
 #include <sys/ioctl.h>
 #include "liburing.h"
 
-#define QD  64          // concurrent?
-#define BS  (32*1024)   //
+#define QD  32          // concurrent?
+#define MY_BLOCK_SIZE  (1*1024)   //
 
 struct io_data {
   size_t offset;
@@ -21,7 +25,7 @@ struct io_data {
 };
 
 static int infd, outfd;
-static unsigned inflight;
+static unsigned int inflight;
 
 
 static int setup_context(unsigned entries, struct io_uring *ring) {
@@ -57,6 +61,7 @@ static int get_file_size(int fd, off_t *size) {
   return -1;
 }
 
+// Continuation?? readv 하자마자 writev를 한다.
 static void queue_rw_pair(struct io_uring *ring, off_t size, off_t offset) {
   struct io_uring_sqe *sqe;
   struct io_data *data;
@@ -84,10 +89,11 @@ static int handle_cqe(struct io_uring *ring, struct io_uring_cqe *cqe) {
   int ret = 0;
 
   data->index++;
+  printf("handle_cqe offset=%d index=%d inflight=%d\n", data->offset, data->index, inflight);
 
   if (cqe->res < 0) {
     if (cqe->res == -ECANCELED) {
-      queue_rw_pair(ring, BS, data->offset);
+      queue_rw_pair(ring, MY_BLOCK_SIZE, data->offset);
       inflight += 2;
     } else {
       printf("cqe error: %s\n", strerror(cqe->res));
@@ -95,9 +101,9 @@ static int handle_cqe(struct io_uring *ring, struct io_uring_cqe *cqe) {
     }
   }
 
+  // read write 한번씩 증가되어서?
   if (data->index == 2) {
     void *ptr = (void *) data - data->iov.iov_len;
-
     free(ptr);
   }
   io_uring_cqe_seen(ring, cqe);
@@ -115,17 +121,20 @@ static int copy_file(struct io_uring *ring, off_t insize) {
     int depth;
 
     while (insize && inflight < QD) {
-      this_size = BS;
+      this_size = MY_BLOCK_SIZE;
       if (this_size > insize)
         this_size = insize;
       queue_rw_pair(ring, this_size, offset);
+      printf("queue_rw_pair offset=%d\n", offset);
       offset += this_size;
       insize -= this_size;
-      inflight += 2;
+      inflight += 2;  // why 2 ?
     }
 
-    if (has_inflight != inflight)
+    if (has_inflight != inflight) {
+      printf("io_uring_submit\n");
       io_uring_submit(ring);
+    }
 
     if (insize)
       depth = QD;
@@ -174,6 +183,7 @@ int main(int argc, char *argv[]) {
     return 1;
   if (get_file_size(infd, &insize))
     return 1;
+  printf("insize=%d\n", insize);
 
   ret = copy_file(&ring, insize);
 
