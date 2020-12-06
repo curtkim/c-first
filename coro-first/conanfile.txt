@@ -1,0 +1,5 @@
+[requires]
+cppcoro/20201020@demo/testing
+
+[generators]
+cmake
