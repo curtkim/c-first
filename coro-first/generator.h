@@ -9,7 +9,7 @@
 #define GENERATOR_H
 
 // infiniteDataStream.cpp
-#include <experimental/coroutine>
+#include <coroutine>
 #include <memory>
 #include <iostream>
 
@@ -19,7 +19,7 @@ namespace coro_exp {
   class generator {
   public:
     struct promise_type;
-    using handle_type = std::experimental::coroutine_handle<promise_type>;
+    using handle_type = std::coroutine_handle<promise_type>;
   private:
     handle_type coro;
   public:
@@ -62,11 +62,11 @@ namespace coro_exp {
       promise_type &operator=(promise_type&&) = delete;
 
       auto initial_suspend() {
-        return std::experimental::suspend_always{};
+        return std::suspend_always{};
       }
 
       auto final_suspend() {
-        return std::experimental::suspend_always{};
+        return std::suspend_always{};
       }
 
       auto get_return_object() {
@@ -74,12 +74,12 @@ namespace coro_exp {
       }
 
       auto return_void() {
-        return std::experimental::suspend_never{};
+        return std::suspend_never{};
       }
 
       auto yield_value(T some_value) {
         current_value = some_value;
-        return std::experimental::suspend_always{};
+        return std::suspend_always{};
       }
 
       void unhandled_exception() {
