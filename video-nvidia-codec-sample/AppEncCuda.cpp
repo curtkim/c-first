@@ -618,13 +618,10 @@ int main(int argc, char **argv)
         }
                 
         // Encode
-        if (bOutputInVideoMem)
-        {
+        if (bOutputInVideoMem) {
             EncodeCudaOpInVidMem(nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut, szOutFilePath, cuStreamType);
-        }
-        else
-        {
-            EncodeCuda(nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut);
+        } else {
+            EncodeCuda          (nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut);
         }
         
         fpOut.close();
