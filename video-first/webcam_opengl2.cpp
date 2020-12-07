@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   // 5. webcam init
   CommonV4l2 common_v4l2;
   CommonV4l2_init(&common_v4l2, COMMON_V4L2_DEVICE, width, height);
-  void *image;
+
 
 
   while (!glfwWindowShouldClose(window)) {
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 
     // 6. get image
     CommonV4l2_updateImage(&common_v4l2);
-    image = CommonV4l2_getImage(&common_v4l2);
+    void* image = CommonV4l2_getImage(&common_v4l2);
 
     // 7. load texture
     // glTexImage2D(target, level, internalFormat, width, height, border, format, type, image);
@@ -140,6 +140,8 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+
+  CommonV4l2_deinit(&common_v4l2);
 
   glDeleteTextures(1, &texture);
   glDeleteVertexArrays(1, &VAO);

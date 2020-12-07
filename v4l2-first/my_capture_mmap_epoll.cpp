@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <iostream>
 
 #include <getopt.h>             /* getopt_long() */
 
@@ -116,6 +117,7 @@ static void mainloop_epoll(int epfd)
     for (;;) {
 
       int nfds = epoll_wait(epfd, events, 1, 10000);
+      std::cout << nfds << std::endl;
       if(nfds <= 0)
         continue;
 
