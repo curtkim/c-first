@@ -26,8 +26,8 @@
 
     v4l2-ctl --list-devices
     v4l2-ctl -d /dev/video2 --list-ctrls
-    v4l2-ctl -d /dev/video2 --list-formats-ext
-    
+    v4l2-ctl -d /dev/video2 --list-formats-ext 
+
     ioctl: VIDIOC_ENUM_FMT
         Index       : 0
         Type        : Video Capture
@@ -41,3 +41,5 @@
         Type        : Video Capture
         Pixel Format: 'YUYV'
         Name        : YUYV 4:2:2
+
+    v4l2-ctl -d /dev/video2 --set-fmt-video=width=1280,height=720,pixelformat=MJPG
