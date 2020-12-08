@@ -9,6 +9,7 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <array>
 
 template< typename T, size_t N >
 inline size_t dim( T (&arr)[N] ) { return N; }
@@ -29,4 +30,11 @@ inline std::ostream & operator<<( std::ostream & os, std::vector<T> const & v )
   return os << "]";
 }
 
+template<typename T, size_t SIZE>
+inline std::ostream & operator<<( std::ostream & os, std::array<T, SIZE> const & v )
+{
+  os << "[array: ";
+  std::copy( v.begin(), v.end(), std::ostream_iterator<T>(os, ", ") );
+  return os << "]";
+}
 #endif //RING_SPAN_LITE_0_4_0_COMMON_H
