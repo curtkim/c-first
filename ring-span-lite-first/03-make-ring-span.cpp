@@ -220,7 +220,7 @@ int main()
 //        auto spn_std_string_filled = make_ring_span( text );
 //        auto spn_std_string_empty  = make_ring_span( text, nonstd::make_empty );
 //
-//        print( spn_std_string_filled );
-//        print( spn_std_string_empty );
+//        print_span( spn_std_string_filled );
+//        print_span( spn_std_string_empty );
   }
 }
