@@ -42,7 +42,7 @@ struct device_info {
 
 static int              out_buf;
 static int              force_format;
-static int              frame_count = 50;
+static int              frame_count = 200;
 static int              frame_number = 0;
 
 static void errno_exit(const char *s)

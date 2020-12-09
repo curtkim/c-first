@@ -13,8 +13,6 @@
 #define MAX_EVENTS 10
 #define BACKLOG 10
 
-static int listener;
-static int epfd;
 
 static void die(const char* msg)
 {
@@ -56,17 +54,17 @@ static int setup_socket()
   return sock;
 }
 
-int main()
-{
+int main() {
   struct epoll_event ev;
   struct epoll_event events[MAX_EVENTS];
   char buffer[1024];
 
-  if ((epfd = epoll_create(MAX_EVENTS)) < 0) {
-    die("epoll_create");
-  }
+  int epfd = epoll_create(MAX_EVENTS);
 
-  listener = setup_socket();
+  if (epfd < 0)
+    die("epoll_create");
+
+  int listener = setup_socket();
 
   memset(&ev, 0, sizeof ev);
   ev.events = EPOLLIN;
@@ -93,25 +91,21 @@ int main()
         ev.events = EPOLLIN | EPOLLET;
         ev.data.fd = client;
         epoll_ctl(epfd, EPOLL_CTL_ADD, client, &ev);
-      }
-      else {
+      } else {
         int client = events[i].data.fd;
         int n = read(client, buffer, sizeof buffer);
         if (n < 0) {
           perror("read");
           epoll_ctl(epfd, EPOLL_CTL_DEL, client, &ev);
           close(client);
-        }
-        else if (n == 0) {
+        } else if (n == 0) {
           epoll_ctl(epfd, EPOLL_CTL_DEL, client, &ev);
           close(client);
-        }
-        else {
+        } else {
           write(client, buffer, n);
         }
       }
     }
   }
 
-  return 0;
 }

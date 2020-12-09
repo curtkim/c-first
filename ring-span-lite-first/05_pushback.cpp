@@ -8,6 +8,7 @@ int main()
     std::cout << "vector\n";
     std::vector<int> vec = {1, 2, 3};
     nonstd::ring_span<int> span(vec.data(), vec.data() + vec.size(), vec.data(), vec.size());
+    std::cout << "sizeof(nonstd::ring_span<int>) = " << sizeof(span) << "\n";
 
     std::cout << vec << "\n";
     std::cout << span << "\n";
