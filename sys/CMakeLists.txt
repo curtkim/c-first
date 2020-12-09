@@ -37,3 +37,7 @@ foreach(APP 11_poll 12_poll_stdin 14_select)
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
+
+foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd)
+    add_executable(${APP} ${APP}.c)
+endforeach()
