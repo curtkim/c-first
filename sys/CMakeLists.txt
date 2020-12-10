@@ -38,6 +38,8 @@ foreach(APP 11_poll 12_poll_stdin 14_select)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
-foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd)
+foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd
+        26_eventfd_worker)
     add_executable(${APP} ${APP}.c)
+    target_link_libraries(${APP} PUBLIC pthread)
 endforeach()
