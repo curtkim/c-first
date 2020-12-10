@@ -23,6 +23,7 @@ void* listener_thread(void *data) {
   eventfd_t v;
   printf("%s: Waiting for completion event...\n", __FUNCTION__);
 
+  // 무엇이 efd를 trigger한 것인가?
   int ret = eventfd_read(efd, &v);
   if (ret < 0)
     error_exit("eventfd_read");
@@ -34,6 +35,7 @@ void* listener_thread(void *data) {
     fprintf(stderr, "Error waiting for completion: %s\n", strerror(-ret));
     return NULL;
   }
+
   /* Now that we have the CQE, let's process it */
   if (cqe->res < 0) {
     fprintf(stderr, "Error in async operation: %s\n", strerror(-cqe->res));
@@ -86,6 +88,7 @@ int main() {
   sleep(2);
 
   /* Setup io_uring instance and register the eventfd */
+  // io_uring_register_eventfd으로 efd를 등록한다.
   setup_io_uring(efd);
 
   /* Initiate a read with io_uring */
