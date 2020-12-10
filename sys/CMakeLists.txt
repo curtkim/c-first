@@ -38,8 +38,12 @@ foreach(APP 11_poll 12_poll_stdin 14_select)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
-foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd
-        26_eventfd_worker)
+# Advanced! 리눅스 시스템 네트워크 프로그래밍
+foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd)
+    add_executable(${APP} ${APP}.c)
+endforeach()
+
+foreach(APP 31_epoll_eventfd_worker 32_epoll_timerfd 33_epoll_signalfd)
     add_executable(${APP} ${APP}.c)
     target_link_libraries(${APP} PUBLIC pthread)
 endforeach()
