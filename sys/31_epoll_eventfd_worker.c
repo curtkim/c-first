@@ -40,7 +40,7 @@ struct timespec tp;
 
 
 #define NUM_PRODUCERS 2
-#define NUM_CONSUMERS 2
+#define NUM_CONSUMERS 1
 #define MAX_EVENTS_SIZE 10 //1024
 
 typedef struct thread_info {

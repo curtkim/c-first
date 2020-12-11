@@ -9,7 +9,7 @@
     xioctl(fd, VIDIOC_QBUF, &buf)
     xioctl(fd, VIDIOC_STREAMON, &type)
 4. mainloop
-    poll / select
+    poll / select / epoll
 5. read_frame
     xioctl(fd, VIDIOC_DQBUF, &buf)
     process_image

@@ -90,6 +90,7 @@ static int test_update_multiring(struct io_uring *r1, struct io_uring *r2,
   close_files(fds, 10, 0);
   close_files(newfds, 10, 1);
   return 0;
+
   err:
   close_files(fds, 10, 0);
   close_files(newfds, 10, 1);
