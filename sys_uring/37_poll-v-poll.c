@@ -31,11 +31,13 @@ static void *epoll_wait_fn(void *data)
   struct thread_data *td = data;
   struct epoll_event ev;
 
-  if (epoll_wait(td->fd, &ev, 1, -1) < 0) {
-    perror("epoll_wait");
-    goto err;
+  for(int i = 0;i < 2; i++){
+    if (epoll_wait(td->fd, &ev, 1, -1) < 0) {
+      perror("epoll_wait");
+      goto err;
+    }
+    printf("after epoll_wait ev.data.fd=%d\n", ev.data.fd);
   }
-  printf("after epoll_wait\n");
 
   return NULL;
   err:
@@ -50,24 +52,25 @@ static void *iou_poll(void *data)
   struct io_uring_cqe *cqe;
   int ret;
 
-  sqe = io_uring_get_sqe(td->ring);
-  io_uring_prep_poll_add(sqe, td->fd, td->events);
+  for(int i = 0;i < 2; i++) {
+    sqe = io_uring_get_sqe(td->ring);
+    io_uring_prep_poll_add(sqe, td->fd, td->events);
+    ret = io_uring_submit(td->ring);
+    if (ret != 1) {
+      fprintf(stderr, "submit got %d\n", ret);
+      goto err;
+    }
 
-  ret = io_uring_submit(td->ring);
-  if (ret != 1) {
-    fprintf(stderr, "submit got %d\n", ret);
-    goto err;
+    ret = io_uring_wait_cqe(td->ring, &cqe);
+    if (ret) {
+      fprintf(stderr, "wait_cqe: %d\n", ret);
+      goto err;
+    }
+    printf("after io_uring_wait_cqe ret=%d cqe->res=%d\n", ret, cqe->res);
+
+    td->out[0] = cqe->res & 0x3f;
+    io_uring_cqe_seen(td->ring, cqe);
   }
-
-  ret = io_uring_wait_cqe(td->ring, &cqe);
-  if (ret) {
-    fprintf(stderr, "wait_cqe: %d\n", ret);
-    goto err;
-  }
-  printf("after io_uring_wait_cqe\n");
-
-  td->out[0] = cqe->res & 0x3f;
-  io_uring_cqe_seen(td->ring, cqe);
   return NULL;
 
   err:
@@ -257,11 +260,13 @@ static int do_test_epoll(struct io_uring *ring, int iou_epoll_add)
     perror("epoll_create");
     return 1;
   }
+  printf("epoll_create fd=%d\n", fd);
 
   if (pipe(pipe1) < 0) {
     perror("pipe");
     return 1;
   }
+  printf("pipe [0]=%d [1]=%d\n", pipe1[0], pipe1[1]);
 
   ev.events = EPOLLIN;
   ev.data.fd = pipe1[0];
@@ -287,18 +292,20 @@ static int do_test_epoll(struct io_uring *ring, int iou_epoll_add)
   td.test = __FUNCTION__;
 
   pthread_create(&threads[0], NULL, iou_poll, &td);
-  pthread_create(&threads[1], NULL, epoll_wait_fn, &td);
+  //pthread_create(&threads[1], NULL, epoll_wait_fn, &td);
   usleep(100*1000);
 
-  buf = 0x89;
-  ret = write(pipe1[1], &buf, sizeof(buf));
-  if (ret != sizeof(buf)) {
-    fprintf(stderr, "write failed: %d\n", ret);
-    return 1;
+  for(int i = 0;i < 2; i++){
+    buf = 0x89;
+    ret = write(pipe1[1], &buf, sizeof(buf));
+    if (ret != sizeof(buf)) {
+      fprintf(stderr, "write failed: %d\n", ret);
+      return 1;
+    }
   }
 
   pthread_join(threads[0], NULL);
-  pthread_join(threads[1], NULL);
+  //pthread_join(threads[1], NULL);
   return 0;
 }
 
