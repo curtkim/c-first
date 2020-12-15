@@ -47,17 +47,25 @@ file(COPY resources/bigbuckbunny_480x272.m2v DESTINATION ${CMAKE_CURRENT_BINARY_
 file(COPY resources/Titanic.mkv DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 # 4. webcam_opengl
-add_executable(webcam_opengl webcam_opengl.c)
-target_link_libraries(webcam_opengl PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
-target_compile_features(webcam_opengl PUBLIC cxx_std_17)
+add_executable(v4l2_opengl v4l2_opengl.c)
+target_link_libraries(v4l2_opengl PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
+target_compile_features(v4l2_opengl PUBLIC cxx_std_17)
 
-add_executable(webcam_opengl_cpp webcam_opengl_cpp.cpp)
-target_link_libraries(webcam_opengl_cpp PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
-target_compile_features(webcam_opengl_cpp PUBLIC cxx_std_17)
+add_executable(v4l2_opengl_cpp v4l2_opengl_cpp.cpp)
+target_link_libraries(v4l2_opengl_cpp PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
+target_compile_features(v4l2_opengl_cpp PUBLIC cxx_std_17)
 
-add_executable(webcam_opengl_cpp2 webcam_opengl_cpp2.cpp)
-target_link_libraries(webcam_opengl_cpp2 PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
-target_compile_features(webcam_opengl_cpp2 PUBLIC cxx_std_17)
+add_executable(v4l2_opengl_cpp2 v4l2_opengl_cpp2.cpp)
+target_link_libraries(v4l2_opengl_cpp2 PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
+target_compile_features(v4l2_opengl_cpp2 PUBLIC cxx_std_17)
+
+add_executable(v4l2_cpp v4l2_cpp.cpp)
+target_link_libraries(v4l2_cpp PUBLIC ${CONAN_LIBS} v4l1 v4l2 uring)
+target_compile_features(v4l2_cpp PUBLIC cxx_std_17)
+
+add_executable(v4l2_cpp2 v4l2_cpp2.cpp)
+target_link_libraries(v4l2_cpp2 PUBLIC ${CONAN_LIBS} v4l1 v4l2 uring)
+target_compile_features(v4l2_cpp2 PUBLIC cxx_std_17)
 
 
 # 5. ffmpeg - opegnl

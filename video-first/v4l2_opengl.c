@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  CommonV4l2_init(&common_v4l2, COMMON_V4L2_DEVICE, width, height);
+  CommonV4l2_init(&common_v4l2, COMMON_V4L2_DEVICE, width, height, V4L2_PIX_FMT_RGB24);
 
   /* Shader setup. */
   program = common_get_shader_program(vertex_shader_source, fragment_shader_source);

@@ -9,6 +9,7 @@
 
 
 #include "common/common_v4l2.h"
+#include "common/common_v4l2.hpp"
 #include "common/shader.hpp"
 #include "common/opengl_util.hpp"
 
@@ -82,6 +83,8 @@ int main(int argc, char *argv[]) {
 
   //int width = 1024;
   //int height = 768;
+  //int width1 = 864, height1 = 480;
+  //int width1 = 800, height1 = 448;
   int width1 = 1600, height1 = 896;
   int width2 = 800, height2 = 600;
 
@@ -117,11 +120,11 @@ int main(int argc, char *argv[]) {
 
   // 5. webcam init
   CommonV4l2 cam1;
-  CommonV4l2_init(&cam1, "/dev/video0", width1, height1);
+  CommonV4l2_init(&cam1, "/dev/video0", width1, height1, V4L2_PIX_FMT_RGB24);
   print_caps(cam1.fd);
 
   CommonV4l2 cam2;
-  CommonV4l2_init(&cam2, "/dev/video2", width2, height2);
+  CommonV4l2_init(&cam2, "/dev/video2", width2, height2, V4L2_PIX_FMT_RGB24);
   print_caps(cam2.fd);
 
   struct io_uring ring;
@@ -141,7 +144,8 @@ int main(int argc, char *argv[]) {
 
     printf("===render\n");
 
-    //waitBySelect(cam2.fd);
+    waitBySelect(cam1.fd);
+    double ticPoll = glfwGetTime();
     //waitByPoll(common_v4l2.fd);
     //waitByEpoll(epfd);
     //waitByIOUring(ring, common_v4l2.fd);
@@ -149,11 +153,13 @@ int main(int argc, char *argv[]) {
 
     // 6. get image
     CommonV4l2_updateImage(&cam1);
+    double ticImage10 = glfwGetTime();
     void* image1 = CommonV4l2_getImage(&cam1);
+    double ticImage1 = glfwGetTime();
 
     CommonV4l2_updateImage(&cam2);
     void* image2 = CommonV4l2_getImage(&cam2);
-
+    double ticImage2 = glfwGetTime();
 
 
     // clear screen and set viewport
@@ -181,9 +187,16 @@ int main(int argc, char *argv[]) {
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
+    double ticRender = glfwGetTime();
 
     {
       glfwPollEvents();
+      printf("poll=%f ms, image1_update=%f image1_get=%f ms, image2=%f ms, render=%f ms\n",
+             (ticPoll - tic)*1000,
+             (ticImage10 - ticPoll)*1000,
+             (ticImage1 - ticImage10)*1000,
+             (ticImage2 - ticImage1)*1000,
+             (ticRender - ticImage2)*1000);
       /*
       // In microseconds
       double duration = 1000000. * (glfwGetTime() - tic);

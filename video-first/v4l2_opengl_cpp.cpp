@@ -9,6 +9,7 @@
 
 
 #include "common/common_v4l2.h"
+#include "common/common_v4l2.hpp"
 #include "common/shader.hpp"
 #include "common/opengl_util.hpp"
 
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]) {
 
   // 5. webcam init
   CommonV4l2 common_v4l2;
-  CommonV4l2_init(&common_v4l2, "/dev/video2", width, height); //COMMON_V4L2_DEVICE
+  CommonV4l2_init(&common_v4l2, "/dev/video2", width, height, V4L2_PIX_FMT_RGB24); //COMMON_V4L2_DEVICE
 
   struct io_uring ring;
   io_uring_queue_init(32, &ring, 0);

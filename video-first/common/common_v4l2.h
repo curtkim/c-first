@@ -16,7 +16,7 @@
 
 #include <sys/poll.h>
 #include <sys/epoll.h>
-#include <liburing.h>
+
 
 #define COMMON_V4L2_CLEAR(x) memset(&(x), 0, sizeof(x))
 #define COMMON_V4L2_DEVICE "/dev/video0"
@@ -50,7 +50,7 @@ void CommonV4l2_xioctl(int fh, unsigned long int request, void *arg) {
 //    VIDIOC_QUERYBUF : Query the status of a buffer
 //    VIDIOC_QBUF : Exchange a buffer with the driver
 // VIDIOC_STREAMON
-void CommonV4l2_init(CommonV4l2 *that, char *dev_name, unsigned int x_res, unsigned int y_res) {
+void CommonV4l2_init(CommonV4l2 *that, char *dev_name, unsigned int x_res, unsigned int y_res, __u32 pix_format) {
   enum v4l2_buf_type type;
   struct v4l2_format fmt;
   struct v4l2_requestbuffers req;
@@ -69,7 +69,7 @@ void CommonV4l2_init(CommonV4l2 *that, char *dev_name, unsigned int x_res, unsig
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   fmt.fmt.pix.width = x_res;
   fmt.fmt.pix.height = y_res;
-  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
+  fmt.fmt.pix.pixelformat = pix_format;
   fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
   CommonV4l2_xioctl(that->fd, VIDIOC_S_FMT, &fmt);
   if ((fmt.fmt.pix.width != x_res) || (fmt.fmt.pix.height != y_res))
@@ -135,6 +135,28 @@ void waitBySelect(int fd) {
   }
 }
 
+void waitBySelect(int fd1, int fd2) {
+  fd_set fds;
+  int r;
+  struct timeval tv;
+
+  do {
+    FD_ZERO(&fds);
+    FD_SET(fd1, &fds);
+    FD_SET(fd2, &fds);
+
+    /* Timeout. */
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
+
+    r = select(fd2 + 1, &fds, NULL, NULL, &tv);
+  } while ((r == -1 && (errno == EINTR)));  // System calls that are interrupted by signals can either abort and return EINTR
+  if (r == -1) {
+    perror("select");
+    exit(EXIT_FAILURE);
+  }
+}
+
 void waitByPoll(int fd) {
   int r;
   do {
@@ -161,33 +183,21 @@ void waitByEpoll(int epfd) {
   printf("epfd = %d, event.data.fd = %d\n", epfd, events[0].data.fd);
 }
 
-void waitByIOUring(struct io_uring& ring, int fd){
-  struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
-  io_uring_prep_poll_add(sqe, fd, POLLIN);
-  io_uring_sqe_set_data(sqe, &fd);
-  io_uring_submit(&ring);
-
-  struct io_uring_cqe *cqe;
-  io_uring_wait_cqe(&ring, &cqe);
-  int * pFd = (int*)io_uring_cqe_get_data(cqe);
-  printf("fd=%d, *pFd=%d\n", fd, *pFd);
-  io_uring_cqe_seen(&ring, cqe);
-}
-
 void CommonV4l2_updateImage(CommonV4l2 *that) {
   struct v4l2_buffer buf;
   //COMMON_V4L2_CLEAR(buf);
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
   CommonV4l2_xioctl(that->fd, VIDIOC_DQBUF, &buf);
+
   that->index = buf.index;
-  printf("dqbuf buf.index = %d, buf.length = %d\n", buf.index, buf.length);
   CommonV4l2_xioctl(that->fd, VIDIOC_QBUF, &buf);
+  //printf("dqbuf buf.index = %d, buf.length = %d %fms %fms\n", buf.index, buf.length, (tic2-tic1)*1000, (tic3-tic2)*1000);
 }
 
 /* TODO must be called after updateImage? Or is init enough? */
 void* CommonV4l2_getImage(CommonV4l2 *that) {
-  printf("getImage buf.index = %d\n", that->index);
+  //printf("getImage buf.index = %d\n", that->index);
   return that->buffers[that->index].start;
 }
 
