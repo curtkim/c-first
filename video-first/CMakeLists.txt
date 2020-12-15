@@ -51,9 +51,13 @@ add_executable(webcam_opengl webcam_opengl.c)
 target_link_libraries(webcam_opengl PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
 target_compile_features(webcam_opengl PUBLIC cxx_std_17)
 
-add_executable(webcam_opengl2 webcam_opengl2.cpp)
-target_link_libraries(webcam_opengl2 PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2)
-target_compile_features(webcam_opengl2 PUBLIC cxx_std_17)
+add_executable(webcam_opengl_cpp webcam_opengl_cpp.cpp)
+target_link_libraries(webcam_opengl_cpp PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
+target_compile_features(webcam_opengl_cpp PUBLIC cxx_std_17)
+
+add_executable(webcam_opengl_cpp2 webcam_opengl_cpp2.cpp)
+target_link_libraries(webcam_opengl_cpp2 PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 v4l1 v4l2 uring)
+target_compile_features(webcam_opengl_cpp2 PUBLIC cxx_std_17)
 
 
 # 5. ffmpeg - opegnl

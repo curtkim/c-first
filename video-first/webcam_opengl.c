@@ -314,6 +314,7 @@ int main(int argc, char **argv) {
   do {
     /* Blocks until an image is available, thus capping FPS to that.
      * 30FPS is common in cheap webcams. */
+    waitByPoll(common_v4l2.fd);
     CommonV4l2_updateImage(&common_v4l2);
     image = CommonV4l2_getImage(&common_v4l2);
     glClear(GL_COLOR_BUFFER_BIT);
