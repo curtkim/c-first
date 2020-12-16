@@ -6,21 +6,26 @@
 
 #include "common/common_v4l2.h"
 #include "common/common_v4l2.hpp"
+#include <fstream>
+
 
 using namespace std::chrono;
 
 int main(int argc, char *argv[]) {
 
+  //char * device = "/dev/video0";
   //int width = 1024;
   //int height = 768;
   //int width1 = 864, height1 = 480;
-  int width1 = 800, height1 = 448;
+  //int width1 = 800, height1 = 448;
   //int width1 = 1600, height1 = 896;
 
+  char * device = "/dev/video2";
+  int width1 = 640, height1 = 480;
 
   // 5. webcam init
   CommonV4l2 cam1;
-  CommonV4l2_init(&cam1, "/dev/video0", width1, height1, V4L2_PIX_FMT_YUYV);
+  CommonV4l2_init(&cam1, device, width1, height1, V4L2_PIX_FMT_YUYV);
   print_caps(cam1.fd);
 
   struct io_uring ring;
@@ -34,7 +39,7 @@ int main(int argc, char *argv[]) {
   epoll_ctl(epfd, EPOLL_CTL_ADD, ev.data.fd, &ev);
   */
 
-  for(int i = 0; i < 50; i++) {
+  for(int i = 0; i < 10; i++) {
 
     auto tic = high_resolution_clock::now();
 
@@ -51,7 +56,11 @@ int main(int argc, char *argv[]) {
     CommonV4l2_updateImage(&cam1);
     auto ticImage10 = high_resolution_clock::now();
     void* image1 = CommonV4l2_getImage(&cam1);
+    size_t size = CommonV4l2_getImageSize(&cam1);
     auto ticImage1 = high_resolution_clock::now();
+
+    std::ofstream myFile ("video2_" + std::to_string(i) + ".yuv", std::ios::out | std::ios::binary);
+    myFile.write((char*)image1, size);
 
     printf("poll=%d ns, image1_update=%d ns image1_get=%d ns\n",
            duration_cast<nanoseconds>(ticPoll - tic).count(),

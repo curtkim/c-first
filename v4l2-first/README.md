@@ -43,3 +43,6 @@
         Name        : YUYV 4:2:2
 
     v4l2-ctl -d /dev/video2 --set-fmt-video=width=1280,height=720,pixelformat=MJPG
+    v4l2-ctl --all -d /dev/video2
+
+    v4l2-ctl -d /dev/video0 --set-fmt-video=width=640,height=480,pixelformat=YUYV

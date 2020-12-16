@@ -4,9 +4,10 @@
 - simple_ffmpeg_info : info
 - simple_ffmpeg_decode_pure : video file convert without format (h264 0.6M -> yuv 47M)
 - simple_ffmpeg_decode (mkv 2.8M -> yuv 287M)
-- webcam_opengl : webcam -> opengl
-- webcam_opengl2 : opengl 코드를 정리함
-- ffmpeg_opengl : file -> opengl  
+- ffmpeg_opengl : file -> opengl
+- v4l2_opengl_cpp : webcam -> opengl
+- v4l2_opengl_cpp2 : webcam 2개 사용
+
 
 ## Reference
 - https://leixiaohua1020.github.io/
