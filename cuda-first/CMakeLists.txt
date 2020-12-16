@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(cuda-first LANGUAGES CUDA CXX)
+project(cuda-first LANGUAGES CUDA C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -63,3 +63,12 @@ file(COPY 5_simulation/ocean.frag DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY 5_simulation/ocean.vert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(template_function_pointer template_function_pointer.cu)
+
+
+foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop)
+    add_executable(${APP} 0_general/${APP}.c)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+    target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_link_libraries(${APP} PRIVATE cuda cudart nppisu)
+endforeach()

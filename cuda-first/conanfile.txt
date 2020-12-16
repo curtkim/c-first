@@ -2,6 +2,7 @@
 stb/20200203
 freeimage/3.18.0@curt/testing
 glfw/3.3.2
+libjpeg/9d
 
 [generators]
 cmake
