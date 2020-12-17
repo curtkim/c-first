@@ -17,7 +17,7 @@ int main() {
   });
 
   WsServer server;
-  server.config.port = 8080;
+  server.config.port = 9999;
   server.io_service = io_context;
 
 
@@ -57,6 +57,7 @@ int main() {
   long cnt = 0;
   server.start([&io_context, &server, &cnt](unsigned short port){
     cout << this_thread::get_id() << " Server listening on port " << port << endl << endl;
+
     TimerContext* t = setInterval(*io_context, [&cnt, &server](){
       cout << this_thread::get_id() << " " << cnt++ << " conn count=" << server.get_connections().size() << endl;
       for(auto &a_connection : server.get_connections()) {
@@ -67,5 +68,6 @@ int main() {
 
   cout << this_thread::get_id() << " main thread" << endl;
   io_context->run();
+
   return 0;
 }
