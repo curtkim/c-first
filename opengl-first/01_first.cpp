@@ -9,6 +9,29 @@ GLFWwindow *window;
 
 #include "common/shader.hpp"
 
+std::string vertex_shader = R"(
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+
+void main(){
+    gl_Position.xyz = vertexPosition_modelspace;
+    gl_Position.w = 1.0;
+}
+)";
+
+std::string fragment_shader = R"(
+#version 330 core
+// Ouput data
+out vec3 color;
+
+void main()
+{
+	// Output color = red
+	color = vec3(1,0,0);
+}
+)";
 
 int main(void) {
   // Initialise GLFW
@@ -51,7 +74,7 @@ int main(void) {
   glBindVertexArray(VertexArrayID);
 
   // Create and compile our GLSL program from the shaders
-  GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+  GLuint programID = LoadShadersFromString(vertex_shader, fragment_shader);
 
   static const GLfloat g_vertex_buffer_data[] = {
     -1.0f, -1.0f, 0.0f,
