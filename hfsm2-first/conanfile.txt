@@ -1,0 +1,5 @@
+[requires]
+hfsm2/1.7.3@curt/testing
+
+[generators]
+cmake
