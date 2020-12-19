@@ -1,5 +1,6 @@
 [requires]
-xtensor/0.21.4
+xtensor/0.21.5
+torch/1.7.0@curt/prebuilt
 
 [generators]
 cmake
