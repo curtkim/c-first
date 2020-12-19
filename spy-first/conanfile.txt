@@ -1,0 +1,5 @@
+[requires]
+spy/0.0.4
+
+[generators]
+cmake
