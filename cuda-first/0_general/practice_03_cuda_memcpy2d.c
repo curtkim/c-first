@@ -73,7 +73,7 @@ void imageReadToGPU(gpuMemory *gpuMem)
 void imageCopyBetweenGPU(gpuMemory *srcMem, gpuMemory *dstMem)
 {
   printf("====== Step 4. cudaMallocPitch for another memory ======\n");
-  void *devPtr = NULL;
+  void* devPtr = NULL;
   size_t pitch = 0;
   size_t widthByte = srcMem->widthByte;
   size_t height = srcMem->height;

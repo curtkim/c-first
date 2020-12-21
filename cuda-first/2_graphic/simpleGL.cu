@@ -97,8 +97,7 @@ void cleanup();
 
 // GL functionality
 bool initGL(int *argc, char **argv);
-void createVBO(GLuint *vbo, struct cudaGraphicsResource **vbo_res,
-               unsigned int vbo_res_flags);
+void createVBO(GLuint *vbo, struct cudaGraphicsResource **vbo_res, unsigned int vbo_res_flags);
 void deleteVBO(GLuint *vbo, struct cudaGraphicsResource *vbo_res);
 
 // rendering callbacks
@@ -139,8 +138,7 @@ __global__ void simple_vbo_kernel(float4 *pos, unsigned int width, unsigned int 
 }
 
 
-void launch_kernel(float4 *pos, unsigned int mesh_width,
-                   unsigned int mesh_height, float time)
+void launch_kernel(float4 *pos, unsigned int mesh_width, unsigned int mesh_height, float time)
 {
   // execute the kernel
   dim3 block(8, 8, 1);
@@ -324,8 +322,7 @@ void runCuda(struct cudaGraphicsResource **vbo_resource)
   float4 *dptr;
   checkCudaErrors(cudaGraphicsMapResources(1, vbo_resource, 0));
   size_t num_bytes;
-  checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **)&dptr, &num_bytes,
-                                                       *vbo_resource));
+  checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **)&dptr, &num_bytes, *vbo_resource));
   //printf("CUDA mapped VBO: May access %ld bytes\n", num_bytes);
 
   // execute the kernel

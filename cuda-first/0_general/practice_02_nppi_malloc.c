@@ -25,7 +25,7 @@ void cudaMallocTest()
   printf("====================================================\n\n");
 
   printf("====== Step 2. nppiMalloc_8u_C3 ======\n");
-  Npp8u *mem = NULL;
+  Npp8u* mem = NULL;
   int stepBytes = 0;
   mem = nppiMalloc_8u_C3(imgWidth, imgHeight, &stepBytes);
 
