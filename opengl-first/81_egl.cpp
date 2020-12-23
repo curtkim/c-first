@@ -5,29 +5,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
-
-static const EGLint configAttribs[] = {
-  EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-  EGL_BLUE_SIZE, 8,
-  EGL_GREEN_SIZE, 8,
-  EGL_RED_SIZE, 8,
-  EGL_DEPTH_SIZE, 8,
-  EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-  EGL_NONE
-};
-
-static const int pbufferWidth = 800;
-static const int pbufferHeight = 600;
-
-static const EGLint pbufferAttribs[] = {
-  EGL_WIDTH, pbufferWidth,
-  EGL_HEIGHT, pbufferHeight,
-  EGL_NONE,
-};
-
-
-int main(int argc, char *argv[])
-{
+EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
   // 1. Initialize EGL
   EGLDisplay eglDpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
@@ -37,6 +15,22 @@ int main(int argc, char *argv[])
   std::cout << major << " " << minor << std::endl;
 
   // 2. Select an appropriate configuration
+  const EGLint configAttribs[] = {
+    EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+    EGL_BLUE_SIZE, 8,
+    EGL_GREEN_SIZE, 8,
+    EGL_RED_SIZE, 8,
+    EGL_DEPTH_SIZE, 8,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+    EGL_NONE
+  };
+
+  const EGLint pbufferAttribs[] = {
+    EGL_WIDTH, pbufferWidth,
+    EGL_HEIGHT, pbufferHeight,
+    EGL_NONE,
+  };
+
   EGLint numConfigs;
   EGLConfig eglCfg;
 
@@ -52,6 +46,15 @@ int main(int argc, char *argv[])
   EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
 
   eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
+  return eglDpy;
+}
+
+int main(int argc, char *argv[])
+{
+  const int pbufferWidth = 800;
+  const int pbufferHeight = 600;
+
+  EGLDisplay eglDisplay = initEGL(pbufferWidth, pbufferHeight);
 
   // from now on use your OpenGL context
   if(!gladLoadGL()) {
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
   }
 
   // Red background
-  glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
   unsigned char* imageData = (unsigned char *)malloc((int)(pbufferWidth*pbufferHeight*(3)));
@@ -74,6 +77,6 @@ int main(int argc, char *argv[])
   free(imageData);
 
   // 6. Terminate EGL when finished
-  eglTerminate(eglDpy);
+  eglTerminate(eglDisplay);
   return 0;
 }
