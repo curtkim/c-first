@@ -92,7 +92,6 @@ void test_reduce() {
       []() { printf("\nOnCompleted\n"); });
 }
 
-<<<<<<< HEAD
 void test_repeat() {
   cout << "---" << __FUNCTION__ << endl;
 
@@ -125,6 +124,15 @@ void test_publish() {
     });
 }
 
+void test_iterate() {
+  std::vector<int> a = {1, 2, 3};
+  auto values = rxcpp::observable<>::iterate(a);
+  values.
+    subscribe(
+    [](int v){printf("OnNext: %d\n", v);},
+    [](){printf("OnCompleted\n");});
+}
+
 int main() {
 
 //  test_with_latest_from_and_pairwise();
@@ -133,6 +141,8 @@ int main() {
 //  test_concat_map();
 //  test_scan();
 //  test_reduce();
-  test_publish();
+//  test_publish();
+
+  test_iterate();
   return 0;
 }
