@@ -10,8 +10,11 @@ add_executable(AppEncCuda AppEncCuda.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEnc
 add_executable(AppEncGL AppEncGL.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderGL.cpp GraphicsUtils.cpp)
 add_executable(AppDec AppDec.cpp NvDecoder/NvDecoder.cpp)
 add_executable(encode_bare encode_bare.cpp)
+add_executable(simpleEncoder simpleEncoder.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
+add_executable(rxcppEncoder rxcppEncoder.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
 
-foreach(APP AppEncCuda AppEncGL AppDec encode_bare)
+
+foreach(APP AppEncCuda AppEncGL AppDec encode_bare simpleEncoder rxcppEncoder)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_include_directories(${APP} PUBLIC .)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
@@ -25,3 +28,5 @@ target_link_libraries(AppEncCuda PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda
 target_link_libraries(AppEncGL PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart X11)
 target_link_libraries(AppDec PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart avformat avcodec avutil avfilter)
 target_link_libraries(encode_bare PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
+target_link_libraries(simpleEncoder PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
+target_link_libraries(rxcppEncoder PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
