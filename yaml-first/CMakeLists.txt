@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(MD5Encrypter)
+cmake_minimum_required(VERSION 3.15)
+project(yaml-first)
 
 add_definitions("-std=c++11")
 
