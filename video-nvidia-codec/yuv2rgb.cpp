@@ -20,6 +20,21 @@ std::vector<unsigned char> readBytesFromFile(const char* filename)
   return result;
 }
 
+std::vector<unsigned char> readBytesFromFile(const char* filename, int length)
+{
+  std::vector<unsigned char> result;
+
+  FILE* f = fopen(filename, "rb");
+
+  result.resize(length);
+
+  char* ptr = reinterpret_cast<char*>(&(result[0]));
+  fread(ptr, length, 1, f); // Read in the entire file
+  fclose(f); // Close the file
+
+  return result;
+}
+
 std::tuple<std::vector<unsigned char>, std::vector<unsigned char>, std::vector<unsigned char>> readYUV(const char* filename, int step1, int step2){
   FILE* f = fopen(filename, "rb");
 
@@ -45,7 +60,7 @@ int main(int argc, char** argv)
 
   {
     //Read y, u and v in bytes arrays
-    auto[y_buffer, u_buffer, v_buffer] = readYUV("temp.yuv", actual_size.area(), actual_size.area() + half_size.area());
+    auto[y_buffer, u_buffer, v_buffer] = readYUV("../../target_1280.yuv", actual_size.area(), actual_size.area() + half_size.area());
 
     cv::Mat y(actual_size, CV_8UC1, y_buffer.data());
     cv::Mat u(half_size, CV_8UC1, u_buffer.data());
@@ -67,7 +82,7 @@ int main(int argc, char** argv)
 
   {
     cv::Size size(1280, 720*3/2);
-    auto buffer = readBytesFromFile("temp.yuv");
+    auto buffer = readBytesFromFile("../../target_1280.yuv", 1280 * 720*3/2);
     cv::Mat mat(size, CV_8UC1, buffer.data());
     cv::Mat bgr;
     cv::cvtColor(mat, bgr, cv::COLOR_YUV2BGR_I420);

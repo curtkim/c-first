@@ -181,12 +181,6 @@ int main() {
   fs.read(reinterpret_cast<char*>(inputBufferLocker.bufferDataPtr), WIDTH * HEIGHT * 1.5);  // 2048*4096*1.5
   fs.close();
 
-  std::ofstream ofsTemp("temp.yuv", std::ofstream::out | std::ofstream::binary);
-  ofsTemp.write(
-    reinterpret_cast<const char*>(inputBufferLocker.bufferDataPtr),
-    WIDTH * HEIGHT * 1.5);
-  ofsTemp.close();
-
 
   nvstatus = encodeAPI.nvEncUnlockInputBuffer(encoder, inputBuffer);
   if (nvstatus != NV_ENC_SUCCESS)
@@ -201,7 +195,7 @@ int main() {
   encodePicParam.version         = NV_ENC_PIC_PARAMS_VER;
   encodePicParam.inputWidth      = WIDTH;
   encodePicParam.inputHeight     = HEIGHT;
-  encodePicParam.inputPitch      = 2048;
+  encodePicParam.inputPitch      = WIDTH;                       //TODO
   encodePicParam.inputBuffer     = inputBuffer;
   encodePicParam.outputBitstream = outputBuffer;
   encodePicParam.bufferFmt       = NV_ENC_BUFFER_FORMAT_IYUV;
