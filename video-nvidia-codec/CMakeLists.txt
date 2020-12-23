@@ -16,3 +16,7 @@ foreach(APP encode encode_two_lamdba)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_include_directories(${APP} PRIVATE /home/curt/projects/nvidia/Video_Codec_SDK_10.0.26/Interface)
 endforeach()
+
+add_executable(yuv2rgb yuv2rgb)
+target_link_libraries(yuv2rgb PUBLIC ${CONAN_LIBS})
+target_compile_features(yuv2rgb PUBLIC cxx_std_17)

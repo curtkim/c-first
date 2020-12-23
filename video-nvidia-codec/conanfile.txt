@@ -5,6 +5,7 @@
 #glfw/3.3.2@curt/testing
 #glm/0.9.9.7
 #fmt/7.0.3
+opencv/4.5.0
 
 [generators]
 cmake

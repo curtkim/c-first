@@ -11,8 +11,8 @@ using namespace std;
 int main() {
   const char * input_file = "../../target_1280.yuv";
   const char * output_file = "target_1280.h264";
-  const int WIDTH = 2048;
-  const int HEIGHT = 4096;
+  const int WIDTH = 1280;
+  const int HEIGHT = 720;
 
   NVENCSTATUS nvstatus;
   void* encoder        = nullptr;
@@ -69,14 +69,38 @@ int main() {
   memset(&encodeCfg, 0, sizeof(NV_ENC_CONFIG));
   memcpy(&encodeCfg, &presetCfg, sizeof(NV_ENC_CONFIG));
   encodeCfg.version = NV_ENC_INITIALIZE_PARAMS_VER;
+  // Specifies the number of pictures in one GOP.(Group Of Picture??)
+  // Low latency application client can set goplength to NVENC_INFINITE_GOPLENGTH
+  // so that keyframes are not inserted automatically. */
   encodeCfg.gopLength                    = NVENC_INFINITE_GOPLENGTH;
+  // Specifies the GOP pattern as follows:
+  // frameIntervalP =
+  // 0: I,
+  // 1: IPP,
+  // 2: IBP,
+  // 3: IBBP
+  // If goplength is set to NVENC_INFINITE_GOPLENGTH
+  // frameIntervalP should be set to 1.
   encodeCfg.frameIntervalP               = 2;  // IPP
   encodeCfg.frameFieldMode               = NV_ENC_PARAMS_FRAME_FIELD_MODE_FRAME;
+  // Specifies the Rate Control Parameters for the current encoding session
   encodeCfg.rcParams.rateControlMode     = NV_ENC_PARAMS_RC_CONSTQP;
   encodeCfg.rcParams.constQP.qpInterP    = 32;
   encodeCfg.rcParams.constQP.qpIntra     = 32;
   encodeCfg.rcParams.initialRCQP.qpIntra = 24;
+
   encodeCfg.encodeCodecConfig.h264Config.maxNumRefFrames = 16;
+  // Specifies the chroma format.
+  // Should be set to
+  // 1 for yuv420 input,
+  // 3 for yuv444 input.
+  // Check support for YUV444 encoding using ::NV_ENC_CAPS_SUPPORT_YUV444_ENCODE caps.*/
+  //
+  // CHROMA_400 = 0,
+  // CHROMA_420 = 1,
+  // CHROMA_422 = 2,
+  // CHROMA_444 = 3,
+  // NUM_CHROMA_FORMAT = 4
   encodeCfg.encodeCodecConfig.h264Config.chromaFormatIDC = 1;  // YUV420
   encodeCfg.encodeCodecConfig.h264Config.disableDeblockingFilterIDC = 0;
 
@@ -87,13 +111,17 @@ int main() {
   encInitParam.presetGUID        = presetGUID; //NV_ENC_PRESET_P3_GUID; //NV_ENC_PRESET_LOW_LATENCY_HQ_GUID;
   encInitParam.encodeWidth       = WIDTH;
   encInitParam.encodeHeight      = HEIGHT;
+  // Display Aspect Ratio
   encInitParam.darWidth          = WIDTH;
   encInitParam.darHeight         = HEIGHT;
   encInitParam.maxEncodeWidth    = 0;
   encInitParam.maxEncodeHeight   = 0;
+  // Specifies the numerator for frame rate used for encoding in frames per second ( Frame rate = frameRateNum / frameRateDen ).
   encInitParam.frameRateNum      = 90;
+  // Set this to 1 to enable asynchronous mode and is expected to use events to get picture completion notification.
   encInitParam.enableEncodeAsync = 0;
   encInitParam.encodeConfig      = &encodeCfg;
+  // Picture Type Decision is be taken by the NvEncodeAPI interface
   encInitParam.enablePTD         = 1;
 
   nvstatus = encodeAPI.nvEncInitializeEncoder(encoder, &encInitParam);
@@ -105,37 +133,36 @@ int main() {
 
 
   // 6. Create input buffer
-  NV_ENC_CREATE_INPUT_BUFFER inputbufferparam;
-  std::memset(&inputbufferparam, 0, sizeof(NV_ENC_CREATE_INPUT_BUFFER));
-  inputbufferparam.version    = NV_ENC_CREATE_INPUT_BUFFER_VER;
-  inputbufferparam.width      = WIDTH;
-  inputbufferparam.height     = HEIGHT;
-  inputbufferparam.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
-  inputbufferparam.bufferFmt  = NV_ENC_BUFFER_FORMAT_IYUV;  // Is this yuv420?
+  NV_ENC_CREATE_INPUT_BUFFER inputBufferParam;
+  std::memset(&inputBufferParam, 0, sizeof(NV_ENC_CREATE_INPUT_BUFFER));
+  inputBufferParam.version    = NV_ENC_CREATE_INPUT_BUFFER_VER;
+  inputBufferParam.width      = WIDTH;
+  inputBufferParam.height     = HEIGHT;
+  inputBufferParam.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
+  inputBufferParam.bufferFmt  = NV_ENC_BUFFER_FORMAT_IYUV;  // Is this yuv420?
 
-  nvstatus = encodeAPI.nvEncCreateInputBuffer(encoder, &inputbufferparam);
+  nvstatus = encodeAPI.nvEncCreateInputBuffer(encoder, &inputBufferParam);
   if (nvstatus != NV_ENC_SUCCESS)
   {
     std::cout << "nvEncCreateInputBuffer failed " << getErrorString(nvstatus) << std::endl;
     return 1;
   }
-
-  NV_ENC_INPUT_PTR inputBuffer = inputbufferparam.inputBuffer;
+  NV_ENC_INPUT_PTR inputBuffer = inputBufferParam.inputBuffer;
 
   // 7. Create output buffer
-  NV_ENC_CREATE_BITSTREAM_BUFFER outputbufferparam;
-  std::memset(&outputbufferparam, 0, sizeof(NV_ENC_CREATE_BITSTREAM_BUFFER));
-  outputbufferparam.version    = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
-  outputbufferparam.size       = 2 * 1024 * 1024;  // No idea why
-  outputbufferparam.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
+  NV_ENC_CREATE_BITSTREAM_BUFFER outputBufferParam;
+  std::memset(&outputBufferParam, 0, sizeof(NV_ENC_CREATE_BITSTREAM_BUFFER));
+  outputBufferParam.version    = NV_ENC_CREATE_BITSTREAM_BUFFER_VER;
+  outputBufferParam.size       = 2 * 1024 * 1024;  // No idea why
+  outputBufferParam.memoryHeap = NV_ENC_MEMORY_HEAP_SYSMEM_CACHED;
 
-  nvstatus = encodeAPI.nvEncCreateBitstreamBuffer(encoder, &outputbufferparam);
+  nvstatus = encodeAPI.nvEncCreateBitstreamBuffer(encoder, &outputBufferParam);
   if (nvstatus != NV_ENC_SUCCESS)
   {
     std::cout << "nvEncCreateBitstreamBuffer failed" << std::endl;
     return 1;
   }
-  NV_ENC_OUTPUT_PTR outputBuffer = outputbufferparam.bitstreamBuffer;
+  NV_ENC_OUTPUT_PTR outputBuffer = outputBufferParam.bitstreamBuffer;
 
 
   // 8. Load a frame into input buffer
@@ -153,6 +180,13 @@ int main() {
   std::ifstream fs(input_file, std::ifstream::in | std::ifstream::binary);
   fs.read(reinterpret_cast<char*>(inputBufferLocker.bufferDataPtr), WIDTH * HEIGHT * 1.5);  // 2048*4096*1.5
   fs.close();
+
+  std::ofstream ofsTemp("temp.yuv", std::ofstream::out | std::ofstream::binary);
+  ofsTemp.write(
+    reinterpret_cast<const char*>(inputBufferLocker.bufferDataPtr),
+    WIDTH * HEIGHT * 1.5);
+  ofsTemp.close();
+
 
   nvstatus = encodeAPI.nvEncUnlockInputBuffer(encoder, inputBuffer);
   if (nvstatus != NV_ENC_SUCCESS)
@@ -207,6 +241,7 @@ int main() {
     std::cout << "nvEncUnlockInputBuffer failed" << std::endl;
     return 1;
   }
+
 
   // 12. Destroy input buffer
   if (inputBuffer)
