@@ -21,6 +21,10 @@
     # target_1280.nv12 / target_1280.yuv는 한 프레임당 1280x720의 1.5배 이다
     1245542400 / 901 / (1280*720)
 
+    # h265
+    ffmpeg -y -i target_1280.mp4 -c:v libx265 -pix_fmt gbrp target_1280_rgb.h265
+
+
 ## Howto
 
     # cd cmake-build-debug

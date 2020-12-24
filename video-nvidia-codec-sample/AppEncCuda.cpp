@@ -516,7 +516,7 @@ void EncodeCudaOpInVidMem(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat,
         // Load the next frame from disk
         std::streamsize nRead = fpIn.read(reinterpret_cast<char*>(pHostFrame.get()), nFrameSize).gcount();
         // For receiving encoded packets
-        std::vector<NV_ENC_OUTPUT_PTR>pVideoMemBfr;
+        std::vector<NV_ENC_OUTPUT_PTR> pVideoMemBfr;
 
         if (nRead == nFrameSize)
         {
