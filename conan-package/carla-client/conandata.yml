@@ -7,3 +7,5 @@ sources:
     url: https://github.com/carla-simulator/carla/archive/0.9.10.tar.gz
   "0.9.10.1":
     url: https://github.com/carla-simulator/carla/archive/0.9.10.1.tar.gz
+  "0.9.11":
+    url: https://github.com/carla-simulator/carla/archive/0.9.11.tar.gz

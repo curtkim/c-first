@@ -6,7 +6,7 @@ from conans import ConanFile, tools, CMake
 class CarlaClient(ConanFile):
 
     ## for test
-    version = "0.9.10.1"
+    version = "0.9.11"
 
     name = "carla-client"
     url = ""
@@ -31,7 +31,7 @@ class CarlaClient(ConanFile):
         "libpng/1.6.37",
         "libtiff/4.1.0",
         "libjpeg/9d",
-    )    
+    )
 
     _cmake = None
 
