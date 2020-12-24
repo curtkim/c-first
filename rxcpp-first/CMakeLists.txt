@@ -16,7 +16,7 @@ foreach(APP 01_create 02_op 03_read_file 04_last_five
         11_parallel 12_rxcurl_ex 13_rxrest
         20_coordination_list 21_observe_on 22_observe_on_runloop 25_synchronize_in 28_worker_schedule
         31_multi_subscribe 32_filter_with_latest
-        51_value_move
+        51_value_move 52_dynamic_array
         61_create_asio_timer
         62_asio_stdin
         66_asio_timeout
