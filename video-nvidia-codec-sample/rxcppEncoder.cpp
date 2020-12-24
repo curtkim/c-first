@@ -10,6 +10,7 @@
 
 #include <rxcpp/rx.hpp>
 
+
 namespace Rx {
   using namespace rxcpp;
   using namespace rxcpp::sources;
@@ -48,17 +49,17 @@ int main() {
   int nFrameSize = enc.GetFrameSize();
 
   // create
-  auto frames = rxcpp::observable<>::create<std::vector<uint8_t>>(
-    [nFrameSize](rxcpp::subscriber<std::vector<uint8_t>> s){
+  int count;
+  auto frames = rxcpp::observable<>::create<std::tuple<char*, std::streamsize>>(
+    [nFrameSize, &count](rxcpp::subscriber<std::tuple<char*, std::streamsize>> s){
       std::ifstream fpIn("../../target_1280.yuv", std::ifstream::in | std::ifstream::binary);
 
       while (true) {
-        std::vector<uint8_t> pHostFrame;
-        pHostFrame.reserve(nFrameSize);
+        char* p = (char*)std::malloc(nFrameSize);
         // Load the next frame from disk
-        std::streamsize nRead = fpIn.read(reinterpret_cast<char *>(pHostFrame.data()), nFrameSize).gcount();
-        printf("nRead = %d\n", nRead);
-        s.on_next(pHostFrame);
+        std::streamsize nRead = fpIn.read(p, nFrameSize).gcount();
+        printf("nRead = %d, %d\n", nRead, count++);
+        s.on_next(std::make_tuple(p,nRead) );
         if (nRead != nFrameSize) {
           s.on_completed();
           break;
@@ -67,13 +68,14 @@ int main() {
       fpIn.close();
     });
 
-  frames.concat_map([&enc, &cuContext, &nFrameSize](std::vector<uint8_t> pHostFrame) {
+  frames.concat_map([&enc, &cuContext](std::tuple<char*, std::streamsize> tuple) {
     std::vector<std::vector<uint8_t>> vPacket;
+    auto [p, size] = tuple;
 
-    printf("pHostFrame.size()= %d\n", pHostFrame.size());
-    if( pHostFrame.size() == nFrameSize) {
+    if( size > 0){
+      printf("encode %d\n", size);
       const NvEncInputFrame *encoderInputFrame = enc.GetNextInputFrame();
-      NvEncoderCuda::CopyToDeviceFrame(cuContext, pHostFrame.data(), 0, (CUdeviceptr) encoderInputFrame->inputPtr,
+      NvEncoderCuda::CopyToDeviceFrame(cuContext, p, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                        (int) encoderInputFrame->pitch,
                                        enc.GetEncodeWidth(),
                                        enc.GetEncodeHeight(),
@@ -86,6 +88,7 @@ int main() {
     else {
       enc.EndEncode(vPacket);
     }
+    std::free(p);
     return rxcpp::observable<>::iterate(vPacket);
   })
   .tap([&fpOut](std::vector<uint8_t> packet){
