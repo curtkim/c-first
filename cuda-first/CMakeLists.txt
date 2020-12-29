@@ -31,7 +31,7 @@ foreach(APP simpleGL)
     target_link_libraries(${APP} PUBLIC glut GL GLU)
 endforeach()
 
-add_executable(opengl_cuda_interop 2_graphic/opengl_cuda_interop.cpp common/shader.cpp 2_graphic/simple_kernel.cu)
+add_executable(opengl_cuda_interop 2_my_graphic/opengl_cuda_interop.cpp common/shader.cpp 2_graphic/simple_kernel.cu)
 target_link_libraries(opengl_cuda_interop PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_include_directories(opengl_cuda_interop PRIVATE /usr/local/cuda/include)
 target_compile_features(opengl_cuda_interop PUBLIC cxx_std_17)

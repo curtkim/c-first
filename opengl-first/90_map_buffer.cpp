@@ -1,4 +1,10 @@
 // from https://github.com/progschj/OpenGL-Examples/blob/master/08map_buffer.cpp
+/*
+* This example uses the geometry shader again for particle drawing.
+* The particles are animated on the cpu and uploaded every frame by mapping vbos.
+* Multiple vbos are used to triple buffer the particle data.
+*/
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -66,8 +72,12 @@ void main() {
 
 // define spheres for the particles to bounce off
 const int spheres = 3;
-const glm::vec3 center[spheres] {glm::vec3(0,12,1), glm::vec3(-3,0,0), glm::vec3(5,-10,0)};
-const float radius[spheres] = {3,7,12};
+const glm::vec3 center[spheres] {
+  glm::vec3(0,12,1),
+  glm::vec3(-3,0,0),
+  glm::vec3(5,-10,0)
+};
+const float radius[spheres] = {3, 7, 12};
 
 // physical parameters
 const float dt = 1.0f/60.0f;
@@ -140,11 +150,11 @@ int main() {
   // randomly place particles in a cube
   std::vector<glm::vec3> vertexData(particles);
   std::vector<glm::vec3> velocity(particles);
-  for(int i = 0;i<particles;++i) {
+  for(int i = 0; i<particles; ++i) {
     vertexData[i] = glm::vec3(0.5f-float(std::rand())/RAND_MAX,
                               0.5f-float(std::rand())/RAND_MAX,
                               0.5f-float(std::rand())/RAND_MAX);
-    vertexData[i] = glm::vec3(0.0f,20.0f,0.0f) + 5.0f*vertexData[i];
+    vertexData[i] = glm::vec3(0.0f,20.0f,0.0f) + 5.0f * vertexData[i];
   }
 
   // generate vbos and vaos
@@ -158,7 +168,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
 
     // fill with initial data
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertexData.size(), &vertexData[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertexData.size(), &vertexData[0], GL_DYNAMIC_DRAW);
 
     // set up generic attrib pointers
     glEnableVertexAttribArray(0);
@@ -170,7 +180,7 @@ int main() {
 
   // enable blending
   glEnable(GL_BLEND);
-  //  and set the blend function to result = 1*source + 1*destination
+  // and set the blend function to result = 1*source + 1*destination
   glBlendFunc(GL_ONE, GL_ONE);
 
 
@@ -193,10 +203,11 @@ int main() {
     // update physics
     updatePhysics(vertexData, velocity);
 
+
     // bind a buffer to upload to
     glBindBuffer(GL_ARRAY_BUFFER, vbo[(current_buffer+buffercount-1) % buffercount]);
     // explicitly invalidate the buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertexData.size(), 0, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertexData.size(), 0, GL_DYNAMIC_DRAW);
 
     // map the buffer
     glm::vec3 *mapped =
@@ -212,6 +223,7 @@ int main() {
 
     // unmap the buffer
     glUnmapBuffer(GL_ARRAY_BUFFER);
+
 
     // clear first
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
