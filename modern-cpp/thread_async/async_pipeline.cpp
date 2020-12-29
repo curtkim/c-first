@@ -8,10 +8,10 @@
 #include <future>
 // We need a data structure to manage our pipeline. The double-ended queue fits nicely.
 #include <deque>
-// We'd like to be able to print to console.
 #include <iostream>
-// And we want to measure time.
 #include <chrono>
+
+using namespace std::chrono;
 
 
 // Let's create the first function that performs some heavy processing.
@@ -22,8 +22,9 @@ std::pair<size_t, std::string> func1(std::future<std::pair<size_t, std::string>>
   // Here we retrieve payload from the future object.
   // This call will block until the result is produced by another thread.
   const auto input = future_input.get();
+  std::cout << std::this_thread::get_id() << " func1 " << input.first << "\n";
   // Let's sleep for a while. This is to be replaced with actual compute eventually.
-  std::this_thread::sleep_for(std::chrono::milliseconds(900));
+  std::this_thread::sleep_for(std::chrono::milliseconds(90));
   // Attach a string to input and return it to make sure that the function got executed.
   std::string output(input.second + " func1");
   // We return a regular object which will be turned into a future object by std::async.
@@ -38,18 +39,19 @@ std::pair<size_t, std::string> func2(std::future<std::pair<size_t, std::string>>
 {
   // Similar to func1, but we emulate different compute time.
   const auto input = future_input.get();
-  std::this_thread::sleep_for(std::chrono::milliseconds(950));
+  std::cout << std::this_thread::get_id() << " func2 " << input.first << "\n";
+  std::this_thread::sleep_for(std::chrono::milliseconds(95));
   std::string output(input.second + " func2");
   return std::make_pair(input.first, output);
 }
 
 
-// After the processing of a sample is done we would like to visualize the results.
+// After the processing of a sample is done
+// we would like to visualize the results.
 // We are going to do this by printing the result into the console.
-// We also want the visualization to be smooth, such that our prints come
-// in nice regular intervals.
+// We also want the visualization to be smooth, such that our prints come in nice regular intervals.
 void visualize(std::future<std::pair<size_t, std::string>>&& future_input,
-               const std::chrono::time_point<std::chrono::high_resolution_clock>& start_time,
+               const time_point<high_resolution_clock>& start_time,
                std::atomic<unsigned long>& current_idx)
 {
   const auto input = future_input.get();
@@ -71,7 +73,7 @@ void visualize(std::future<std::pair<size_t, std::string>>&& future_input,
   }
 
   // Time to see what we got and at what timestamp relative to the launch of the app.
-  std::cout << "Sample " << this_idx << " output: '" << input.second << "' finished at " <<
+  std::cout << std::this_thread::get_id() << " visualize " << this_idx << " output: '" << input.second << "' finished at " <<
             std::chrono::duration_cast<std::chrono::milliseconds>(
               std::chrono::high_resolution_clock::now() - start_time).count() << std::endl;
 
@@ -81,7 +83,7 @@ void visualize(std::future<std::pair<size_t, std::string>>&& future_input,
   // stage, and we do not want it to be a compute stage. Varying compute time can
   // introduce jitter to our visualization. Sleep is more reliable in this regard
   // as long as we have enough free cores in the CPU.
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // Finally after the current sample is visualized, we are free to advance current_idx
   // and allow threads that visualize next samples to run.
@@ -93,7 +95,7 @@ void visualize(std::future<std::pair<size_t, std::string>>&& future_input,
 int main()
 {
   // Capture the moment we start the app.
-  const auto start_time = std::chrono::high_resolution_clock::now();
+  const auto start_time = high_resolution_clock::now();
 
   // Here we explicitly specify the number of processors except visualizer.
   size_t pipeline_depth = 2;
@@ -111,10 +113,11 @@ int main()
   // Now we are ready to fill our pipeline with samples. Let's limit the number
   // of samples to 100 to showcase how we can gracefully stop the pipeline
   // after all samples are visualized.
-  for (size_t idx = 0; idx < 100; idx++)
+  for (size_t idx = 0; idx < 10; idx++)
   {
     // Here we create an input to the pipeline. Let's make it a string.
     auto input_str = std::string("input_string_") + std::to_string(idx);
+
     // We'd like to wrap the input into a future object which is available
     // immediately. This trick allows us to have a uniform signature of
     // functions func#, that takes a future object and returns a value
@@ -140,11 +143,12 @@ int main()
     // asynchronous operations shine. The atomic current_idx is passed here by
     // reference to ensure sequential visualisation of samples despite multiple
     // visualization threads will be running concurrently.
-    auto future_vis = std::async(std::launch::async, &visualize, std::move(future_2),
-                                 std::ref(start_time), std::ref(current_idx));
+    auto future_vis = std::async(std::launch::async, &visualize,
+                                 std::move(future_2), std::ref(start_time), std::ref(current_idx));
 
     // We append the dummy futures into a double-ended queue.
     visualize_futures.push_back(std::move(future_vis));
+
     // And check that the pipeline is full. We do not want our pipeline to launch
     // dozens of threads ahead of time since we know that the visualization will
     // anyway run in 1 second intervals.
@@ -155,7 +159,7 @@ int main()
       visualize_futures.pop_front();
     }
 
-    std::cout << "Enqueued sample: " << idx << std::endl;
+    std::cout << std::this_thread::get_id() << " Enqueued sample: " << idx << std::endl;
   }
 
   std::cout << "Waiting to finish..." << std::endl;
