@@ -7,7 +7,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 # 2 nvidia env/dec
-foreach(APP encode encode_two_lamdba)
+foreach(APP encode encode_two_lamdba encode_egl)
     add_executable(${APP} ${APP}.cpp)
     target_link_directories(${APP} PUBLIC /home/curt/projects/nvidia/Video_Codec_SDK_10.0.26/Lib/linux/stubs/x86_64)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
@@ -16,6 +16,8 @@ foreach(APP encode encode_two_lamdba)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_include_directories(${APP} PRIVATE /home/curt/projects/nvidia/Video_Codec_SDK_10.0.26/Interface)
 endforeach()
+
+target_link_libraries(encode_egl PUBLIC EGL ${OPENGL_LIBRARY})
 
 add_executable(yuv2rgb yuv2rgb)
 target_link_libraries(yuv2rgb PUBLIC ${CONAN_LIBS})

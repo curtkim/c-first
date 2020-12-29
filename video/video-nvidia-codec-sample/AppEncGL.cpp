@@ -1,23 +1,12 @@
-/*
-* Copyright 2017-2020 NVIDIA Corporation.  All rights reserved.
-*
-* Please refer to the NVIDIA end user license agreement (EULA) associated
-* with this source code for terms and conditions that govern your use of
-* this software. Any use, reproduction, disclosure, or distribution of
-* this software and related documentation outside the terms of the EULA
-* is strictly prohibited.
-*
-*/
-
 /**
-*  This sample application illustrates encoding of frames stored in OpenGL
-*  textures. The application reads frames from the input file and uploads them
-*  to the textures obtained from the encoder using NvEncoder::GetNextInputFrame().
-*  The encoder subsequently maps the textures for encoder using NvEncodeAPI and
-*  submits them to NVENC hardware for encoding as part of NvEncoder::EncodeFrame().
+*  This sample application illustrates encoding of frames stored in OpenGL textures.
+*  The application reads frames from the input file and uploads them to the textures obtained from the encoder using NvEncoder::GetNextInputFrame().
+*  The encoder subsequently maps the textures for encoder using NvEncodeAPI and submits them to NVENC hardware for encoding
+*  as part of NvEncoder::EncodeFrame().
 *
-*  The X server must be running and the DISPLAY environment variable must be
-*  set when attempting to run this application.
+*  The X server must be running and the DISPLAY environment variable must be set when attempting to run this application.
+*
+*
 */
 
 #include <iostream>

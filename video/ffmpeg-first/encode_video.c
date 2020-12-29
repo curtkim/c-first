@@ -36,7 +36,7 @@ static void encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt, FILE 
   }
 }
 
-void fill_frame(AVCodecContext *c, AVFrame *frame, int i) {
+void fill_frame_yuv420(AVCodecContext *c, AVFrame *frame, int i) {
   int x,y;
 
   /* prepare a dummy image */
@@ -56,6 +56,11 @@ void fill_frame(AVCodecContext *c, AVFrame *frame, int i) {
   }
 }
 
+void print_frame_info(AVFrame *frame){
+  printf("channels=%d\n", frame->channels);
+  printf("linesize[]=%d %d %d\n", frame->linesize[0], frame->linesize[1], frame->linesize[2]);
+}
+
 int main(int argc, char **argv)
 {
   const char *filename, *codec_name;
@@ -66,6 +71,10 @@ int main(int argc, char **argv)
   AVFrame *frame;
   AVPacket *pkt;
   uint8_t endcode[] = { 0, 0, 1, 0xb7 };
+
+  // PIXEL_FORMAT
+  enum AVPixelFormat PIXEL_FORMAT = AV_PIX_FMT_YUV420P;
+
 
   if (argc <= 2) {
     fprintf(stderr, "Usage: %s <output file> <codec name>\n", argv[0]);
@@ -109,7 +118,8 @@ int main(int argc, char **argv)
    */
   c->gop_size = 10;
   c->max_b_frames = 1;
-  c->pix_fmt = AV_PIX_FMT_YUV420P;
+  c->pix_fmt = PIXEL_FORMAT;
+
 
   if (codec->id == AV_CODEC_ID_H264)
     av_opt_set(c->priv_data, "preset", "slow", 0);
@@ -141,6 +151,7 @@ int main(int argc, char **argv)
     fprintf(stderr, "Could not allocate the video frame data\n");
     exit(1);
   }
+  print_frame_info(frame);
 
   /* encode 1 second of video */
   for (i = 0; i < 25*10; i++) {
@@ -151,7 +162,7 @@ int main(int argc, char **argv)
     if (ret < 0)
       exit(1);
 
-    fill_frame(c, frame, i);
+    fill_frame_yuv420(c, frame, i);
     frame->pts = i;
 
     /* encode the image */
