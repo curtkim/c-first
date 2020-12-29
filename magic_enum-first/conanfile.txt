@@ -1,0 +1,5 @@
+[requires]
+magic_enum/0.7.1
+
+[generators]
+cmake
