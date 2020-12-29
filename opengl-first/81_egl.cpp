@@ -49,12 +49,12 @@ EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
   return eglDpy;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-  const int pbufferWidth = 800;
-  const int pbufferHeight = 600;
+  const int width = 800;
+  const int height = 600;
 
-  EGLDisplay eglDisplay = initEGL(pbufferWidth, pbufferHeight);
+  EGLDisplay eglDisplay = initEGL(width, height);
 
   // from now on use your OpenGL context
   if(!gladLoadGL()) {
@@ -62,17 +62,17 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  // Red background
+  // DrawCode(Red background)
   glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  unsigned char* imageData = (unsigned char *)malloc((int)(pbufferWidth*pbufferHeight*(3)));
-  glReadPixels(0, 0, pbufferWidth, pbufferHeight, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+  unsigned char* imageData = (unsigned char *)malloc(width * height * 3);
+  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 
   GLsizei nrChannels = 3;
-  GLsizei stride = nrChannels * pbufferWidth;
+  GLsizei stride = nrChannels * width;
   stbi_flip_vertically_on_write(true);
-  stbi_write_png("egl.png", pbufferWidth, pbufferHeight, nrChannels, imageData, stride);
+  stbi_write_png("egl.png", width, height, nrChannels, imageData, stride);
 
   free(imageData);
 
