@@ -1,5 +1,5 @@
 #include <iostream>
-#include "gpu.hpp"
+#include "first-gpu.hpp"
 
 void printCudaVersion()
 {

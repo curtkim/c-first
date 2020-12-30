@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "gpu.hpp"
+#include "first-gpu.hpp"
 
 int main()
 {

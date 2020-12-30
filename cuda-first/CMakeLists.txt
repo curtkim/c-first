@@ -4,7 +4,7 @@ project(cuda-first LANGUAGES CUDA C CXX)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-add_executable(cuda-version main.cc gpu.cu)
+add_executable(first first.cc first-gpu.cu)
 
 add_executable(nvtx_first nvtx_first.cpp)
 target_include_directories(nvtx_first PUBLIC /usr/local/cuda/include)
