@@ -9,5 +9,6 @@ int main()
     std::cout << "CUDA: On" << std::endl;
     printCudaVersion();
 
+    launch_print_from_gpu();
     return 0;
 }
