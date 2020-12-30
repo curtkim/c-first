@@ -42,20 +42,24 @@ int add_accept_request(int server_socket, struct sockaddr_in *client_addr,
   io_uring_submit(&ring);
   return 0;
 }
+
 int add_read_request(int client_socket) {
   struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
+
   struct request *req = malloc(sizeof(*req) + sizeof(struct iovec));
   req->iov[0].iov_base = malloc(READ_SZ);
   req->iov[0].iov_len = READ_SZ;
   req->event_type = EVENT_TYPE_READ;
   req->client_socket = client_socket;
   memset(req->iov[0].iov_base, 0, READ_SZ);
+
   /* Linux kernel 5.5 has support for readv, but not for recv() or read() */
   io_uring_prep_readv(sqe, client_socket, &req->iov[0], 1, 0);
   io_uring_sqe_set_data(sqe, req);
   io_uring_submit(&ring);
   return 0;
 }
+
 int add_write_request(struct request *req) {
   struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
   req->event_type = EVENT_TYPE_WRITE;
@@ -164,10 +168,13 @@ void server_loop(int server_socket) {
   struct io_uring_cqe *cqe;
   struct sockaddr_in client_addr;
   socklen_t client_addr_len = sizeof(client_addr);
+
   add_accept_request(server_socket, &client_addr, &client_addr_len);
+
   while (1) {
     int ret = io_uring_wait_cqe(&ring, &cqe);
     struct request *req = (struct request *) cqe->user_data;
+
     if (ret < 0)
       fatal_error("io_uring_wait_cqe");
     if (cqe->res < 0) {
@@ -175,6 +182,7 @@ void server_loop(int server_socket) {
               strerror(-cqe->res), req->event_type);
       exit(1);
     }
+
     switch (req->event_type) {
       case EVENT_TYPE_ACCEPT:
         add_accept_request(server_socket, &client_addr, &client_addr_len);

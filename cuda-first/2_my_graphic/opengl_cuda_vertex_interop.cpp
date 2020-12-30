@@ -14,6 +14,7 @@
 
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
+#include <nvToolsExt.h>
 
 // Utilities and timing functions
 #include <helper_functions.h>    // includes cuda.h and cuda_runtime_api.h
@@ -67,6 +68,7 @@ void launch_kernel(float4 *pos, unsigned int mesh_width, unsigned int mesh_heigh
 // 4. cudaGraphicsUnmapResources
 void runCuda(struct cudaGraphicsResource **vbo_resource, float g_fAnim)
 {
+  nvtxRangePush(__FUNCTION__);
   // map OpenGL buffer object for writing from CUDA
   float4 *dptr;
   checkCudaErrors(cudaGraphicsMapResources(1, vbo_resource, 0));
@@ -83,6 +85,7 @@ void runCuda(struct cudaGraphicsResource **vbo_resource, float g_fAnim)
 
   // unmap buffer object
   checkCudaErrors(cudaGraphicsUnmapResources(1, vbo_resource, 0));
+  nvtxRangePop();
 }
 
 auto load_dynamic_model(int width, int height, int time = 0) {
@@ -222,6 +225,7 @@ int main(int argc, char **argv) {
     runCuda(&cuda_vbo_resource, g_fAnim);
     //runCudaTest(g_fAnim);
 
+    nvtxRangePush("opengl render");
     // create transformations
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     glm::mat4 view = glm::mat4(1.0f);
@@ -244,6 +248,7 @@ int main(int argc, char **argv) {
     glfwSwapBuffers(window);
     glfwPollEvents();
 
+    nvtxRangePop(); // opengl render
   } // Check if the ESC key was pressed or the window was closed
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 

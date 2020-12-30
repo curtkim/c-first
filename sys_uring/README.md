@@ -1,6 +1,7 @@
 ## Reference
 - https://blogs.oracle.com/linux/an-introduction-to-the-io_uring-asynchronous-io-framework
 - https://unixism.net/loti/tutorial/cat_liburing.html
+- https://unixism.net/2020/04/io-uring-by-example-part-1-introduction/
 
 ## HOWTO
 
@@ -22,7 +23,3 @@
         io_uring_wait_cqe()
             io_uring_cqe_get_data()  -- get_data
     io_uring_queue_exit()
-
-## uring-cp
-    
-    

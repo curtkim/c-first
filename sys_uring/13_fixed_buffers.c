@@ -1,3 +1,7 @@
+// This causes the kernel to map these buffers in,
+// avoiding future copies to and from user space
+// kernel이 userspace 사이에 buffer를 copy하지 않아서 효율적이다.
+
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
@@ -10,9 +14,10 @@
 #define STR2        "We have no time to stand and stare."
 
 int fixed_buffers(struct io_uring *ring) {
+  // 0,1은 write에 쓰고, 2,3은 read에 사용한다.
   struct iovec iov[4];
-  struct io_uring_sqe *sqe;
-  struct io_uring_cqe *cqe;
+  struct io_uring_sqe* sqe;
+  struct io_uring_cqe* cqe;
 
   int fd = open(FILE_NAME, O_RDWR|O_TRUNC|O_CREAT, 0644);
   if (fd < 0 ) {
@@ -38,11 +43,8 @@ int fixed_buffers(struct io_uring *ring) {
     fprintf(stderr, "Could not get SQE.\n");
     return 1;
   }
-
   int str1_sz = strlen(STR1);
-  int str2_sz = strlen(STR2);
   strncpy(iov[0].iov_base, STR1, str1_sz);
-  strncpy(iov[1].iov_base, STR2, str2_sz);
   io_uring_prep_write_fixed(sqe, fd, iov[0].iov_base, str1_sz, 0, 0);
 
   // sqe2
@@ -51,10 +53,13 @@ int fixed_buffers(struct io_uring *ring) {
     fprintf(stderr, "Could not get SQE.\n");
     return 1;
   }
+  int str2_sz = strlen(STR2);
+  strncpy(iov[1].iov_base, STR2, str2_sz);
   io_uring_prep_write_fixed(sqe, fd, iov[1].iov_base, str2_sz, str1_sz, 1);
 
   // submit1
   io_uring_submit(ring);
+
 
   for(int i = 0; i < 2; i ++) {
     int ret = io_uring_wait_cqe(ring, &cqe);
@@ -70,6 +75,7 @@ int fixed_buffers(struct io_uring *ring) {
     printf("Result of the operation: %d\n", cqe->res);
     io_uring_cqe_seen(ring, cqe);
   }
+
 
   // sqe3
   sqe = io_uring_get_sqe(ring);
@@ -117,7 +123,9 @@ int main() {
     fprintf(stderr, "Unable to setup io_uring: %s\n", strerror(-ret));
     return 1;
   }
+
   fixed_buffers(&ring);
+
   io_uring_queue_exit(&ring);
   return 0;
 }

@@ -7,6 +7,8 @@
     nsys profile -o baseline.qdstrm --force-overwrite=true ./nvtx_first
     nsys-ui 
 
+
+
 ## Reference
 https://www.jetbrains.com/help/clion/cuda-projects.html
 https://github.com/socal-ucr/CUDA-Intro

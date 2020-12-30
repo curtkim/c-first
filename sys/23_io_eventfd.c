@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  efd = eventfd(0, EFD_SEMAPHORE);
+  efd = eventfd(0, EFD_SEMAPHORE); //
   if (efd == -1)
     handle_error("eventfd");
 
@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
     case 0:
       for (j = 1; j < argc; j++) {
         sleep(1);
-        printf("\tChild writing %s to efd\n", argv[j]);
-        u = strtoull(argv[j], NULL, 0);
         /* strtoull() allows various bases */
+        u = strtoull(argv[j], NULL, 0);
+        printf("\tChild writing %s (%d) to efd\n", argv[j], u);
         s = write(efd, &u, sizeof(uint64_t));
         if (s != sizeof(uint64_t))
           handle_error("write");
