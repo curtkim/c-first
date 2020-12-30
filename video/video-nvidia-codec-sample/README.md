@@ -60,7 +60,8 @@ iyuv = YUV420p
                      2 : both pre and post processing are on DIFFERENT CUDA stream
     -codec       Codec: h264 hevc
     -preset      Preset: p1 p2 p3 p4 p5 p6 p7
-    -profile     H264: baseline main high high444; HEVC: main main10 frext
+    -profile     H264: baseline main high high444; 
+                 HEVC: main main10 frext
     -tuninginfo  TuningInfo: hq lowlatency ultralowlatency lossless
     -multipass   Multipass: disabled qres fullres
     -444         (Only for RGB input) YUV444 encode
