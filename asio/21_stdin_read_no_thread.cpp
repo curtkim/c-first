@@ -10,7 +10,7 @@ void read_from_stdio(asio::posix::stream_descriptor & stream, asio::streambuf& b
     std::istream is(&buffer);
     std::string result_line;
     std::getline(is, result_line);
-    std::cout << result_line << std::endl;
+    std::cout << std::this_thread::get_id() << " " << result_line << std::endl;
 
     count++;
     if( count < 5)
