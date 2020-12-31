@@ -53,7 +53,9 @@ foreach(APP move_forward move_forward2 move_semantic exchange test_shared_ptr te
 endforeach()
 
 ### meta
-foreach(APP crtp_mixin crtp_static_polymorphism tag_invoke_test static_assert_test constexpr_test constexpr_test2)
+foreach(APP crtp_mixin crtp_static_polymorphism tag_invoke_test static_assert_test constexpr_test constexpr_test2
+        type_trait1 type_trait2_decltype type_trait3_enable_if type_trait4_introspect
+        if_constexpr_1)
     add_executable(${APP} meta/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries( ${APP} PUBLIC pthread )
