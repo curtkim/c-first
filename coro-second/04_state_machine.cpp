@@ -45,7 +45,7 @@ public:
   };
 
 
-  //struct signal {};
+  struct signal {};
 
   using coro_handle = std::coroutine_handle<promise_type>;
   StateMachine(coro_handle coro_handle) : coroutine_handle(coro_handle) {}

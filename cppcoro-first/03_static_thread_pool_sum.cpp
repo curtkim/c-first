@@ -37,6 +37,6 @@ int main() {
   cppcoro::static_thread_pool threadPool;
   std::cout << "main " << std::this_thread::get_id() << std::endl;
 
-  auto result = cppcoro::sync_wait(sum_of_squares(1, 2000, threadPool));
+  auto result = cppcoro::sync_wait(sum_of_squares(1, 3000, threadPool));
   std::cout << result << std::endl;
 }

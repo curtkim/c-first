@@ -25,8 +25,13 @@ target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_CO_AWAIT)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_STD_COROUTINE)
 target_link_libraries(03_echo_server pthread)
 
-foreach(APP 04_state_machine 05_task)
+
+foreach(APP 04_state_machine )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
+add_executable(05_task 05_task.cpp)
+target_compile_options(05_task PUBLIC -fcoroutines)
+target_compile_features(05_task PUBLIC cxx_std_20)
