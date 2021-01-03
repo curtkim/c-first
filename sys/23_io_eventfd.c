@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 
   switch (fork()) {
     case 0:
+      printf("argc=%d\n", argc);
       for (j = 1; j < argc; j++) {
         sleep(1);
         /* strtoull() allows various bases */

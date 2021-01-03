@@ -43,7 +43,7 @@ foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd)
     add_executable(${APP} ${APP}.c)
 endforeach()
 
-foreach(APP 31_epoll_eventfd_worker 32_epoll_timerfd 33_epoll_signalfd)
+foreach(APP 31_epoll_eventfd_worker 32_epoll_timerfd 33_epoll_signalfd 36_epoll_eventfd_single_efd)
     add_executable(${APP} ${APP}.c)
     target_link_libraries(${APP} PUBLIC pthread)
 endforeach()

@@ -40,7 +40,7 @@ struct timespec tp;
 
 
 #define NUM_PRODUCERS 2
-#define NUM_CONSUMERS 1
+#define NUM_CONSUMERS 2
 #define MAX_EVENTS_SIZE 10 //1024
 
 typedef struct thread_info {
@@ -48,6 +48,7 @@ typedef struct thread_info {
   int rank;
   int epfd;
 } thread_info_t;
+
 
 static void do_task() {
   return;
@@ -73,7 +74,7 @@ static void *consumer_routine(void *data) {
 
     for (i = 0; i < nfds; i++) {
       if (events[i].events & EPOLLIN) {
-        //log_debug("[consumer-%d] got event from fd-%d", c->rank, events[i].data.fd);
+        log_debug("[consumer-%d] got event from fd=%d", c->rank, events[i].data.fd);
 
         ret = read(events[i].data.fd, &v, sizeof(v));
         if (ret < 0) {
@@ -97,6 +98,7 @@ static void *producer_routine(void *data) {
   int efd = -1;
   int ret = -1;
   int interval = 1;
+  uint64_t i = 0;
 
   log_debug("[producer-%d] issues 1 task per %d second", p->rank, interval);
   while (1) {
@@ -104,7 +106,7 @@ static void *producer_routine(void *data) {
     if (efd == -1)
       exit_error("eventfd create: %s", strerror(errno));
 
-    log_debug("[producer-%d] create efd=%d", p->rank, efd);
+    log_debug("[producer-%d] create efd=%d value=%d", p->rank, efd, i);
 
     event.data.fd = efd;
     event.events = EPOLLIN | EPOLLET;
@@ -112,10 +114,11 @@ static void *producer_routine(void *data) {
     if (ret != 0)
       exit_error("epoll_ctl");
 
-    ret = write(efd, &(uint64_t) {1}, sizeof(uint64_t));
+    ret = write(efd, &i, sizeof(uint64_t));
     if (ret != 8)
       log_error("[producer-%d] failed to write eventfd", p->rank);
 
+    i++;
     sleep(interval);
   }
 }
