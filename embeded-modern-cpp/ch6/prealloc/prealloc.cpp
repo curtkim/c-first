@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <string.h>
+
 constexpr size_t kMaxFileNameSize = 256;
 constexpr size_t kBufferSize = 4096;
 constexpr size_t kMaxDevices = 16;

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.5.1)
+project(sharedmem)
+add_executable(sharedmem sharedmem.cpp)
+target_link_libraries(sharedmem rt)
+target_compile_features(sharedmem PUBLIC cxx_std_17)

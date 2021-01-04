@@ -12,6 +12,7 @@ constexpr int overlap(void* ptr) {
 int main() {
   char static_buffer[kAllocBytes];
   char* dynamic_buffer = new char[kAllocBytes];
+  
   alignas(kAlignSize) char aligned_static_buffer[kAllocBytes];
   char* aligned_dynamic_buffer = nullptr;
 
