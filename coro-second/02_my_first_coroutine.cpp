@@ -2,11 +2,9 @@
 #include <iostream>
 #include <assert.h>
 
-
 class resumable {
 public:
   struct promise_type;
-
 
   using coro_handle = std::coroutine_handle<promise_type>;
 

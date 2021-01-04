@@ -1,5 +1,6 @@
 [requires]
 asio/1.17.0
+ms-gsl/3.1.0
 
 [generators]
 cmake
