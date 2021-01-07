@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.5.1)
+project(expected)
+add_executable(expected expected.cpp)
+target_link_libraries(expected PUBLIC pthread)
+target_compile_features(expected PUBLIC cxx_std_17)
