@@ -7,13 +7,16 @@ project(coro_seconds)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP 01_main 01_nested 04_state_machine 05_task
+foreach(APP
+        01_main 01_nested 04_state_machine 05_task
         02_my_first_coroutine 02_my_first_coroutine_return 02_my_first_coroutine_yield
-        11_russian-roulette)
+        11_russian-roulette
+        )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
 
 add_executable(03_echo_server 03_echo_server.cpp)
 target_compile_options(03_echo_server PRIVATE -fcoroutines)

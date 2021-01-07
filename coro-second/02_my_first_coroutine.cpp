@@ -8,7 +8,9 @@ public:
 
   using coro_handle = std::coroutine_handle<promise_type>;
 
-  resumable(coro_handle handle) : handle_(handle) { assert(handle); }
+  resumable(coro_handle handle) : handle_(handle) {
+    assert(handle);
+  }
   //resumable(resumable&) = delete;
   //resumable(resumable&&) = delete;
 
@@ -26,7 +28,12 @@ private:
 struct resumable::promise_type {
   using coro_handle = std::coroutine_handle<promise_type>;
   auto get_return_object() {
+    std::cout << "typeid(*this) " << typeid(*this).name() << std::endl; // N9resumable12promise_typeE
     return coro_handle::from_promise(*this);
+    // Note that the type of the return-object doesn’t need to be the same type as the return-type of the coroutine function.
+    // An implicit conversion from the return-object to the return-type of the coroutine is performed if necessary.
+    // coro_handle을 반환하지만 implcit conversion으로 resumable로 변환하는 것 같다.
+    // promise -> coro_handle -> coro_handle holder(return-type of coroutine)
   }
   auto initial_suspend() {
     return std::suspend_always();

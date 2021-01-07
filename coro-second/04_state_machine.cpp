@@ -13,6 +13,7 @@ public:
   struct promise_type {
     std::optional<Signal> recent_signal;
     std::optional<Result> returned_value;
+
     StateMachine get_return_object() {
       return std::coroutine_handle<promise_type>::from_promise(*this);
     }
@@ -39,13 +40,13 @@ public:
       }
     };
 
-    SignalAwaiter await_transform(Signal) {
+    SignalAwaiter await_transform(Signal signal) {
       return SignalAwaiter(recent_signal);
     }
   };
 
 
-  struct signal {};
+  //struct signal {};
 
   using coro_handle = std::coroutine_handle<promise_type>;
   StateMachine(coro_handle coro_handle) : coroutine_handle(coro_handle) {}
@@ -70,9 +71,9 @@ private:
 StateMachine<button_press, std::FILE *> open_file(const char *file_name) {
   using this_coroutine = StateMachine<button_press, std::FILE *>;
 
-  button_press first_button = co_await this_coroutine::signal{};
+  button_press first_button = co_await button_press::LEFT_MOUSE; //this_coroutine::signal{};
   while (true) {
-    button_press second_button = co_await this_coroutine::signal{};
+    button_press second_button = co_await button_press::LEFT_MOUSE;
     if (first_button == button_press::LEFT_MOUSE and second_button == button_press::LEFT_MOUSE)
       co_return std::fopen(file_name, "r");
 
@@ -83,12 +84,19 @@ StateMachine<button_press, std::FILE *> open_file(const char *file_name) {
 
 int main() {
   auto machine = open_file("test");
-  machine.send_signal(button_press::LEFT_MOUSE);
-  machine.send_signal(button_press::RIGHT_MOUSE);
-  machine.send_signal(button_press::LEFT_MOUSE);
-  machine.send_signal(button_press::LEFT_MOUSE);
 
-  auto result = machine.get_result();
+  machine.send_signal(button_press::LEFT_MOUSE);
+  std::cout << machine.get_result().has_value() << std::endl;
+
+  machine.send_signal(button_press::RIGHT_MOUSE);
+  std::cout << machine.get_result().has_value() << std::endl;
+
+  machine.send_signal(button_press::LEFT_MOUSE);
+  std::cout << machine.get_result().has_value() << std::endl;
+
+  machine.send_signal(button_press::LEFT_MOUSE);
+  std::cout << machine.get_result().has_value() << std::endl;
+
   /*
   milli::raii close_guard ([&result] {
     if (result.has_value())
@@ -96,6 +104,9 @@ int main() {
   });
    */
 
+  auto result = machine.get_result();
+  std::cout << result.has_value() << std::endl;
   std::cout << result.value() << std::endl;
+
   return 0;
 }
