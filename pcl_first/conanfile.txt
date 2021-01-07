@@ -1,5 +1,5 @@
 [requires]
-pcl/1.10.1@demo/testing
+pcl/1.11.1@curt/testing
 
 [generators]
 cmake
