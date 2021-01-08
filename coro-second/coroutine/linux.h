@@ -160,12 +160,14 @@ namespace coro {
       }
 
       bool await_ready() const noexcept {
+        printf("await_ready fd=%d\n", efd.fd());
         return efd.is_set();
       }
       /**
        * @brief Wait for `write` to given `eventfd`
        */
       void await_suspend(coroutine_handle<void> coro) noexcept(false) {
+        printf("await_suspend fd=%d coro.address=%p\n", efd.fd(), coro.address());
         this->data.ptr = coro.address();
         return ep.try_add(efd.fd(), *this);
       }
@@ -173,6 +175,7 @@ namespace coro {
        * @brief Reset the given event object when resumed
        */
       void await_resume() noexcept {
+        printf("await_resume fd=%d\n", efd.fd());
         return efd.reset();
       }
     };
