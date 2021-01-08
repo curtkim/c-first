@@ -17,10 +17,10 @@ int main() {
     co_return x;
   };
 
-  auto[a, b, c] = cppcoro::sync_wait(cppcoro::when_all(
+
+  auto[a, b] = cppcoro::sync_wait(cppcoro::when_all(
     makeVoidTask(),
-    makeIntTask(123),
-    makeVoidTask()));
+    makeIntTask(123)));
 
   assert( b == 123);
 

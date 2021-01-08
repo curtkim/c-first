@@ -1,5 +1,6 @@
 [requires]
 cppcoro/20201020@demo/testing
+gsl-lite/0.37.0
 
 [generators]
 cmake

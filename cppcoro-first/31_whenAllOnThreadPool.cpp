@@ -1,3 +1,6 @@
+// 각각의 coroutine이 1초씩 sleep하는데
+// when_all로 multi thread로 실행되어서
+// 전체 시간이 1초에 끝난다.
 #include <chrono>
 #include <iostream>
 #include <thread>

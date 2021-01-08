@@ -9,8 +9,11 @@ conan_basic_setup()
 
 #set(SOURCE_FILES main.cpp)
 
-foreach(APP fibonacci_generator 01_sync_wait 02_static_thread_pool 03_static_thread_pool_sum 04_when_all
-        11_task 21_producer_consumer 22_cancellation 23_mutex
+foreach(APP 00_fibonacci_generator 00_chain
+        01_sync_wait 02_static_thread_pool 03_static_thread_pool_sum 04_when_all
+        11_task
+        21_producer_consumer
+        22_cancellation 23_mutex
         31_whenAllOnThreadPool 32_async_latch)
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PUBLIC -fcoroutines)
