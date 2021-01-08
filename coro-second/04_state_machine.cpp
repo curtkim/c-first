@@ -10,7 +10,9 @@ enum class button_press {LEFT_MOUSE, RIGHT_MOUSE};
 template <typename Signal, typename Result>
 class StateMachine {
 public:
+
   struct promise_type {
+    // send_signal로 받은 Signal을 저장한다.
     std::optional<Signal> recent_signal;
     std::optional<Result> returned_value;
 
@@ -25,6 +27,7 @@ public:
         std::rethrow_exception(exceptionPtr);
     }
     void return_value(Result value) { returned_value.emplace(value); };
+
 
     struct SignalAwaiter {
       std::optional<Signal> &recent_signal;

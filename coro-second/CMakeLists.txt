@@ -11,11 +11,19 @@ foreach(APP
         01_main 01_nested 04_state_machine 05_task
         02_my_first_coroutine 02_my_first_coroutine_return 02_my_first_coroutine_yield
         11_russian-roulette
+
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
+add_executable(21_linux_event_wait 21_linux_event_wait.cpp coroutine/linux.cpp)
+#target_link_libraries(21_linux_event_wait PUBLIC coroutine_linux)
+target_include_directories(21_linux_event_wait PUBLIC .)
+target_compile_definitions(21_linux_event_wait PUBLIC gsl_CONFIG_DEFAULTS_VERSION)
+target_compile_options(21_linux_event_wait PRIVATE -fcoroutines)
+target_compile_features(21_linux_event_wait PUBLIC cxx_std_20)
 
 
 add_executable(03_echo_server 03_echo_server.cpp)

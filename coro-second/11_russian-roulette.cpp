@@ -1,10 +1,7 @@
 // https://luncliff.github.io/coroutine/articles/russian-roulette-kor/
-//
-//  Author  : github.com/luncliff (luncliff@gmail.com)
-//  License : CC BY 4.0
-//
 #include <array>
 #include <random>
+#include <iostream>
 
 #include <coroutine>
 
@@ -12,13 +9,12 @@
 
 using namespace std;
 
-using chamber_t = uint32_t;
-
-auto select_chamber() -> chamber_t {
+auto select_chamber() -> int {
   std::random_device device{};
   std::mt19937_64 gen{device()};
-  return static_cast<chamber_t>(gen());
+  return static_cast<int>(gen());
 }
+
 
 
 class promise_manual_control {
@@ -33,8 +29,11 @@ public:
   }
 };
 
+// 1. Coroutine Interface Type
 class user_behavior_t : public coroutine_handle<void> {
 public:
+
+  // 2. Promise
   class promise_type final : public promise_manual_control {
   public:
     void return_void() noexcept {}
@@ -54,21 +53,23 @@ public:
 };
 
 
-
-//  trigger fires the bullet
-//  all players will 'wait' for it
+// 3. Awaiter
+// -------
+// trigger fires the bullet
+// all players will 'wait' for it
 class trigger_t {
 protected:
-  const chamber_t& loaded;
-  chamber_t current;
+  const int& loaded;
+  int current;
 
 public:
-  trigger_t(const chamber_t& _loaded, chamber_t _current)
-    : loaded{_loaded}, current{_current} {
+  trigger_t(const int& _loaded, int _current) : loaded{_loaded}, current{_current} {
+    printf("constructor: current=%d loaded=%d\n", current, loaded);
   }
 
 private:
   bool pull() { // pull the trigger. is it the bad case?
+    printf("current=%d loaded=%d\n", current, loaded);
     return --current == loaded;
   }
 
@@ -85,15 +86,14 @@ public:
 
 // revolver knows which is the loaded chamber
 class revolver_t : public trigger_t {
-  const chamber_t loaded;
+  const int loaded;
 
 public:
-  revolver_t(chamber_t current, chamber_t num_player)
-    : trigger_t{loaded, num_player}, loaded{current % num_player} {
-  }
+  revolver_t(int _loaded, int num_player) : loaded{_loaded}, trigger_t{loaded, num_player} {}
 };
 
 
+// 어떻게 return type이 user_behavior_t가 될 수 있을까?
 //  this player will ...
 //  1. be bypassed
 //     (fired = false; then return)
@@ -101,12 +101,17 @@ public:
 //     (fired = true; then return)
 //  3. be skipped because of the other player became a victim
 //     (destroyed when it is suspended - no output)
-auto player(gsl::index id, bool& fired, trigger_t& trigger) -> user_behavior_t {
+auto make_player(gsl::index id, bool& fired, trigger_t& trigger) -> user_behavior_t {
   // bang !
   fired = co_await trigger;
   fired ? printf("player %zu dead  :( \n", id)
         : printf("player %zu alive :) \n", id);
 }
+
+// russian_roulette은 coroutine은 아니다.
+// user_behavior_t가 coroutine이자 coroutine_handle이다..
+// trigger가 awaiter이다.
+// 여러개의 coroutine이 하나의 awaiter를 사용한다.
 
 // the game will go on until the revolver fires its bullet
 void russian_roulette(revolver_t& revolver, gsl::span<user_behavior_t> users) {
@@ -115,18 +120,20 @@ void russian_roulette(revolver_t& revolver, gsl::span<user_behavior_t> users) {
   // spawn player coroutines with their id
   gsl::index id{};
   for (auto& user : users)
-    user = player(++id, fired, revolver);
+    user = make_player(++id, fired, revolver);
 
   // cleanup the game on return
   auto on_finish = gsl::finally([users] {
-    for (coroutine_handle<void>& frame : users)
+    for (coroutine_handle<void>& frame : users) {
+      printf("destroy user\n");
       frame.destroy();
+    }
   });
 
   // until there is a victim ...
-  for (id = 0u; fired == false; id = (id + 1) % users.size()) {
+  for (int i = 0; fired == false; i = (i + 1) % users.size()) {
     // continue the users' behavior in round-robin manner
-    coroutine_handle<void>& task = users[id];
+    coroutine_handle<void>& task = users[i];
     if (task.done() == false)
       task.resume();
   }
@@ -136,7 +143,10 @@ void russian_roulette(revolver_t& revolver, gsl::span<user_behavior_t> users) {
 int main(int, char*[]) {
   // select some chamber with the users
   array<user_behavior_t, 6> users{};
-  revolver_t revolver{select_chamber(), users.max_size()};
+
+  const int loaded = select_chamber() % users.size();
+  std::cout << "loaded=" << loaded << std::endl;
+  revolver_t revolver{loaded, users.max_size()};
 
   russian_roulette(revolver, users);
   return EXIT_SUCCESS;
