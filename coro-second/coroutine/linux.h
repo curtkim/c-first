@@ -6,8 +6,8 @@
 #include <sys/epoll.h> // for Linux epoll
 
 #include <coroutine/return.h>
-//#include <gsl/gsl>
-#include <gsl-lite/gsl-lite.hpp>
+#include <gsl/gsl>
+//#include <gsl-lite/gsl-lite.hpp>
 
 /**
  * @defgroup Linux

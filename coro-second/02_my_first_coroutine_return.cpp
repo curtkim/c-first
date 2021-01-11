@@ -50,7 +50,7 @@ public:
   ~resumable() { handle_.destroy(); }
 
   const char* return_val(){
-    handle_.promise()
+    handle_.promise();
     return handle_.promise().string_;
   }
 

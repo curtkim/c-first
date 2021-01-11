@@ -27,6 +27,15 @@ foreach(APP 21_linux_event_wait )
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
 
+
+add_executable(22_net_socket_tcp_echo 22_net_socket_tcp_echo.cpp coroutine/io_linux.cpp coroutine/linux.cpp latch_linux.cpp socket.cpp)
+#target_link_libraries(21_linux_event_wait PUBLIC coroutine_linux)
+target_include_directories(22_net_socket_tcp_echo PUBLIC .)
+target_compile_definitions(22_net_socket_tcp_echo PUBLIC gsl_CONFIG_DEFAULTS_VERSION)
+target_compile_options(22_net_socket_tcp_echo PRIVATE -fcoroutines)
+target_compile_features(22_net_socket_tcp_echo PUBLIC cxx_std_20)
+
+
 add_executable(03_echo_server 03_echo_server.cpp)
 target_compile_options(03_echo_server PRIVATE -fcoroutines)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_CO_AWAIT)
