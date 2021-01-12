@@ -7,7 +7,7 @@ project(coroutines)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP echo_server refactored_echo_server chat_server)
+foreach(APP echo_server refactored_echo_server chat_server timeout)
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_definitions(${APP} PUBLIC ASIO_HAS_CO_AWAIT)
