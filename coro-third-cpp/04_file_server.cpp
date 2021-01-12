@@ -79,15 +79,12 @@ task<> http_send_file(io_service& service, std::string filename, int clientfd, i
     fmt::print("st.st_size = {}, offset={}, infd={}, clientfd={}\n", st.st_size, offset, infd, clientfd);
 
     if (st.st_size > offset) {
-      /*
       co_await when_all(std::array {
         service.read(infd, filebuf.data(), st.st_size - offset, offset, IOSQE_IO_LINK) | panic_on_err("read", false),
         service.send(clientfd, filebuf.data(), st.st_size - offset, MSG_NOSIGNAL) | panic_on_err("send", false),
       });
-      */
-
-      co_await service.read(infd, filebuf.data(), st.st_size - offset, offset, IOSQE_IO_LINK);
-      co_await service.send(clientfd, filebuf.data(), st.st_size - offset, MSG_NOSIGNAL);
+      //co_await service.read(infd, filebuf.data(), st.st_size - offset, offset, IOSQE_IO_LINK);
+      //co_await service.send(clientfd, filebuf.data(), st.st_size - offset, MSG_NOSIGNAL);
     }
     fmt::print("pipe end\n");
   }

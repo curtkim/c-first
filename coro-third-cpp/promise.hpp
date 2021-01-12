@@ -1,15 +1,6 @@
 #pragma once
 
-#if __has_include(<coroutine>)
-#   include <coroutine>
-namespace std::experimental {
-    using std::suspend_always;
-    using std::suspend_never;
-    using std::coroutine_handle;
-}
-#else
-#   include <experimental/coroutine>
-#endif
+#include <coroutine>
 #include <variant>
 #include <optional>
 #include <cassert>
@@ -36,7 +27,7 @@ struct promise final: cancelable {
     }
 
     template <typename TPromise>
-    void await_suspend(std::experimental::coroutine_handle<TPromise> caller) noexcept {
+    void await_suspend(std::coroutine_handle<TPromise> caller) noexcept {
         on_suspend(&caller.promise().callee_);
         waiter_ = caller;
     }
@@ -89,7 +80,7 @@ struct promise final: cancelable {
     }
 
 private:
-    std::experimental::coroutine_handle<> waiter_;
+    std::coroutine_handle<> waiter_;
     std::variant<
         std::monostate,
         std::conditional_t<std::is_void_v<T>, std::monostate, T>,

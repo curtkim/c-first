@@ -13,8 +13,7 @@ int main() {
   };
 
   auto makeIntTask = [](int x) -> cppcoro::task<int>
-  {
-    co_return x;
+  {return
   };
 
 

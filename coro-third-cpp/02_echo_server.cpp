@@ -22,54 +22,17 @@ task<> accept_connection(io_service& service, int serverfd) {
   while (int clientfd = co_await service.accept(serverfd, nullptr, nullptr)) {
     [=, &service](int clientfd) -> task<> {
       printf("sockfd %d is accepted; number of running coroutines: %d\n",clientfd, ++runningCoroutines);
-#if USE_SPLICE
-      int pipefds[2];
-            pipe(pipefds) | panic_on_err("pipe", true);
-#else
       std::vector<char> buf(BUF_SIZE);
-#endif
+
       while (true) {
-#if USE_POLL
-        #   if USE_LINK
-                service.poll(clientfd, POLLIN, IOSQE_IO_LINK);
-#   else
-                co_await service.poll(clientfd, POLLIN);
-#   endif
-#endif
-#if USE_SPLICE
-        #   if USE_LINK
-                auto tresult = service.splice(clientfd, -1, pipefds[1], -1, -1, SPLICE_F_MOVE, IOSQE_IO_LINK);
-                int r = co_await service.splice(pipefds[0], -1, clientfd, -1, -1, SPLICE_F_MOVE);
-                if (r <= 0) {
-                    auto r1 = tresult.get_result();
-                    if (r1 <= 0) break;
-                    co_await service.splice(pipefds[0], -1, clientfd, -1, r1, SPLICE_F_MOVE);
-                }
-#   else
-                int r = co_await service.splice(clientfd, -1, pipefds[1], -1, -1, SPLICE_F_MOVE);
-                if (r <= 0) break;
-                co_await service.splice(pipefds[0], -1, clientfd, -1, -1, SPLICE_F_MOVE);
-#   endif
-#else
-#   if USE_LINK
-        #       error This won't work because short read of IORING_OP_RECV is not considered an error
-                auto tresult = service.recv(clientfd, buf.data(), BUF_SIZE, MSG_NOSIGNAL, IOSQE_IO_LINK);
-                int r = co_await service.send(clientfd, buf.data(), BUF_SIZE, MSG_NOSIGNAL);
-                if (r <= 0) {
-                    auto r1 = tresult.get_result();
-                    if (r1 <= 0) break;
-                    co_await service.send(clientfd, buf.data(), r, MSG_NOSIGNAL);
-                }
-#   else
         printf("service.recv\n");
         int r = co_await service.recv(clientfd, buf.data(), BUF_SIZE, MSG_NOSIGNAL);
         printf("service.recv after r=%d\n", r);
         if (r <= 0) break;
         co_await service.send(clientfd, buf.data(), r, MSG_NOSIGNAL);
         printf("service.send after\n");
-#   endif
-#endif
       }
+
       shutdown(clientfd, SHUT_RDWR);
       printf("sockfd %d is closed; number of running coroutines: %d\n", clientfd, --runningCoroutines);
     }(clientfd);
