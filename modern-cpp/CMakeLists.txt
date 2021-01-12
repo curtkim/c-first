@@ -29,9 +29,10 @@ foreach(APP cpp17 from_chars set_extract map_try_emplace map_insert_or_assign sa
 endforeach()
 
 ### c++20
-foreach(APP utility)
+foreach(APP utility stop_token_test)
     add_executable(${APP} cpp20/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
+    target_link_libraries(${APP} PUBLIC pthread)
 endforeach()
 
 
