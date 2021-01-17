@@ -1,0 +1,7 @@
+[requires]
+zlib/1.2.8
+boost/1.75.0
+openssl/1.1.1i
+
+[generators]
+cmake
