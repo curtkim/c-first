@@ -16,6 +16,7 @@ foreach(APP
         hana_01 hana_02_serialize hana_03_switch hana_04_integral_constant hana_05_euclidean_dist
         hana02_TypeComputations hana03_Introspection hana03_Introspection_json
         magic_get_test
+        hof_construct hof_compose
         )
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} ${CONAN_LIBS})
