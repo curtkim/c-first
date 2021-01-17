@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 project (modern-cpp)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### container
@@ -47,10 +50,11 @@ target_link_libraries( Threadpool_test pthread )
 
 
 ### memory
-foreach(APP move_forward move_forward2 move_semantic exchange test_shared_ptr test_shared_ptr2 rvalue_reference unique ref)
+foreach(APP move_forward move_forward2 move_semantic exchange test_shared_ptr test_shared_ptr2 rvalue_reference unique ref
+        nightmare_move_semantic_for_trivial_class)
     add_executable(${APP} memory/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
-    target_link_libraries( ${APP} PUBLIC pthread )
+    target_link_libraries( ${APP} PUBLIC ${CONAN_LIBS} pthread)
 endforeach()
 
 ### meta
@@ -114,3 +118,4 @@ foreach(APP type_erasure_with_template type_erasure_with_oop type_erasure_with_s
     add_executable(${APP} type_erasure/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
