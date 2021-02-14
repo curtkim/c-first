@@ -15,3 +15,8 @@
 
 ## reference
 https://github.com/tdegeus/pybind11_examples
+http://unixnme.blogspot.com/2019/11/debug-pybind11-c-extension-with-clion.html
+
+
+## clion에서 debugging
+![clion_run_config](clion_run_config.png)
