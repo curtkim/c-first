@@ -1,24 +1,31 @@
-cmake_minimum_required(VERSION 2.8.12)
-project(MD5Encrypter)
+cmake_minimum_required(VERSION 3.5)
+project(FormatOutput CXX)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+#list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
 add_definitions("-std=c++11")
 
-# Download automatically, you can also just copy the conan.cmake file
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.15/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
+  message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+  file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/develop/conan.cmake"
+                "${CMAKE_BINARY_DIR}/conan.cmake"
+                TLS_VERIFY ON)
 endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-conan_cmake_run(CONANFILE conanfile.txt BUILD missing)
+conan_cmake_configure(
+    REQUIRES fmt/6.1.2 
+    GENERATORS cmake_find_package
+)
+conan_cmake_autodetect(settings)
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conan-center
+                    SETTINGS ${settings})
 
-foreach(A ${CONAN_LIBS})
-  message(STATUS ${A})
-endforeach()
+find_package(fmt)
 
-add_executable(md5 md5.cpp)
-#target_link_libraries(md5 ${CONAN_LIBS})
-target_link_libraries(md5 PocoCrypto)
-
+add_executable(main main.cpp)
+target_link_libraries(main fmt::fmt) 
