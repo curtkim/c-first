@@ -1,7 +1,0 @@
-sources:
-  "1.9.2":
-    url: https://github.com/apache/avro/archive/release-1.9.2.tar.gz
-patches:
-  "1.9.2":
-    - patch_file: "patches/fix-cmake.patch"
-      base_path: "source_subfolder"
