@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, tools
 
 class IMGUIConan(ConanFile):
     name = "imgui"
-    version = "1.79-docking"
+    version = "1.81-docking"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/ocornut/imgui"
     description = "Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies"
@@ -38,7 +38,7 @@ class IMGUIConan(ConanFile):
         git = tools.Git(folder=self._source_subfolder)
 
         git.clone("https://github.com/ocornut/imgui.git", "docking")
-        git.run("reset --hard " + "682249396f02b8c21e5ff333ab4a1969c89387ad")
+        git.run("reset --hard " + "cfe83c4b4410050094829579dc496bf6eab88993")
 
     def _configure_cmake(self):
         if self._cmake:
@@ -53,9 +53,22 @@ class IMGUIConan(ConanFile):
 
     def package(self):
         self.copy(pattern="LICENSE.txt", dst="licenses", src=self._source_subfolder)
-        self.copy(pattern="examples/imgui_impl_*", dst="res/bindings", src=self._source_subfolder, keep_path=False)
+        backends_folder = src=os.path.join(
+            self._source_subfolder,
+            "backends" if tools.Version(self.version) >= "1.80" else "examples"
+        )
+        self.copy(pattern="imgui_impl_*",
+                  dst=os.path.join("res", "bindings"),
+                  src=backends_folder)
         cmake = self._configure_cmake()
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = tools.collect_libs(self)
+        self.cpp_info.libs = ["imgui"]
+        if self.settings.os == "Linux":
+            self.cpp_info.system_libs.append("m")
+        self.cpp_info.srcdirs = [os.path.join("res", "bindings")]
+
+        bin_path = os.path.join(self.package_folder, "bin")
+        self.output.info("Appending PATH env var with : {}".format(bin_path))
+        self.env_info.PATH.append(bin_path)
