@@ -9,4 +9,6 @@ int main()
 
   // empty?
   std::cout << span << "\n";
+  std::cout << span.empty() << "\n";
+  std::cout << span.size() << "\n";
 }

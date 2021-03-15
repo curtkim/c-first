@@ -13,5 +13,7 @@ int main()
   r.push_back( std::make_unique<Widget>() );
   r.push_back( std::make_unique<Widget>() );
 
+  std::cout << r.size() << "\n";
+
   r = nonstd::ring_span< std::unique_ptr<Widget> >( v.begin(), v.end() );
 }

@@ -2,7 +2,7 @@
 
 int main()
 {
-  double arr[]   = { 2.0 , 3.0, 5.0, };
+  double arr[] = { 2.0 , 3.0, 5.0, };
 
   nonstd::ring_span<double> buffer( arr, arr + dim(arr), arr, dim(arr) );
   std::cout << buffer << "\n";
