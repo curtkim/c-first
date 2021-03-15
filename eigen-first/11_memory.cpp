@@ -1,5 +1,3 @@
-#include <malloc.h>
-
 #include <iostream>
 #include <Eigen/Dense>
 
