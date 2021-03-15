@@ -1,5 +1,5 @@
 [requires]
-eigen/3.3.7
+eigen/3.3.9
 
 [generators]
 cmake

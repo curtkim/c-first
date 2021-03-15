@@ -1,2 +1,10 @@
-- libigl 예제 
-http://www.alecjacobson.com/weblog/?p=4307
+## compile hooking code
+
+    gcc -shared -fPIC mallochook.c -o mallochook.so -ldl
+
+## RUN with hook
+
+    LD_PRELOAD=./mallochook.so ./program
+
+## reference
+- https://sjp38.github.io/ko/post/hooking_library_calls/

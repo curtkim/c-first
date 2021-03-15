@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {
-  ArrayXf v = ArrayXf::LinSpaced(11, 0.f, 10.f);
+  ArrayXf v = ArrayXf::LinSpaced(11, 0.f, 10.f); // 0~10
   cout << "size=" << v.size() << endl;
 
   float *vc = v.data();
