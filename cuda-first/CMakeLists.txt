@@ -72,7 +72,7 @@ add_executable(template_function_pointer template_function_pointer.cu)
 
 
 foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop)
-    add_executable(${APP} 0_general/${APP}.c)
+    add_executable(${APP} 0_malloc/${APP}.c)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})

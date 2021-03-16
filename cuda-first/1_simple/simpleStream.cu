@@ -21,6 +21,7 @@
 
 const char *sSDKsample = "simpleStreams";
 
+/*
 const char *sEventSyncMethod[] =
   {
     "cudaEventDefault",
@@ -28,20 +29,19 @@ const char *sEventSyncMethod[] =
     "cudaEventDisableTiming",
     NULL
   };
+*/
 
-const char *sDeviceSyncMethod[] =
-  {
-    "cudaDeviceScheduleAuto",
-    "cudaDeviceScheduleSpin",
-    "cudaDeviceScheduleYield",
-    "INVALID",
-    "cudaDeviceScheduleBlockingSync",
-    NULL
-  };
+const char *sDeviceSyncMethod[] = {
+  "cudaDeviceScheduleAuto",
+  "cudaDeviceScheduleSpin",
+  "cudaDeviceScheduleYield",
+  "INVALID",
+  "cudaDeviceScheduleBlockingSync",
+  NULL
+};
 
 // System includes
 #include <stdio.h>
-#include <assert.h>
 
 // CUDA runtime
 #include <cuda_runtime.h>
@@ -58,6 +58,7 @@ const char *sDeviceSyncMethod[] =
 // Macro to aligned up to the memory size in question
 #define MEMORY_ALIGNMENT  4096
 #define ALIGN_UP(x,size) ( ((size_t)x+(size-1))&(~(size-1)) )
+
 
 __global__ void init_array(int *g_data, int *factor, int num_iterations)
 {
@@ -79,9 +80,9 @@ bool correct_data(int *a, const int n, const int c)
       return false;
     }
   }
-
   return true;
 }
+
 
 inline void AllocateHostMemory(bool bPinGenericMemory, int **pp_a, int **ppAligned_a, int nbytes)
 {
@@ -138,15 +139,14 @@ inline void FreeHostMemory(bool bPinGenericMemory, int **pp_a, int **ppAligned_a
   }
 }
 
-static const char *sSyncMethod[] =
-  {
-    "0 (Automatic Blocking)",
-    "1 (Spin Blocking)",
-    "2 (Yield Blocking)",
-    "3 (Undefined Blocking Method)",
-    "4 (Blocking Sync Event) = low CPU utilization",
-    NULL
-  };
+static const char *sSyncMethod[] = {
+  "0 (Automatic Blocking)",
+  "1 (Spin Blocking)",
+  "2 (Yield Blocking)",
+  "3 (Undefined Blocking Method)",
+  "4 (Blocking Sync Event) = low CPU utilization",
+  NULL
+};
 
 void printHelp()
 {
@@ -166,6 +166,7 @@ void printHelp()
 #define DEFAULT_PINNED_GENERIC_MEMORY true
 #endif
 
+
 int main(int argc, char **argv)
 {
   int cuda_device = 0;
@@ -184,7 +185,6 @@ int main(int argc, char **argv)
 
   int niterations;    // number of iterations for the loop inside the kernel
 
-  printf("[ %s ]\n\n", sSDKsample);
 
   if (checkCmdLineFlag(argc, (const char **)argv, "help"))
   {
@@ -270,6 +270,7 @@ int main(int argc, char **argv)
   scale_factor = max((32.0f / (_ConvertSMVer2Cores(deviceProp.major, deviceProp.minor) * (float)deviceProp.multiProcessorCount)), 1.0f);
   n = (int)rint((float)n / scale_factor);
 
+
   printf("> CUDA Capable: SM %d.%d hardware\n", deviceProp.major, deviceProp.minor);
   printf("> %d Multiprocessor(s) x %d (Cores/Multiprocessor) = %d (Cores)\n",
          deviceProp.multiProcessorCount,
@@ -282,6 +283,7 @@ int main(int argc, char **argv)
   // enable use of blocking sync, to reduce CPU usage
   printf("> Using CPU/GPU Device Synchronization method (%s)\n", sDeviceSyncMethod[device_sync_method]);
   checkCudaErrors(cudaSetDeviceFlags(device_sync_method | (bPinGenericMemory ? cudaDeviceMapHost : 0)));
+
 
   // allocate host memory
   int c = 5;                      // value to which the array will be initialized
@@ -301,8 +303,7 @@ int main(int argc, char **argv)
   printf("\nStarting Test\n");
 
   // allocate and initialize an array of stream handles
-  cudaStream_t *streams = (cudaStream_t *) malloc(nstreams * sizeof(cudaStream_t));
-
+  cudaStream_t* streams = (cudaStream_t *) malloc(nstreams * sizeof(cudaStream_t));
   for (int i = 0; i < nstreams; i++)
   {
     checkCudaErrors(cudaStreamCreate(&(streams[i])));
@@ -316,13 +317,14 @@ int main(int argc, char **argv)
   checkCudaErrors(cudaEventCreateWithFlags(&start_event, eventflags));
   checkCudaErrors(cudaEventCreateWithFlags(&stop_event, eventflags));
 
-  // time memcopy from device
+  // 1. time memcopy from device
   checkCudaErrors(cudaEventRecord(start_event, 0));     // record in stream-0, to ensure that all previous CUDA calls have completed
   checkCudaErrors(cudaMemcpyAsync(hAligned_a, d_a, nbytes, cudaMemcpyDeviceToHost, streams[0]));
   checkCudaErrors(cudaEventRecord(stop_event, 0));
   checkCudaErrors(cudaEventSynchronize(stop_event));   // block until the event is actually recorded
   checkCudaErrors(cudaEventElapsedTime(&time_memcpy, start_event, stop_event));
   printf("memcopy:\t%.2f\n", time_memcpy);
+
 
   // time kernel
   threads=dim3(512, 1);

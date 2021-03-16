@@ -49,23 +49,21 @@ int main(int argc, char *argv[])
   checkCudaErrors(cudaGetDeviceProperties(&deviceProps, devID));
   printf("CUDA device [%s]\n", deviceProps.name);
 
-  int n = 1024 * 1024;
-  int nbytes = n * sizeof(int);
-  int value = 26;
+
+  const int N = 1024 * 1024;
+  const int N_BYTES = N * sizeof(int);
+  const int VALUE = 26;
+
 
   // allocate host memory
-  int *a = 0;
-  checkCudaErrors(cudaMallocHost((void **)&a, nbytes));
-  memset(a, 0, nbytes);
+  int* host_arr;
+  checkCudaErrors(cudaMallocHost((void **)&host_arr, N_BYTES));
+  memset(host_arr, 0, N_BYTES);
 
   // allocate device memory
-  int *d_a=0;
-  checkCudaErrors(cudaMalloc((void **)&d_a, nbytes));
-  checkCudaErrors(cudaMemset(d_a, 255, nbytes));
-
-  // set kernel launch configuration
-  dim3 threads = dim3(512, 1);
-  dim3 blocks  = dim3(n / threads.x, 1);
+  int* device_arr;
+  checkCudaErrors(cudaMalloc((void **)&device_arr, N_BYTES));
+  checkCudaErrors(cudaMemset(device_arr, 255, N_BYTES));
 
   // create cuda event handles
   cudaEvent_t start, stop;
@@ -76,21 +74,27 @@ int main(int argc, char *argv[])
   sdkCreateTimer(&timer);
   sdkResetTimer(&timer);
 
+
   checkCudaErrors(cudaDeviceSynchronize());
   float gpu_time = 0.0f;
 
   // asynchronously issue work to the GPU (all to stream 0)
   sdkStartTimer(&timer);
   cudaEventRecord(start, 0);
-  cudaMemcpyAsync(d_a, a, nbytes, cudaMemcpyHostToDevice, 0);
-  increment_kernel<<<blocks, threads, 0, 0>>>(d_a, value);
-  cudaMemcpyAsync(a, d_a, nbytes, cudaMemcpyDeviceToHost, 0);
+  cudaMemcpyAsync(device_arr, host_arr, N_BYTES, cudaMemcpyHostToDevice, 0);
+
+  // set kernel launch configuration
+  dim3 threads = dim3(512, 1);
+  dim3 blocks  = dim3(N / threads.x, 1);
+  increment_kernel<<<blocks, threads, 0, 0>>>(device_arr, VALUE);
+
+  cudaMemcpyAsync(host_arr, device_arr, N_BYTES, cudaMemcpyDeviceToHost, 0);
   cudaEventRecord(stop, 0);
   sdkStopTimer(&timer);
 
+
   // have CPU do some work while waiting for stage 1 to finish
   unsigned long int counter=0;
-
   while (cudaEventQuery(stop) == cudaErrorNotReady)
   {
     counter++;
@@ -104,13 +108,13 @@ int main(int argc, char *argv[])
   printf("CPU executed %lu iterations while waiting for GPU to finish\n", counter);
 
   // check the output for correctness
-  bool bFinalResults = correct_output(a, n, value);
+  bool bFinalResults = correct_output(host_arr, N, VALUE);
 
   // release resources
   checkCudaErrors(cudaEventDestroy(start));
   checkCudaErrors(cudaEventDestroy(stop));
-  checkCudaErrors(cudaFreeHost(a));
-  checkCudaErrors(cudaFree(d_a));
+  checkCudaErrors(cudaFreeHost(host_arr));
+  checkCudaErrors(cudaFree(device_arr));
 
   exit(bFinalResults ? EXIT_SUCCESS : EXIT_FAILURE);
 }

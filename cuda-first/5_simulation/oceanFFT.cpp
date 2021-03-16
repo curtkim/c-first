@@ -51,8 +51,6 @@
 #include <GL/freeglut.h>
 #endif
 
-#include <rendercheck_gl.h>
-
 const char *sSDKsample = "CUDA FFT Ocean Simulation";
 
 #define MAX_EPSILON 0.10f
@@ -66,8 +64,6 @@ unsigned int windowW = 512, windowH = 512;
 const unsigned int meshSize = 256;
 const unsigned int spectrumW = meshSize + 4;
 const unsigned int spectrumH = meshSize + 1;
-
-const int frameCompare = 4;
 
 // OpenGL vertex buffers
 GLuint posVertexBuffer;
@@ -167,7 +163,6 @@ void timerEvent(int value);
 
 // Cuda functionality
 void runCuda();
-void runCudaTest(char *exec_path);
 void generate_h0(float2 *h0);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,75 +170,17 @@ void generate_h0(float2 *h0);
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
-    printf("NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.\n\n");
+    printf("[%s]\n\n"
+           "Left mouse button          - rotate\n"
+           "Middle mouse button        - pan\n"
+           "Right mouse button         - zoom\n"
+           "'w' key                    - toggle wireframe\n", sSDKsample);
 
-    // check for command line arguments
-    if (checkCmdLineFlag(argc, (const char **)argv, "qatest"))
-    {
-        animate       = false;
-        fpsLimit = frameCheckNumber;
-        runAutoTest(argc, argv);
-    }
-    else
-    {
-        printf("[%s]\n\n"
-               "Left mouse button          - rotate\n"
-               "Middle mouse button        - pan\n"
-               "Right mouse button         - zoom\n"
-               "'w' key                    - toggle wireframe\n", sSDKsample);
-
-        runGraphicsTest(argc, argv);
-    }
+    runGraphicsTest(argc, argv);
 
     exit(EXIT_SUCCESS);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//! Run test
-////////////////////////////////////////////////////////////////////////////////
-void runAutoTest(int argc, char **argv)
-{
-    printf("%s Starting...\n\n", argv[0]);
-
-    // Cuda init
-    int dev = findCudaDevice(argc, (const char **)argv);
-
-    cudaDeviceProp deviceProp;
-    checkCudaErrors(cudaGetDeviceProperties(&deviceProp, dev));
-    printf("Compute capability %d.%d\n", deviceProp.major, deviceProp.minor);
-
-    // create FFT plan
-    checkCudaErrors(cufftPlan2d(&fftPlan, meshSize, meshSize, CUFFT_C2C));
-
-    // allocate memory
-    int spectrumSize = spectrumW*spectrumH*sizeof(float2);
-    checkCudaErrors(cudaMalloc((void **)&d_h0, spectrumSize));
-    h_h0 = (float2 *) malloc(spectrumSize);
-    generate_h0(h_h0);
-    checkCudaErrors(cudaMemcpy(d_h0, h_h0, spectrumSize, cudaMemcpyHostToDevice));
-
-    int outputSize =  meshSize*meshSize*sizeof(float2);
-    checkCudaErrors(cudaMalloc((void **)&d_ht, outputSize));
-    checkCudaErrors(cudaMalloc((void **)&d_slope, outputSize));
-
-    sdkCreateTimer(&timer);
-    sdkStartTimer(&timer);
-    prevTime = sdkGetTimerValue(&timer);
-
-    runCudaTest(argv[0]);
-
-    checkCudaErrors(cudaFree(d_ht));
-    checkCudaErrors(cudaFree(d_slope));
-    checkCudaErrors(cudaFree(d_h0));
-    checkCudaErrors(cufftDestroy(fftPlan));
-    free(h_h0);
-
-    exit(g_TotalErrors==0 ? EXIT_SUCCESS : EXIT_FAILURE);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//! Run test
-////////////////////////////////////////////////////////////////////////////////
 void runGraphicsTest(int argc, char **argv)
 {
 #if defined(__linux__)
@@ -431,66 +368,6 @@ void runCuda()
 	checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_heightVB_resource, 0));
     checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_slopeVB_resource, 0));
 }
-
-void runCudaTest(char *exec_path)
-{
-    checkCudaErrors(cudaMalloc((void **)&g_hptr, meshSize*meshSize*sizeof(float)));
-    checkCudaErrors(cudaMalloc((void **)&g_sptr, meshSize*meshSize*sizeof(float2)));
-
-    // generate wave spectrum in frequency domain
-    cudaGenerateSpectrumKernel(d_h0, d_ht, spectrumW, meshSize, meshSize, animTime, patchSize);
-
-    // execute inverse FFT to convert to spatial domain
-    checkCudaErrors(cufftExecC2C(fftPlan, d_ht, d_ht, CUFFT_INVERSE));
-
-    // update heightmap values
-    cudaUpdateHeightmapKernel(g_hptr, d_ht, meshSize, meshSize, true);
-
-    {
-        float *hptr = (float *)malloc(meshSize*meshSize*sizeof(float));
-        cudaMemcpy((void *)hptr, (void *)g_hptr, meshSize*meshSize*sizeof(float), cudaMemcpyDeviceToHost);
-        sdkDumpBin((void *)hptr, meshSize*meshSize*sizeof(float), "spatialDomain.bin");
-
-        if (!sdkCompareBin2BinFloat("spatialDomain.bin", "ref_spatialDomain.bin", meshSize*meshSize,
-                                    MAX_EPSILON, THRESHOLD, exec_path))
-        {
-            g_TotalErrors++;
-        }
-
-        free(hptr);
-    }
-
-    // calculate slope for shading
-    cudaCalculateSlopeKernel(g_hptr, g_sptr, meshSize, meshSize);
-
-    {
-        float2 *sptr = (float2 *)malloc(meshSize*meshSize*sizeof(float2));
-        cudaMemcpy((void *)sptr, (void *)g_sptr, meshSize*meshSize*sizeof(float2), cudaMemcpyDeviceToHost);
-        sdkDumpBin(sptr, meshSize*meshSize*sizeof(float2), "slopeShading.bin");
-
-        if (!sdkCompareBin2BinFloat("slopeShading.bin", "ref_slopeShading.bin", meshSize*meshSize*2,
-                                    MAX_EPSILON, THRESHOLD, exec_path))
-        {
-            g_TotalErrors++;
-        }
-
-        free(sptr);
-    }
-
-    checkCudaErrors(cudaFree(g_hptr));
-    checkCudaErrors(cudaFree(g_sptr));
-}
-
-
-//void computeFPS()
-//{
-//    frameCount++;
-//    fpsCount++;
-//
-//    if (fpsCount == fpsLimit) {
-//        fpsCount = 0;
-//    }
-//}
 
 ////////////////////////////////////////////////////////////////////////////////
 //! Display callback
