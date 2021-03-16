@@ -4,6 +4,7 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include <chrono>
 
 template <typename T>
 class ConcurrentQueue {
@@ -68,6 +69,9 @@ void consume(ConcurrentQueue<int>& q, unsigned int id) {
 }
 
 int main() {
+
+  auto start = std::chrono::steady_clock::now();
+
   ConcurrentQueue<int> q;
 
   // producer thread
@@ -84,5 +88,10 @@ int main() {
   consumer2.join();
   consumer3.join();
   consumer4.join();
+
+  auto time = std::chrono::steady_clock::now() - start;
+  auto timeMs = std::chrono::duration_cast<std::chrono::milliseconds>(time).count();
+  std::cout << timeMs << "ms\n";
+
   return 0;
 }
