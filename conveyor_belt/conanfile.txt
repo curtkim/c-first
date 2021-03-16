@@ -1,0 +1,6 @@
+[requires]
+ring-span-lite/0.4.0
+asio/1.18.1
+
+[generators]
+cmake
