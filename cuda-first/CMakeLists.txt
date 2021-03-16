@@ -22,9 +22,12 @@ target_link_libraries(matrix_multiplication_by_rand cublas curand)
 
 include_directories(common)
 
-foreach(APP asyncAPI simpleCudaGraph simpleStream)
+foreach(APP asyncAPI simpleCudaGraph simpleStream )
     add_executable(${APP} 1_simple/${APP}.cu)
 endforeach()
+
+add_executable(simpleCallback 1_simple/simpleCallback.cu 1_simple/multithreading.cpp)
+
 
 foreach(APP simpleGL)
     add_executable(${APP} 2_graphic/${APP}.cu)
