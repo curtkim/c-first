@@ -47,7 +47,7 @@ struct timespec tp;
 
 typedef struct thread_info {
   pthread_t thread_id;
-  int epfd;
+  //int epfd;
   int efd;
 } thread_info_t;
 
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     exit_error("epoll_ctl");
 
   thread_info_t threadInfo;
-  threadInfo.epfd = epfd;
+  //threadInfo.epfd = epfd;
   threadInfo.efd = efd;
 
   // start consumers (as task worker)

@@ -54,6 +54,7 @@ static void do_task() {
   return;
 }
 
+// epoll_wait -> event.data.fd -> read -> close
 static void *consumer_routine(void *data) {
   struct thread_info *c = (struct thread_info *) data;
   struct epoll_event *events;
@@ -91,6 +92,7 @@ static void *consumer_routine(void *data) {
 
 
 // infinite constant workload
+// eventfd, epoll_ctl, write
 static void *producer_routine(void *data) {
   struct thread_info *p = (struct thread_info *) data;
   struct epoll_event event;

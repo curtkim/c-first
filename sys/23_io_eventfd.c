@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  efd = eventfd(0, EFD_SEMAPHORE); //
+  efd = eventfd(0, EFD_CLOEXEC); //EFD_SEMAPHORE
   if (efd == -1)
     handle_error("eventfd");
 
