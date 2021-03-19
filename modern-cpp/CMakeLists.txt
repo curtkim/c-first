@@ -51,7 +51,8 @@ target_link_libraries( Threadpool_test pthread )
 
 ### memory
 foreach(APP move_forward move_forward2 move_semantic exchange test_shared_ptr test_shared_ptr2 rvalue_reference unique ref
-        nightmare_move_semantic_for_trivial_class)
+        nightmare_move_semantic_for_trivial_class
+        test_shared_multi_thread)
     add_executable(${APP} memory/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries( ${APP} PUBLIC ${CONAN_LIBS} pthread)
@@ -93,7 +94,7 @@ foreach(APP
         lambda2
         reflection_test
         vector_2d
-        atomic_test
+        atomic_int
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
