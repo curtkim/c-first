@@ -25,7 +25,7 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
-  ReaderWriterQueue<boost::shared_ptr<cs::SensorData>> q(1);
+  boost::shared_ptr<cs::SensorData> pSensorData;
 
   auto[world, vehicle] = init_carla(MAP_NAME);
   auto blueprint_library = world.GetBlueprintLibrary();
@@ -42,15 +42,11 @@ int main(int argc, const char *argv[]) {
   auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
 
   // Register a callback to save images to disk.
-  camera->Listen([&q](auto data) {
+  camera->Listen([&pSensorData](auto data) {
     //auto image = boost::static_pointer_cast<csd::Image>(data);
     //assert(image != nullptr);
     //bool success = q.try_enqueue(image);
-    bool success = q.try_enqueue(data);
-    if( !success){
-      // q max_size 2라서 loop가 꺼내가지 않으면 실패가 발생한다.
-      std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
-    }
+    pSensorData = data;
   });
 
   vehicle->SetAutopilot(true);
@@ -65,7 +61,7 @@ int main(int argc, const char *argv[]) {
   //ourShader.setInt("texture1", GL_TEXTURE0);
 
   int frame = 0;
-  boost::shared_ptr<cs::SensorData> pSensorData;
+
 
   while (!glfwWindowShouldClose(window))
   {
@@ -80,7 +76,9 @@ int main(int argc, const char *argv[]) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    while(!q.try_dequeue(pSensorData)){}
+    while(pSensorData != nullptr){
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 
     auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
     unsigned int texture = loadTexture(pImage);

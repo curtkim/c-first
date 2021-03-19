@@ -1,11 +1,13 @@
 #include <atomic>
 #include <iostream>
+#include <assert.h>
 
 using namespace std;
 
 int main() {
-
-  atomic<int> intAtomic;
+  atomic<int> intAtomic = 1;
+  cout << intAtomic << "\n";
+  //assert( 1 == intAtomic.load()); // ? why not 0
   intAtomic = 2;
 
 
@@ -15,7 +17,7 @@ int main() {
   intAtomic++;
   // 값 더하기 : 일반 함수 atomic_fetch_add
   atomic_fetch_add(&intAtomic, 1);
-  cout << intAtomic << "\n";
+  cout << "add " << intAtomic << "\n";
 
 
   // 값 빼기 : 멤버 함수 fetch_sub
@@ -24,7 +26,7 @@ int main() {
   intAtomic--;
   // 값 빼기 : 일반 함수 atomic_fetch_sub
   atomic_fetch_sub(&intAtomic, 1);
-  cout << intAtomic << "\n";
+  cout << "subtract " << intAtomic << "\n";
 
 
   // 값 로드 : 멤버 함수 load
@@ -33,15 +35,14 @@ int main() {
   value = intAtomic;
   // 값 로드 : 일반 함수 atomic_load
   value = atomic_load(&intAtomic);
-
-  cout << value << "\n";
+  cout << "load " << value << "\n";
 
 
   // 값 교환 : 멤버 함수 exchange
   int oldValue = intAtomic.exchange(5);
   // 값 교환 : 일반 함수 atomic_exchange
   oldValue = atomic_exchange(&intAtomic, 3);
-  cout << intAtomic << "\n";
+  cout << "exchange " << intAtomic << "\n";
 
 
   int comparand = 5;
