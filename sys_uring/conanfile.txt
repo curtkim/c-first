@@ -1,0 +1,5 @@
+[requires]
+liburing/0.7@curt/testing
+
+[generators]
+cmake
