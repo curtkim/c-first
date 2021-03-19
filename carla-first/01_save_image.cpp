@@ -178,6 +178,7 @@ int main(int argc, const char *argv[]) {
 
     // Register a callback to save images to disk.
     camera->Listen([](auto data) {
+      std::cout << "listen thread : " << std::this_thread::get_id() << std::endl;
       auto image = boost::static_pointer_cast<csd::Image>(data);
       assert(image != nullptr);
       SaveImageToDisk(*image);

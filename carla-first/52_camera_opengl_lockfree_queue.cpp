@@ -15,6 +15,7 @@ namespace cg = carla::geom;
 namespace cs = carla::sensor;
 namespace csd = carla::sensor::data;
 
+
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 unsigned int loadTexture(boost::shared_ptr<csd::Image> image) {
@@ -34,7 +35,7 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
 
-  ReaderWriterQueue<boost::shared_ptr<csd::Image>> q(2);
+  ReaderWriterQueue<boost::shared_ptr<cs::SensorData>> q(2);
 
   auto[world, vehicle] = init_carla(MAP_NAME);
   auto blueprint_library = world.GetBlueprintLibrary();
@@ -72,7 +73,7 @@ int main(int argc, const char *argv[]) {
   //ourShader.setInt("texture1", GL_TEXTURE0);
 
   int frame = 0;
-  boost::shared_ptr<csd::Image> pImage;
+  boost::shared_ptr<cs::SensorData> pSensorData;
 
   while (!glfwWindowShouldClose(window))
   {
@@ -87,8 +88,9 @@ int main(int argc, const char *argv[]) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    while(!q.try_dequeue(pImage)){}
+    while(!q.try_dequeue(pSensorData)){}
 
+    auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
     unsigned int texture = loadTexture(pImage);
     glBindTexture(GL_TEXTURE_2D, texture);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
