@@ -53,11 +53,13 @@ int main(int argc, const char *argv[]) {
 
   // Register a callback to save images to disk.
   camera->Listen([&q](auto data) {
-    auto image = boost::static_pointer_cast<csd::Image>(data);
-    assert(image != nullptr);
-    bool success = q.try_enqueue(image);
+    //auto image = boost::static_pointer_cast<csd::Image>(data);
+    //assert(image != nullptr);
+    //bool success = q.try_enqueue(image);
+    bool success = q.try_enqueue(data);
     if( !success){
-      std::cout << std::this_thread::get_id() << " fail enqueue frame=" << image->GetFrame() << std::endl;
+      // q max_size 2라서 loop가 꺼내가지 않으면 실패가 발생한다.
+      std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
     }
   });
 

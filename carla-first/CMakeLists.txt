@@ -41,7 +41,7 @@ endforeach()
 
 # opengl
 foreach(APP
-        51_camera_opengl
+        51_camera_opengl_rx
         52_camera_opengl_lockfree_queue
         53_lidar_opengl
         62_sensor_client_sync
