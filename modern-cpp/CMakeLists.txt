@@ -19,14 +19,14 @@ foreach(APP chrono_duration chrono_timepoint chrono_to_time_t clock_steady)
 endforeach()
 
 ### thread_async
-foreach(APP producer_consumer test_async test_async2 thread_main condition_variable_test condition_variable_test2 async_pipeline)
+foreach(APP producer_consumer test_async test_async2 promise thread_main condition_variable_test condition_variable_test2 async_pipeline)
     add_executable(${APP} thread_async/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries(${APP} PUBLIC pthread)
 endforeach()
 
 ### c++17
-foreach(APP cpp17 from_chars set_extract map_try_emplace map_insert_or_assign sampling math_fun array_shared_ptr)
+foreach(APP cpp17 from_chars set_extract_means_move map_try_emplace map_insert_or_assign sampling math_fun array_shared_ptr)
     add_executable(${APP} cpp17/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
@@ -85,7 +85,6 @@ foreach(APP
         return_value_optimization
         decltype_first
         const
-        promise
         utf8
         function
         question01

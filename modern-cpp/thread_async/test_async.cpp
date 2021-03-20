@@ -15,10 +15,10 @@ int parallel_sum(RandomIt beg, RandomIt end)
 
   RandomIt mid = beg + len/2;
   std::cerr << std::this_thread::get_id() <<  " async " << std::endl;
-  auto handle = std::async(std::launch::async,
-                           parallel_sum<RandomIt>, mid, end);
+
+  auto future = std::async(std::launch::async, parallel_sum<RandomIt>, mid, end);
   int sum = parallel_sum(beg, mid);
-  return sum + handle.get();
+  return sum + future.get();
 }
 
 int main() {

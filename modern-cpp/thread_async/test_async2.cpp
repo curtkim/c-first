@@ -8,6 +8,7 @@
 #include <thread>
 
 std::mutex m;
+
 struct X {
   void foo(int i, const std::string& str) {
     std::thread::id this_id = std::this_thread::get_id();

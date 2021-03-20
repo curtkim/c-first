@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <cmath>     // std::lerp
 #include <numeric>   // std::midpoint
 #include <iostream>
@@ -6,17 +7,6 @@
 #include <memory>
 #include <functional>
 
-void midpoint() {
-  std::cout << std::endl;
-  std::cout << "std::midpoint(10, 20): " << std::midpoint(10, 20) << std::endl;
-}
-
-void lerp() {
-  std::cout << std::endl;
-  for (auto v: {0.0, 0.2, 0.4, 0.6, 0.8, 1.1}) {
-    std::cout << "std::lerp(10, 20, " << v << "): " << std::lerp(10, 20, v) << std::endl;
-  }
-}
 
 void to_array() {
   auto arr1 = std::to_array("C-String Literal");
@@ -81,13 +71,22 @@ void bind_front() {
   std::cout << "twoThousandPlus5(20): " << twoThousandPlus5(20) << std::endl;
 }
 
+
 int main() {
-  midpoint();
-  lerp();
+  // midpoint
+  assert( 15 == std::midpoint(10, 20));
+  // round down
+  assert( 14 == std::midpoint(10, 19));
+
+  // linear interpolation
+  assert( 10 == std::lerp(10, 20, 0.0));
+  assert( 12 == std::lerp(10, 20, 0.2));
+  assert( 21 == std::lerp(10, 20, 1.1));
+
 
   to_array();
-
   starts_ends_with();
 
+  // curring?
   bind_front();
 }
