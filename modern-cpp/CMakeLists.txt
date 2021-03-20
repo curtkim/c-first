@@ -115,7 +115,7 @@ if(OpenMP_CXX_FOUND)
     target_link_libraries(parallel_transform PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
-foreach(APP type_erasure_with_template type_erasure_with_oop type_erasure_with_sfinae)
+foreach(APP type_erasure_with_template type_erasure_with_oop ) #type_erasure_with_sfinae
     add_executable(${APP} type_erasure/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()

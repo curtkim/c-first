@@ -37,8 +37,8 @@ int main()
   swap(a, b);
 
   no_copy nc_a, nc_b;
-  swap(nc_a, nc_b); // 1
+  //swap(nc_a, nc_b); // 1
 
   data_structure<int> ds_ok;
-  data_structure<no_default> ds_error; // 2
+  //data_structure<no_default> ds_error; // 2
 }
