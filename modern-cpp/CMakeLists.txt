@@ -85,12 +85,14 @@ foreach(APP
         return_value_optimization
         decltype_first
         const
+        const_by_lambda
         utf8
         function
         question01
         attribute_pure
         lambda
         lambda2
+        lambda_as_parameter
         reflection_test
         vector_2d
         atomic_int
