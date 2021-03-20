@@ -1,4 +1,6 @@
-http://mochan.info/c++/2019/11/12/pre-compiled-headers-gcc-clang-cmake.html
+## reference
+- http://mochan.info/c++/2019/11/12/pre-compiled-headers-gcc-clang-cmake.html
+- https://onqtam.com/programming/2019-12-20-pch-unity-cmake-3-16/
 
 ## howto
 
