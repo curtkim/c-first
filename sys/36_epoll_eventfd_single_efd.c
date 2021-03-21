@@ -1,4 +1,4 @@
-// epfd, efd를 파라미터로 넘김
+// efd를 파라미터로 넘김
 // thread가 sleep해서 0,1,2을 efd에 write한다.
 // main thread가 epoll_wait, read해서 value를 출력한다.
 // epoll_create, epoll_ctl, epoll_wait
@@ -51,10 +51,6 @@ typedef struct thread_info {
   int efd;
 } thread_info_t;
 
-
-static void do_task() {
-  return;
-}
 
 static void *producer_routine(void *data) {
   struct thread_info *p = (struct thread_info *) data;

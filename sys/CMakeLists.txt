@@ -48,3 +48,7 @@ foreach(APP 31_epoll_eventfd_worker 32_epoll_timerfd 33_epoll_signalfd 36_epoll_
     add_executable(${APP} ${APP}.c)
     target_link_libraries(${APP} PUBLIC pthread m)
 endforeach()
+
+add_executable(36_epoll_eventfd_single_efd_cpp 36_epoll_eventfd_single_efd_cpp.cpp)
+target_link_libraries(36_epoll_eventfd_single_efd_cpp PUBLIC pthread)
+target_compile_features(36_epoll_eventfd_single_efd_cpp PUBLIC cxx_std_17)
