@@ -33,7 +33,7 @@ add_executable(08_read_mmap 08_read_mmap.cpp)
 add_executable(09_aio_passwd 09_aio_passwd.c)
 add_executable(09_aio_poll 09_aio_poll.c)
 
-foreach(APP 11_poll 12_poll_stdin 14_select)
+foreach(APP 11_poll 12_poll_stdin 14_select 15_writev_test 16_readv_test 17_recvmmsg_test 18_sendmmsg_test)
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
