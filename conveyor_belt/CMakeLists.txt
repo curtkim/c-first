@@ -10,3 +10,10 @@ foreach(APP
     target_link_libraries(${APP} ${CONAN_LIBS})
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
+
+
+set(TEST_SOURCES
+        track-test.cpp
+        )
+
+add_executable(test test.cpp ${TEST_SOURCES})

@@ -1,9 +1,18 @@
 #pragma once
 
-#include "circular_queue.hpp"
+#include <chrono>
+#include <tuple>
+#include "track.hpp"
 #include "nonstd/ring_span.hpp"
 
-constexpr int QUEUE_SIZE = 10;
+// fields(first field가 key column임)
+// idx, name, type, size, minimum_size
+
+
+const int QUEUE_SIZE = 10;
+
+
+
 
 struct TimeSpan {
   nonstd::ring_span<long> lidar;
@@ -12,10 +21,15 @@ struct TimeSpan {
 
 };
 
+
 struct Timeline {
-  CircularQueue<long> lidar1 = {QUEUE_SIZE};
-  CircularQueue<int> camera1 = {QUEUE_SIZE};
-  CircularQueue<int> camera2 = {QUEUE_SIZE};
+  Track<long> lidar1 = {QUEUE_SIZE};
+  Track<int> camera1 = {QUEUE_SIZE};
+  Track<int> camera2 = {QUEUE_SIZE};
+
+  auto get_tracks() {
+    return std::forward_as_tuple(lidar1, camera1, camera2);
+  }
 
   TimeSpan frame(){
 

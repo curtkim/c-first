@@ -1,35 +1,33 @@
 #pragma once
 
-#include <mutex>
-#include <condition_variable>
+#include <tuple>
+#include <vector>
+#include <chrono>
+
+struct Header {
+  long seq;
+  std::chrono::system_clock::time_point time;
+};
 
 template <typename T>
-class CircularQueue {
+class Track {
 private:
 
-  T* data;
+  std::vector<Header,T> data;
   int max_size;
   int front = 0;
   int rear = 0;
-
-  std::mutex mutex_;
-  std::condition_variable cond_;
+  long seq = 0;
 
 public:
 
-  CircularQueue(int max_size) : max_size(max_size)
+  Track(int max_size) : max_size(max_size), data(max_size)
   {
-    data = new T[max_size];
   }
 
-  CircularQueue()=default;
-  CircularQueue(const CircularQueue&) = delete;            // disable copying
-  CircularQueue& operator=(const CircularQueue&) = delete; // disable assignment
-
-
-  virtual ~CircularQueue() {
-    delete[] data;
-  }
+  Track()=default;
+  Track(const Track&) = delete;            // disable copying
+  Track& operator=(const Track&) = delete; // disable assignment
 
   bool is_empty() {
     return front == rear;
@@ -45,11 +43,12 @@ public:
     }
     else {
       rear = ++rear%max_size;
-      data[rear] = item;
+      auto tuple = std::make_tuple(Header{seq++, std::chrono::system_clock::now()}, item);
+      data[rear] = tuple;
     }
   }
 
-  T dequeue() {
+  std::tuple<Header,T> dequeue() {
     if (is_empty()) {
       throw "queue is empty";
     }

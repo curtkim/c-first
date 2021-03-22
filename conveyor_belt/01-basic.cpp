@@ -1,12 +1,16 @@
 #include <iostream>
 #include <nonstd/ring_span.hpp>
 
-#include "circular_queue.hpp"
+#include "track.hpp"
 #include "timeline.hpp"
+
+#include <asio.hpp>
+#include "timer.hpp"
 
 // 생성자(begin, end, first, size)
 int main()
 {
+  /*
   Timeline timeline;
   std::cout << "sizeof timeline " << sizeof(timeline) << std::endl;
   std::cout << "sizeof lidar circular queue " << sizeof(timeline.lidar1) << std::endl;
@@ -20,5 +24,19 @@ int main()
 
   TimeSpan frame = timeline.frame();
   std::cout << "sizeof timespan " << sizeof(frame) << std::endl;
+  */
 
+  asio::io_service io_service;
+
+  int cnt = 0;
+  TimerContext* t = setInterval(io_service, [&](){
+    puts("aaaa");
+    cnt++;
+    if (cnt == 3) clearInterval(t);
+  }, 1000);
+
+
+
+  io_service.run();
+  delete t;
 }
