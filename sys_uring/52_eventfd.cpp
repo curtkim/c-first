@@ -56,8 +56,7 @@ int main(){
       return 1;
     }
 
-    printf("length %d\n", cqe->res);
-    std::cout << value << std::endl;
+    std::cout << "value=" << value << ", length=" << cqe->res << std::endl;
     io_uring_cqe_seen(&ring, cqe);
 
     struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);

@@ -18,4 +18,3 @@ foreach(APP 51_inotify 52_eventfd)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} uring pthread)
 endforeach()
-
