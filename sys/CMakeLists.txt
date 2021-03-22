@@ -23,6 +23,8 @@ add_executable(05_memory_mapped_read 05_memory_mapped_read.cpp)
 add_executable(05_mmap_test 05_mmap_test.cpp)
 
 add_executable(06_inotify_first 06_inotify_first.cpp)
+add_executable(06_inotify_tail 06_inotify_tail.cpp)
+add_executable(06_inotify_epoll 06_inotify_epoll.cpp)
 
 add_executable(07_write_direct 07_write_direct.cpp)
 add_executable(07_write_direct2 07_write_direct2.cpp)

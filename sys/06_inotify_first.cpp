@@ -18,11 +18,13 @@ int main(int argc, char **argv) {
         perror("inotify_init");
     }
 
-    wd = inotify_add_watch(fd, ".",IN_MODIFY | IN_CREATE | IN_DELETE);
+    wd = inotify_add_watch(fd, ".", IN_MODIFY | IN_CREATE | IN_DELETE);
     printf("after add watch\n");
 
     length = read(fd, buffer, BUF_LEN);
     // 여기서 블락됨
+    // inotify_event뒤에 name의 char array가 붙어있음
+    // length는 name(char array)의 길이까지 포함한다.
     printf("length %d\n", length);
 
     if (length < 0) {
