@@ -14,6 +14,8 @@ foreach(APP 00_cat_raw 01_cat_uring 04_capability
     target_compile_definitions(${APP} PUBLIC _GNU_SOURCE)
 endforeach()
 
-add_executable(51_inotify 51_inotify.cpp)
-target_link_libraries(51_inotify uring pthread)
+foreach(APP 51_inotify 52_eventfd)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} uring pthread)
+endforeach()
 

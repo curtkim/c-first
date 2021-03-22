@@ -57,11 +57,12 @@ int main(int argc, char **argv) {
   io_uring_queue_init(QUEUE_DEPTH, &ring, 0);
 
   for(int i = 0;i < 3; i++) {
+    // submit
     struct io_uring_sqe *sqe = io_uring_get_sqe(&ring);
     io_uring_prep_read(sqe, fd, buffer, BUF_LEN, 0);
     io_uring_submit(&ring);
 
-
+    // completion
     struct io_uring_cqe *cqe;
     int ret = io_uring_wait_cqe(&ring, &cqe);
     if (ret < 0) {
