@@ -7,7 +7,7 @@ conan_basic_setup()
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ### container
-foreach(APP array variant variant_polymorphism vector_test test_list)
+foreach(APP array array_dynamic variant variant_polymorphism vector_test vector_test2 test_list)
     add_executable(${APP} container/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()

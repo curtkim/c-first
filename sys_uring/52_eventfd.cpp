@@ -17,6 +17,8 @@ void handle_error(char* reason){
 void produce(int efd){
   for (uint64_t j = 1; j < 10; j++) {
     sleep(1);
+
+    // io_uring을 사용하지 않고, old style
     ssize_t s = write(efd, &j, sizeof(uint64_t));
     if (s != sizeof(uint64_t))
       handle_error("write");
