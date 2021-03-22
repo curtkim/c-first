@@ -1,4 +1,6 @@
-// 파일을 block으로 나누어 scatter read하는 요청을 한개 submit한다
+// 파일을 block으로 나누어 scatter read하는 요청을 한개 submit한다 with iovec array
+// io_uring_wait_cqe 한후에
+// iovec array에 load된 값을 출력한다.
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,10 +17,6 @@ struct file_info {
   struct iovec iovecs[];      /* Referred by readv/writev */
 };
 
-/*
-* Returns the size of the file whose open file descriptor is passed in.
-* Properly handles regular file and block devices as well. Pretty.
-* */
 
 off_t get_file_size(int fd) {
   struct stat st;

@@ -31,7 +31,7 @@ void* listener_thread(void* data) {
 
   // 무엇이 efd를 trigger한 것인가?
   int ret = eventfd_read(efd, &v);
-  // int ret = read(efd, &v, sizeof(uint64_t)); 동일한 효과가 있다.
+  //int ret = read(efd, &v, sizeof(uint64_t)); //동일한 효과가 있다.
   if (ret < 0)
     error_exit("eventfd_read");
 

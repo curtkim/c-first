@@ -66,9 +66,9 @@ void test_workaround(int sfd) {
 
 int main() {
   int sfd = setup_signal();
-  test_uring(sfd);
+  //test_uring(sfd);
 //    test_epoll(sfd);
-//    test_workaround(sfd);
+  test_workaround(sfd);
 //    test_aio(sfd);
   puts("OK");
   close(sfd);

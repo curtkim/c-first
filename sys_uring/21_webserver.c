@@ -122,11 +122,15 @@ void handle_get_method(char *path, int client_socket) {
     /* Check if this is a normal/regular file and not a directory or something else */
     if (S_ISREG(path_stat.st_mode)) {
       struct request *req = zh_malloc(sizeof(*req) + (sizeof(struct iovec) * 6));
+
       req->iovec_count = 6;
       req->client_socket = client_socket;
+      // header가 5개를 사용한다.
       send_headers(final_path, path_stat.st_size, req->iov);
+
       copy_file_contents(final_path, path_stat.st_size, &req->iov[5]);
       printf("200 %s %ld bytes\n", final_path, path_stat.st_size);
+
       add_write_request( req);
     }
     else {
@@ -184,12 +188,12 @@ void server_loop(int server_socket) {
     }
 
     switch (req->event_type) {
-      case EVENT_TYPE_ACCEPT:
+      case EVENT_TYPE_ACCEPT: // accept 요청이 들어왔다.
         add_accept_request(server_socket, &client_addr, &client_addr_len);
         add_read_request(cqe->res);
         free(req);
         break;
-      case EVENT_TYPE_READ:
+      case EVENT_TYPE_READ: // client가 보낸 http request가 들어왔다.
         if (!cqe->res) {
           fprintf(stderr, "Empty request!\n");
           break;
@@ -198,7 +202,7 @@ void server_loop(int server_socket) {
         free(req->iov[0].iov_base);
         free(req);
         break;
-      case EVENT_TYPE_WRITE:
+      case EVENT_TYPE_WRITE: // client에게 write가 완료되었다.
         for (int i = 0; i < req->iovec_count; i++) {
           free(req->iov[i].iov_base);
         }
