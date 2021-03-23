@@ -27,6 +27,8 @@ TEST_CASE("timeline") {
     REQUIRE(1 == value);
     REQUIRE(0 == header.seq);
   }
+
+  // by front, back
   {
     const auto [header, value] = frame.gps1.front();
     REQUIRE(1 == value);
@@ -34,6 +36,18 @@ TEST_CASE("timeline") {
   }
   {
     const auto [header, value] = frame.gps1.back();
+    REQUIRE(1 == value);
+    REQUIRE(1 == header.seq);
+  }
+
+  // by index
+  {
+    const auto [header, value] = frame.gps1[0];
+    REQUIRE(1 == value);
+    REQUIRE(0 == header.seq);
+  }
+  {
+    const auto [header, value] = frame.gps1[1];
     REQUIRE(1 == value);
     REQUIRE(1 == header.seq);
   }
