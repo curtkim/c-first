@@ -17,15 +17,4 @@ int main()
   nonstd::ring_span<double> buffer2( arr, arr + dim(arr), arr+1, dim(arr) );
   std::cout << buffer2 << "\n";
 
-
-  // vector
-
-  std::vector<double> vec = {2.0, 3.0, 5.0};
-
-  nonstd::ring_span<double> buffer3( vec.data(), vec.data() + vec.size(), vec.data(), vec.size() );
-  std::cout << buffer3 << "\n";
-
-  // end를 넘어, 일부분만
-  nonstd::ring_span<double> buffer4( vec.data(), vec.data() + vec.size(), vec.data()+2, vec.size()-1 );
-  std::cout << buffer4 << "\n";
 }

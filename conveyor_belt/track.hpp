@@ -11,7 +11,7 @@ struct Header {
 
 template <typename T>
 class Track {
-private:
+public:
 
   std::vector<std::tuple<Header,T>> data;
   int max_size;
@@ -29,15 +29,15 @@ public:
   Track(const Track&) = delete;            // disable copying
   Track& operator=(const Track&) = delete; // disable assignment
 
-  bool is_empty() {
+  inline bool is_empty() {
     return front == rear;
   }
 
-  bool is_full() {
+  inline bool is_full() {
     return front == (rear+1)%max_size;
   }
 
-  void enqueue(T item) {
+  void enqueue(const T item) {
     if (is_full()) {
       throw "queue is full";
     }

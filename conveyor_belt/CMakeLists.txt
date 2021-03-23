@@ -15,6 +15,7 @@ endforeach()
 set(TEST_SOURCES
         struct-vector-test.cpp
         track-test.cpp
+        timeline-test.cpp
         )
 
 add_executable(test test.cpp ${TEST_SOURCES})
