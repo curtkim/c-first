@@ -1,16 +1,43 @@
 #include <doctest/doctest.h>
-#include "timeline.hpp"
+#include <vector>
+#include <tuple>
+#include <array>
+#include <iostream>
+
+#include "track.hpp"
 
 TEST_CASE("track") {
 
-  Track<long> lidar1 = {10};
+  SUBCASE("add one") {
+    Track<long> track = {10};
+    REQUIRE(track.is_empty());
 
-  lidar1.enqueue(1);
-  lidar1.enqueue(2);
+    track.enqueue(1);
+    REQUIRE(!track.is_empty());
 
-  lidar1.dequeue();
-  auto [lidar_header, lidar_data] = lidar1.dequeue();
+    const auto [header, body] = track.dequeue();
+    REQUIRE(header.seq == 0);
+    REQUIRE(body == 1);
+    REQUIRE(track.is_empty());
+  }
 
-  REQUIRE(lidar_header.seq == 1);
-  REQUIRE(lidar_data == 2);
+  SUBCASE("add two") {
+    Track<long> track = {10};
+    track.enqueue(1);
+    track.enqueue(2);
+
+    {
+      const auto[header, body] = track.dequeue();
+      REQUIRE(header.seq == 0);
+      REQUIRE(body == 1);
+      REQUIRE(!track.is_empty());
+    }
+    {
+      const auto[header, body] = track.dequeue();
+      REQUIRE(header.seq == 1);
+      REQUIRE(body == 2);
+      REQUIRE(track.is_empty());
+    }
+  }
+
 }

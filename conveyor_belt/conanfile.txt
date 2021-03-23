@@ -2,6 +2,7 @@
 ring-span-lite/0.4.0
 asio/1.18.1
 doctest/2.4.4
+nanobench/4.3.0
 
 [generators]
 cmake

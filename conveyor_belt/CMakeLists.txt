@@ -13,7 +13,12 @@ endforeach()
 
 
 set(TEST_SOURCES
+        struct-vector-test.cpp
         track-test.cpp
         )
 
 add_executable(test test.cpp ${TEST_SOURCES})
+
+## bench
+add_executable(struct-vector-bench struct-vector-bench.cpp)
+target_link_libraries(struct-vector-bench ${CONAN_LIBS})

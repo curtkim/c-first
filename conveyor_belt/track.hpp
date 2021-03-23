@@ -13,7 +13,7 @@ template <typename T>
 class Track {
 private:
 
-  std::vector<Header,T> data;
+  std::vector<std::tuple<Header,T>> data;
   int max_size;
   int front = 0;
   int rear = 0;
@@ -42,19 +42,18 @@ public:
       throw "queue is full";
     }
     else {
+      std::get<0>(data[rear]) = Header{seq++, std::chrono::system_clock::now()};
+      std::get<1>(data[rear]) = item;
       rear = ++rear%max_size;
-      auto tuple = std::make_tuple(Header{seq++, std::chrono::system_clock::now()}, item);
-      data[rear] = tuple;
     }
   }
 
-  std::tuple<Header,T> dequeue() {
+  const std::tuple<Header,T>& dequeue() {
     if (is_empty()) {
       throw "queue is empty";
     }
     else {
-      return data[front%max_size];
+      return data[front++%max_size];
     }
   }
-
 };
