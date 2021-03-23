@@ -16,25 +16,25 @@ struct Data {
   long j;
 };
 
+const long TERMINATE = 99;
+
 
 void doit(std::atomic_ref<Data> data){
   while(1){
     const Data& d = data.load();
 
-    if( d.a == 99) break;
+    if( d.a == TERMINATE) break;
     
     std::cout << d.a << "\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
   }
-
-  std::cout << "thread end\n";
 }
 
 
 int main() {
   Data data1;
   Data data2;
-  Data terminal;
+  const Data terminal {TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE,TERMINATE};
 
   bool isData1 = true;
   std::atomic_ref<Data> ref(data1);
@@ -54,8 +54,6 @@ int main() {
     isData1 = !isData1; // toggle
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
-
-  terminal.a = 99;
 
   ref.store(terminal);
   t.join();
