@@ -32,11 +32,15 @@ foreach(APP cpp17 from_chars set_extract_means_move map_try_emplace map_insert_o
 endforeach()
 
 ### c++20
-foreach(APP utility stop_token_test)
+foreach(APP utility stop_token_test )
     add_executable(${APP} cpp20/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
-    target_link_libraries(${APP} PUBLIC pthread)
+    target_link_libraries(${APP} PUBLIC pthread )
 endforeach()
+
+add_executable(atomic_reference_test cpp20/atomic_reference_test.cpp)
+target_compile_features(atomic_reference_test PUBLIC cxx_std_20)
+target_link_libraries(atomic_reference_test PUBLIC pthread atomic) #atomic을 추가해야 한다. why??
 
 
 
@@ -96,6 +100,7 @@ foreach(APP
         reflection_test
         vector_2d
         atomic_int
+        reference_test
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
