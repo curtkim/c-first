@@ -38,6 +38,8 @@ int main() {
 
   bool isData1 = true;
   std::atomic_ref<Data> ref(data1);
+  std::cout << "sizeof(std::atomic_ref<Data>) " << sizeof(std::atomic_ref<Data>) << "\n"; // 8
+  std::cout << "sizeof(Data) " << sizeof(Data) << "\n";                                   // 80
 
   std::thread t(doit, ref);
 
