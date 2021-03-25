@@ -101,6 +101,7 @@ foreach(APP
         vector_2d
         atomic_int
         reference_test
+        reference_child_has_parent_reference
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)

@@ -9,6 +9,8 @@ struct Data {
   long d;
 };
 
+
+
 int main() {
   Data data1 = {1,1,1,1};
   Data data2 = {2,2,2,2};
@@ -35,5 +37,4 @@ int main() {
   const auto& [aaa, bbb] = std::make_tuple(a, 123);
   // 같게 할수 없는 건가?
   assert(a.data() != aaa.data());
-
 }
