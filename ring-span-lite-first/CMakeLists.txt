@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
-project(ring-span-lite/0.4.0)
+cmake_minimum_required(VERSION 3.16)
+project(ring-span-lite-test)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
