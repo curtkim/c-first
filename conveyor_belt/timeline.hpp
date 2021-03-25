@@ -12,8 +12,6 @@
 const int QUEUE_SIZE = 10;
 
 
-
-
 struct Frame {
   nonstd::ring_span<std::tuple<Header, long>> lidar1;
   nonstd::ring_span<std::tuple<Header, int>> camera1;
