@@ -109,7 +109,7 @@ foreach(APP
 endforeach()
 
 
-foreach(APP span_test)
+foreach(APP span_test span_test2)
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
     target_link_libraries( ${APP} pthread )
