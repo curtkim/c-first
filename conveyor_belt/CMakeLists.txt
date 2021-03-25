@@ -19,6 +19,7 @@ set(TEST_SOURCES
         )
 
 add_executable(test test.cpp ${TEST_SOURCES})
+target_compile_features(test PUBLIC cxx_std_17)
 
 ## bench
 add_executable(struct-vector-bench struct-vector-bench.cpp)

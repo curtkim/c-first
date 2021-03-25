@@ -37,18 +37,10 @@ struct Timeline {
 
   Frame frame(){
     return Frame{
-      nonstd::ring_span<std::tuple<Header, long>>(
-        lidar1.data.data(), lidar1.data.data()+lidar1.data.size(), lidar1.data.data()+lidar1.front, lidar1.rear
-      ),
-      nonstd::ring_span<std::tuple<Header, int>>(
-        camera1.data.data(), camera1.data.data()+camera1.data.size(), camera1.data.data()+camera1.front, camera1.rear
-      ),
-      nonstd::ring_span<std::tuple<Header, int>>(
-        camera2.data.data(), camera2.data.data()+camera2.data.size(), camera2.data.data()+camera2.front, camera1.rear
-      ),
-      nonstd::ring_span<std::tuple<Header, int>>(
-        gps1.data.data(), gps1.data.data()+gps1.data.size(), gps1.data.data()+gps1.front, gps1.rear
-      )
+      lidar1.span(),
+      camera1.span(),
+      camera2.span(),
+      gps1.span()
     };
   }
 };

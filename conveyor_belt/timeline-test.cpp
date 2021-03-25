@@ -1,8 +1,4 @@
 #include <doctest/doctest.h>
-#include <vector>
-#include <tuple>
-#include <array>
-#include <iostream>
 
 #include "timeline.hpp"
 
@@ -23,31 +19,31 @@ TEST_CASE("timeline") {
   REQUIRE(2 == frame.gps1.size());
 
   {
-    const auto [header, value] = frame.lidar1.front();
+    const auto& [header, value] = frame.lidar1.front();
     REQUIRE(1 == value);
     REQUIRE(0 == header.seq);
   }
 
   // by front, back
   {
-    const auto [header, value] = frame.gps1.front();
+    const auto& [header, value] = frame.gps1.front();
     REQUIRE(1 == value);
     REQUIRE(0 == header.seq);
   }
   {
-    const auto [header, value] = frame.gps1.back();
+    const auto& [header, value] = frame.gps1.back();
     REQUIRE(1 == value);
     REQUIRE(1 == header.seq);
   }
 
   // by index
   {
-    const auto [header, value] = frame.gps1[0];
+    const auto& [header, value] = frame.gps1[0];
     REQUIRE(1 == value);
     REQUIRE(0 == header.seq);
   }
   {
-    const auto [header, value] = frame.gps1[1];
+    const auto& [header, value] = frame.gps1[1];
     REQUIRE(1 == value);
     REQUIRE(1 == header.seq);
   }

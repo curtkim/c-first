@@ -3,6 +3,7 @@
 #include <tuple>
 #include <vector>
 #include <chrono>
+#include "nonstd/ring_span.hpp"
 
 struct Header {
   long seq;
@@ -13,7 +14,7 @@ template <typename T>
 class Track {
 public:
 
-  std::vector<std::tuple<Header,T>> data;
+  std::tuple<Header,T>* data;
   int max_size;
   int front = 0;
   int rear = 0;
@@ -21,13 +22,18 @@ public:
 
 public:
 
-  Track(int max_size) : max_size(max_size), data(max_size)
+  Track(int max_size) : max_size(max_size)
   {
+    data = new std::tuple<Header,T>[max_size];
   }
 
   Track()=default;
   Track(const Track&) = delete;            // disable copying
   Track& operator=(const Track&) = delete; // disable assignment
+
+  ~Track(){
+    delete [] data;
+  }
 
   inline bool is_empty() {
     return front == rear;
@@ -55,5 +61,9 @@ public:
     else {
       return data[front++%max_size];
     }
+  }
+
+  nonstd::ring_span<std::tuple<Header, T>> span() {
+    return nonstd::ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, rear);
   }
 };
