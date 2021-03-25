@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <string>
+#include <tuple>
 
 struct Data {
   long a;
@@ -16,4 +18,22 @@ int main() {
 
   ref = data2;
   assert(2 == ref.a);
+
+  std::string a = "1234567890123456789012345678901234567890";
+  std::string& b = a;
+  std::string c = a; // copy
+
+  assert(&a == &b);
+  assert(a.data() == b.data());
+
+  assert(&a != &c);
+  assert(a.data() != c.data());
+
+  auto [aa, bb] = std::make_tuple(a, 123);
+  assert(a.data() != aa.data());
+
+  const auto& [aaa, bbb] = std::make_tuple(a, 123);
+  // 같게 할수 없는 건가?
+  assert(a.data() != aaa.data());
+
 }
