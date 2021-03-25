@@ -29,7 +29,7 @@ class CarlaClient(ConanFile):
         "rpclib/2.2.1@demo/testing",
         "carla-recast/20190509@demo/testing",        
         "libpng/1.6.37",
-        "libtiff/4.1.0",
+        "libtiff/4.2.0",
         "libjpeg/9d",
     )
 
