@@ -1,8 +1,4 @@
 #include <liburing.h>
-#include <unistd.h>
-#include <sys/signalfd.h>
-#include <sys/epoll.h>
-#include <sys/poll.h>
 #include <stdio.h>
 
 #include <errno.h>
@@ -11,8 +7,24 @@
 
 #define TIMEOUT_MSEC	200
 
-static int not_supported;
-static int no_modify;
+
+// gettimeofday으로 system의 현재시간을 timeval에 채운다.
+// io_uring_prep_timeout를 호출하기 위해서는 timespec을 채워야 한다.
+
+
+// struct_timeval.h (in system)
+//struct timeval
+//{
+//  __time_t tv_sec;		/* Seconds.  */
+//  __suseconds_t tv_usec;	/* Microseconds.  */
+//};
+
+// in liburing
+//struct __kernel_timespec {
+//  int64_t		tv_sec;
+//  long long	tv_nsec;
+//};
+
 
 static void msec_to_ts(struct __kernel_timespec *ts, unsigned int msec)
 {
@@ -20,8 +32,7 @@ static void msec_to_ts(struct __kernel_timespec *ts, unsigned int msec)
   ts->tv_nsec = (msec % 1000) * 1000000;
 }
 
-static unsigned long long mtime_since(const struct timeval *s,
-                                      const struct timeval *e)
+static unsigned long long mtime_since(const struct timeval *s, const struct timeval *e)
 {
   long long sec, usec;
 
@@ -49,7 +60,7 @@ static int test_single_timeout(struct io_uring *ring)
 {
   struct io_uring_cqe *cqe;
   struct io_uring_sqe *sqe;
-  unsigned long long exp;
+
   struct __kernel_timespec ts;
   struct timeval tv;
   int ret;
@@ -61,7 +72,8 @@ static int test_single_timeout(struct io_uring *ring)
   }
 
   msec_to_ts(&ts, TIMEOUT_MSEC);
-  io_uring_prep_timeout(sqe, &ts, 0, 0);
+  printf("sec= %lld nsec= %lld\n", ts.tv_sec, ts.tv_nsec);
+  io_uring_prep_timeout(sqe, &ts, 0, 0); // timespec, count, flag
 
   ret = io_uring_submit(ring);
   if (ret <= 0) {
@@ -79,14 +91,15 @@ static int test_single_timeout(struct io_uring *ring)
   io_uring_cqe_seen(ring, cqe);
   if (ret == -EINVAL) {
     fprintf(stdout, "%s: Timeout not supported, ignored\n", __FUNCTION__);
-    not_supported = 1;
     return 0;
   } else if (ret != -ETIME) {
     fprintf(stderr, "%s: Timeout: %s\n", __FUNCTION__, strerror(-ret));
     goto err;
   }
 
-  exp = mtime_since_now(&tv);
+  unsigned long long exp = mtime_since_now(&tv);
+  printf("%lld", exp);
+
   if (exp >= TIMEOUT_MSEC / 2 && exp <= (TIMEOUT_MSEC * 3) / 2)
     return 0;
   fprintf(stderr, "%s: Timeout seems wonky (got %llu)\n", __FUNCTION__, exp);
@@ -95,6 +108,8 @@ static int test_single_timeout(struct io_uring *ring)
 }
 
 int main(int argc, char *argv[]) {
+  printf("sizeof(long long) = %d\n", sizeof(long long));
+
   struct io_uring ring;
   int ret;
 
