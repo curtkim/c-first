@@ -27,12 +27,12 @@ auto animal_types = hana::make_tuple(hana::type_c<Fish*>, hana::type_c<Cat&>, ha
 auto no_pointers = hana::remove_if(animal_types, [](auto a) {
   return hana::traits::is_pointer(a);
 });
-static_assert(no_pointers == hana::make_tuple(hana::type_c<Cat&>, hana::type_c<Dog>), "");
+static_assert(no_pointers == hana::make_tuple(hana::type_c<Cat&>, hana::type_c<Dog>));
 
 // 3. has_field
 auto has_name = hana::is_valid([](auto&& x) -> decltype((void)x.name) { });
-static_assert(has_name(garfield), "");
-static_assert(!has_name(1), "");
+static_assert(has_name(garfield));
+static_assert(!has_name(1));
 
 
 int main(){

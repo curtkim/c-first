@@ -1,7 +1,7 @@
+#include <assert.h>
 #include <iostream>
 #include <string>
 #include <boost/pfr.hpp> // Precise and Flat Reflection
-
 
 
 struct Person {
@@ -18,14 +18,18 @@ struct MyStruct { // no ostream operator defined!
 
 int main() {
 
+  // 2 field
   Person val{"Edgar Allan Poe", 1809};
+  assert(boost::pfr::get<0>(val).compare("Edgar Allan Poe") == 0);
+  assert(boost::pfr::get<1>(val) == 1809);
 
-  std::cout << boost::pfr::get<0>(val)                // No macro!
-            << " was born in " << boost::pfr::get<1>(val) << "\n";  // Works with any aggregate initializables!
 
-
+  // 3 field
   MyStruct s{100, 'H', 3.141593};
-  std::cout << "my_struct has " << boost::pfr::tuple_size<MyStruct>::value
-            << boost::pfr::io(s) << "\n";
+  static_assert( 3 == boost::pfr::tuple_size<MyStruct>::value);
+
+  std::ostringstream oss;
+  oss << boost::pfr::io(s);
+  assert(oss.str().compare("{100, H, 3.14159}") == 0);
 }
 

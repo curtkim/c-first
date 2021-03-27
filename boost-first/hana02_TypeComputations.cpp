@@ -40,7 +40,8 @@ auto smallest = hana::minimum(hana::make_tuple(hana::type_c<T>...), [](auto t, a
 });
 template <typename ...T>
 using smallest_t = typename decltype(smallest<T...>)::type;
-static_assert(std::is_same<smallest_t<char, long, long double>, char>::value, "");
+
+static_assert(std::is_same<smallest_t<char, long, long double>, char>::value);
 
 
 int main() {
