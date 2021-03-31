@@ -1,0 +1,6 @@
+[requires]
+cpp-lazy/2.3.3@curt/testing
+fmt/7.1.3
+
+[generators]
+cmake
