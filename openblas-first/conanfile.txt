@@ -1,5 +1,5 @@
 [requires]
-openblas/0.3.7
+openblas/0.3.13
 
 [generators]
 cmake
