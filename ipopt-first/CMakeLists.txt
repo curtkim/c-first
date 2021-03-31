@@ -9,3 +9,11 @@ target_link_libraries(cpp-example ipopt)
 
 add_executable(hs071_main hs071_main.cpp hs071_nlp.cpp)
 target_link_libraries(hs071_main ipopt)
+
+
+message(status "IPOPT_CFLAGS: " ${IPOPT_CFLAGS})
+message(status "IPOPT_CFLAGS_OTHER: " ${IPOPT_CFLAGS_OTHER})
+set(CMAKE_CXX_FLAGS "-DHAVE_CSTDDEF -DHAVE_MPI_INITIALIZED")
+
+add_executable(example example.cpp)
+target_link_libraries(example ipopt)

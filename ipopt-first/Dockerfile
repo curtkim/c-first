@@ -18,7 +18,7 @@ RUN cd /tmp/Ipopt-${IPOPT_VERSION}/ThirdParty/ASL && ./get.ASL
 RUN cd /tmp/Ipopt-${IPOPT_VERSION}/ThirdParty/Mumps && ./get.Mumps
 RUN cd /tmp/Ipopt-${IPOPT_VERSION}/ThirdParty/Metis && ./get.Metis
 
-RUN cd /tmp/Ipopt-3.12.7 && \
+RUN cd /tmp/Ipopt-${IPOPT_VERSION} && \
     mkdir build && \
     cd build && \
     ../configure --prefix=/usr/local && \
@@ -34,3 +34,4 @@ WORKDIR /work
 RUN cmake -S . -B build && cmake --build build
 RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/cpp-example
 RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/hs071_main
+RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/example
