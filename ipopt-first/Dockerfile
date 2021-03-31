@@ -4,10 +4,20 @@ USER root
 RUN apt-get update && apt-get install -y cppad wget unzip patch
 RUN apt-get install -y libblas3 liblapack3 liblapack-dev libblas-dev gfortran
 
+#ARG CPADD_VERSION=20210000.6
 ARG IPOPT_VERSION=3.12.7
 ARG MAKE_PARALLEL=40 
 
 WORKDIR /tmp
+
+#RUN wget -q https://github.com/coin-or/CppAD/archive/refs/tags/${CPADD_VERSION}.tar.gz && \
+#    tar -zxvf ${CPADD_VERSION}.tar.gz
+#RUN cd CppAD-${CPADD_VERSION} && \
+#    cmake -S . -B build && \
+#    cd build && \
+#    make -j${MAKE_PARALLEL} && \
+#    make install
+
 
 RUN wget -q https://www.coin-or.org/download/source/Ipopt/Ipopt-${IPOPT_VERSION}.zip && \
     unzip Ipopt-${IPOPT_VERSION}.zip && \
