@@ -9,8 +9,10 @@ namespace {
     class FG_eval {
     public:
         typedef CPPAD_TESTVECTOR( AD<double> ) ADvector;
+        
         void operator()(ADvector& fg, const ADvector& x)
-        {     assert( fg.size() == 3 );
+        {     
+            assert( fg.size() == 3 );
             assert( x.size()  == 4 );
 
             // Fortran style indexing
@@ -31,7 +33,8 @@ namespace {
 }
 
 bool get_started(void)
-{     bool ok = true;
+{     
+    bool ok = true;
     size_t i;
     typedef CPPAD_TESTVECTOR( double ) Dvector;
 
@@ -47,8 +50,8 @@ bool get_started(void)
     xi[3] = 1.0;
     // lower and upper limits for x
     Dvector xl(nx), xu(nx);
-    for(i = 0; i < nx; i++)
-    {     xl[i] = 1.0;
+    for(i = 0; i < nx; i++) {     
+        xl[i] = 1.0;
         xu[i] = 5.0;
     }
     // lower and upper limits for g
@@ -80,30 +83,26 @@ bool get_started(void)
     CppAD::ipopt::solve_result<Dvector> solution;
 
     // solve the problem
-    CppAD::ipopt::solve<Dvector, FG_eval>(
-            options, xi, xl, xu, gl, gu, fg_eval, solution
-    );
+    CppAD::ipopt::solve<Dvector, FG_eval>(options, xi, xl, xu, gl, gu, fg_eval, solution);
+
     //
     // Check some of the solution values
     //
     ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
+    
     //
     double check_x[]  = { 1.000000, 4.743000, 3.82115, 1.379408 };
     double check_zl[] = { 1.087871, 0.,       0.,      0.       };
     double check_zu[] = { 0.,       0.,       0.,      0.       };
     double rel_tol    = 1e-6;  // relative tolerance
     double abs_tol    = 1e-6;  // absolute tolerance
+
     for(i = 0; i < nx; i++)
-    {     ok &= CppAD::NearEqual(
-                check_x[i],  solution.x[i],   rel_tol, abs_tol
-        );
+    {     
+        ok &= CppAD::NearEqual(check_x[i],  solution.x[i],   rel_tol, abs_tol);
         std::cout << check_x[i] << ", " << solution.x[i] << std::endl;
-        ok &= CppAD::NearEqual(
-                check_zl[i], solution.zl[i], rel_tol, abs_tol
-        );
-        ok &= CppAD::NearEqual(
-                check_zu[i], solution.zu[i], rel_tol, abs_tol
-        );
+        ok &= CppAD::NearEqual(check_zl[i], solution.zl[i], rel_tol, abs_tol);
+        ok &= CppAD::NearEqual(check_zu[i], solution.zu[i], rel_tol, abs_tol);
     }
 
     return ok;
