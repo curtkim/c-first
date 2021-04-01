@@ -65,7 +65,7 @@ endforeach()
 ### meta
 foreach(APP crtp_mixin crtp_static_polymorphism tag_invoke_test static_assert_test constexpr_test constexpr_test2
         type_trait1 type_trait2_decltype type_trait3_enable_if type_trait4_introspect
-        if_constexpr_1)
+        if_constexpr_1 test-special-member-function)
     add_executable(${APP} meta/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_link_libraries( ${APP} PUBLIC pthread )

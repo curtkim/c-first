@@ -9,6 +9,7 @@ struct Data {
 };
 
 int main(){
-  std::vector
+  std::vector<std::tuple<Header, Data>> list(10);
 
+  list.em
 }
