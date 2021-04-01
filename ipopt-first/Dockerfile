@@ -43,6 +43,6 @@ COPY --chown=conan:1001 . /work
 WORKDIR /work
 
 RUN cmake -S . -B build && cmake --build build
-RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/cpp-example
+RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/nlp-example
 RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/hs071_main
 RUN LD_LIBRARY_PATH=/usr/local/lib /work/build/example
