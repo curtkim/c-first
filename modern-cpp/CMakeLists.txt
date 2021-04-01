@@ -102,6 +102,9 @@ foreach(APP
         atomic_int
         reference_test
         reference_child_has_parent_reference
+        rule_of_three
+        rule_of_five
+        rule_of_zero
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)
