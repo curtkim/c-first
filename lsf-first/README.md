@@ -1,3 +1,1 @@
-https://github.com/xianyi/OpenBLAS/wiki/User-Manual
-
--DCMAKE_CUDA_COMPILER=/usr/local/cuda-10.0/bin/nvcc
+https://vorbrodt.blog/2021/03/28/light-weight-serialization-framework/
