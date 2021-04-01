@@ -1,3 +1,11 @@
+## case
+- source_subfolder를 사용하고 wrap CMakeLists.txt를 사용하는 case( 아닌 경우는 mypkg mypkg는 replace_in_file를 사용한다.)
+- genertor가 cmake가 아닌 경우(pl_mpeg)
+- tools.Git를 사용(libunifex), self.run을 사용
+- AutoToolsBuildEnvironment사용하는 경우(freeimage)
+
+
+## creating_package
 https://docs.conan.io/en/latest/creating_packages/getting_started.html
 
 

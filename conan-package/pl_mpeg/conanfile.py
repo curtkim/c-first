@@ -2,7 +2,7 @@ import os
 from conans import ConanFile, tools
 
 
-class Asio(ConanFile):
+class PlMpeg(ConanFile):
     name = "pl_mpeg"
     version = "20200510"
     url = "https://github.com/conan-io/conan-center-index"

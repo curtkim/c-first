@@ -9,7 +9,10 @@ class FreeImage(ConanFile):
     homepage = "https://gitlab.lrde.epita.fr/olena/mirror-freeimage"
     description = "FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications."
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False], "fPIC": [True, False]}
+    options = {
+        "shared": [True, False], 
+        "fPIC": [True, False]
+    }
     default_options = "shared=False", "fPIC=False"
     generators = "cmake"
 

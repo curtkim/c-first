@@ -47,17 +47,7 @@ class TorchConan(ConanFile):
         self.cpp_info.bindirs = ['bin']
         self.cpp_info.libdirs = ['lib']
         if self.options.cuda != 'None':
-            self.cpp_info.libs.extend(
-                ['torch_cuda', 'c10_cuda'])
+            self.cpp_info.libs.extend(['torch_cuda', 'c10_cuda'])
 
         #self.cpp_info.libs = tools.collect_libs(self)
         #self.cpp_info.includedirs = ['include', 'include/torch/csrc/api/include']
-
-    '''
-    def package_info(self):
-        print('---')
-        print(self.collect_libs())
-        self.cpp_info.libs = self.collect_libs()
-        self.cpp_info.includedirs = ['include', 'include/torch/csrc/api/include']
-        #self.cpp_info.libs = ["hello"]
-    '''
