@@ -41,3 +41,6 @@ target_compile_options(03_echo_server PRIVATE -fcoroutines)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_CO_AWAIT)
 target_compile_definitions(03_echo_server PUBLIC ASIO_HAS_STD_COROUTINE)
 target_link_libraries(03_echo_server pthread)
+
+add_executable(31_simcpp 31_simcpp_main.cpp 31_simcpp.cpp)
+target_compile_options(31_simcpp PRIVATE -fcoroutines)
