@@ -1,0 +1,1 @@
+HDOC_PROJECT_API_KEY=uYxc2cLw.p2yvkXuRfD1SvxOYIamqCKAdvsv7jIaY ~/Downloads/hdoc-1.0.1 -v

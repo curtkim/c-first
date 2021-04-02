@@ -1,0 +1,6 @@
+[project]
+name = "hdoc-first"
+version = "1.0.0"
+
+[paths]
+compile_commands = "cmake-build-debug/compile_commands.json"
