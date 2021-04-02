@@ -1,4 +1,7 @@
 ## case
+- glbinding : package_id를 self.cpp_info.libs = tools.collect_libs(self)로 처리
+- torch_prebuilt package_info에서 cpp_info.libs, includedirs, bindirs, libdirs을 명시함
+- cpp-lazy : source는 get by tag, build by cmake, package by copy
 - pipes : cmake를 최대한 이용하는, source에서 self.run을 사용
 - source_subfolder를 사용하고 wrap CMakeLists.txt를 사용하는 case( 아닌 경우는 mypkg mypkg는 replace_in_file를 사용한다.)
 - genertor가 cmake가 아닌 경우(pl_mpeg)
