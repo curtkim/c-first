@@ -1,0 +1,22 @@
+[requires]
+glfw/3.3.2@curt/testing
+glad/0.1.33
+imgui/1.82
+lager/20210401@curt/testing
+boost/1.75.0
+
+[generators]
+cmake
+
+[imports]
+./res/bindings, imgui_impl_sdl.h -> ../bindings
+./res/bindings, imgui_impl_sdl.cpp -> ../bindings
+./res/bindings, imgui_impl_opengl3.h -> ../bindings
+./res/bindings, imgui_impl_opengl3.cpp -> ../bindings
+
+./res/fonts, DroidSans.ttf -> ../fonts
+./res/fonts, ProggyTiny.ttf -> ../fonts
+./res/fonts, ProggyClean.ttf -> ../fonts
+./res/fonts, Karla-Regular.ttf -> ../fonts
+./res/fonts, Roboto-Medium.ttf -> ../fonts
+./res/fonts, Cousine-Regular.ttf -> ../fonts
