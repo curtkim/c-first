@@ -22,10 +22,8 @@ struct model
     int value = 0;
 };
 
-struct increment_action
-{};
-struct decrement_action
-{};
+struct increment_action{};
+struct decrement_action{};
 struct reset_action
 {
     int new_value = 0;

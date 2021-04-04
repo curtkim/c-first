@@ -14,8 +14,8 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "../counter.hpp"
-#include <lager/event_loop/sdl.hpp>
-#include <lager/resources_path.hpp>
+#include "sdl.hpp"
+//#include <lager/resources_path.hpp>
 #include <lager/store.hpp>
 
 #include <iostream>
@@ -24,7 +24,7 @@
 std::string font_path()
 {
     using namespace std::string_literals;
-    return lager::resources_path() + "/SourceSansPro-Regular.ttf"s;
+    return "fonts/Cousine-Regular.ttf"s;
 }
 
 struct sdl_view
@@ -53,8 +53,7 @@ void draw(sdl_view& v, counter::model c)
     // render text
     {
         auto msg = "counter value is " + std::to_string(c.value);
-        auto surf =
-            TTF_RenderText_Blended(v.font, msg.c_str(), {255, 255, 255, 255});
+        auto surf = TTF_RenderText_Blended(v.font, msg.c_str(), {255, 255, 255, 255});
         auto text = SDL_CreateTextureFromSurface(v.renderer, surf);
         SDL_FreeSurface(surf);
 
@@ -96,7 +95,9 @@ int main()
     auto store = lager::make_store<counter::action>(
         counter::model{}, lager::with_sdl_event_loop{loop});
 
-    watch(store, [&](auto&& val) { draw(view, val); });
+    watch(store, [&](auto&& val) {
+      draw(view, val);
+    });
     draw(view, store.get());
 
     loop.run([&](const SDL_Event& ev) {
