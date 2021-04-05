@@ -24,7 +24,7 @@
 std::string font_path()
 {
     using namespace std::string_literals;
-    return "fonts/Cousine-Regular.ttf"s;
+    return "../../fonts/Cousine-Regular.ttf"s;
 }
 
 struct sdl_view
