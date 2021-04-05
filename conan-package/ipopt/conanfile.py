@@ -28,7 +28,7 @@ class Ipopt(ConanFile):
         tools.get(**self.conan_data["sources"][self.version])
         self.run("mv {}-{}/* .".format(self.name, self.version))
         self.run("chmod +x configure")
-        self.run('find . -name "install-sh" -exec chmod 0755 {} \;')                
+        self.run('find . -name "install-sh" -exec chmod +x {} \;')                
         self.run("chmod +x get.Mumps && ./get.Mumps", cwd='ThirdParty/Mumps')
 
     def build(self):    
@@ -59,6 +59,10 @@ class Ipopt(ConanFile):
         #        "mv {}/usr/* {}/".format(self.package_folder, self.package_folder))
         #    self.run("rm -rf {}/usr".format(self.package_folder))
     '''
+
+    def package(self):
+        self.copy('*', src='package', dst='.', keep_path=True)
+
 
     def package_info(self):
         #self.cpp_info.includedirs = ["include"]

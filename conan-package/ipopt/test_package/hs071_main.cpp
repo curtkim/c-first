@@ -1,5 +1,5 @@
 // [MAIN]
-#include <coin/IpIpoptApplication.hpp>
+#include "coin/IpIpoptApplication.hpp"
 #include "hs071_nlp.hpp"
 
 #include <iostream>

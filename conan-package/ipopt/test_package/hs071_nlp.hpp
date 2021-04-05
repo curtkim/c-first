@@ -1,7 +1,7 @@
 #ifndef __HS071_NLP_HPP__
 #define __HS071_NLP_HPP__
 
-#include <coin/IpTNLP.hpp>
+#include "coin/IpTNLP.hpp"
 
 using namespace Ipopt;
 
