@@ -1,0 +1,7 @@
+[requires]
+Ipopt/3.12.7@curt/testing
+
+[generators]
+cmake
+
+
