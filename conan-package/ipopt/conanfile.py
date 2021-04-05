@@ -1,4 +1,5 @@
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
+from conans import ConanFile, AutoToolsBuildEnvironment, tools 
+from conans.tools import os_info, SystemPackageTool
 import os
 import shutil
 
@@ -18,6 +19,11 @@ class Ipopt(ConanFile):
     requires = (
         "CppAD/20200000.3@curt/testing",
     )
+
+    def system_requirements(self):
+        packages = ["libblas3", "libblas-dev", "liblapack3", "liblapack-dev", "gfortran"]
+        installer = SystemPackageTool()
+        installer.install_packages(packages)
 
     def configure(self):
         if self.settings.os == "Windows":

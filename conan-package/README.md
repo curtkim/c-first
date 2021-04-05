@@ -37,12 +37,26 @@ https://docs.conan.io/en/latest/creating_packages/getting_started.html
 
 ## With Artifactory
 
-    docker pull docker.bintray.io/jfrog/artifactory-cpp-ce
-    docker run -v $(pwd)/artifactory_data:/var/opt/jfrog/artifactory -p 8081:8081 -p 8082:8082 docker.bintray.io/jfrog/artifactory-cpp-ce:latest
-    
+    docker pull docker.bintray.io/jfrog/artifactory-cpp-ce:7.17.4
+    docker run --user 1000:1000 -v $(pwd)/artifactory_data:/var/opt/jfrog/artifactory -p 8081:8081 -p 8082:8082 docker.bintray.io/jfrog/artifactory-cpp-ce:7.17.4
+    UI Administration/Security/Settings 
+    Check 'Allow Anonymouse Access'
+
+
     conan remote add omega-stable http://localhost:8081/artifactory/api/conan/omega-stable
     conan upload carla-client/0.9.9.4@demo/testing -r omega-stable --all
+
+    conan remote add curt-stable http://localhost:8081/artifactory/api/conan/curt_stable
+    conan user -p <PASSWORD> -r <REMOTE> <USERNAME>
+    conan upload Ipopt/3.12.7@curt/testing -r curt-stable --all
+
 
 ## Artifactory Reference
 - https://www.jfrog.com/confluence/display/RTF6X/Installing+with+Docker
 - https://www.jfrog.com/confluence/display/JFROG/Conan+Repositories    
+
+
+## 원하는것
+- easy install
+- persistent config, 산출물
+- anonymous access(read, write), and admin
