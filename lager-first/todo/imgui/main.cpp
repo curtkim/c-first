@@ -173,6 +173,7 @@ int main()
                 draw(store, store.get(), state);
             }
             ImGui::Render();
+
             SDL_GL_MakeCurrent(window, gl_context);
             auto size = ImGui::GetIO().DisplaySize;
             glViewport(0, 0, (int) size.x, (int) size.y);

@@ -17,8 +17,6 @@
 #include "sdl.hpp"
 //#include <lager/resources_path.hpp>
 #include <lager/store.hpp>
-
-#include <iostream>
 #include <string>
 
 std::string font_path()
