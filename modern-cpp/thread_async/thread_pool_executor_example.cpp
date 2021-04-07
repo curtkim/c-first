@@ -26,7 +26,13 @@ void doit(std::uniform_int_distribution<int> dist, int count) {
     ThreadPoolExecutor executor(pool_size, max_pool_size, keep_alive_time, max_queue_size);
 
     for (size_t i = 0; i < count; ++i) {
-        executor.submit(std::bind(task, i));
+        // lambda
+        executor.submit([i](){
+          task(i);
+        });
+        // bind
+        //executor.submit(std::bind(task, i));
+
         //std::this_thread::sleep_for(std::chrono::milliseconds(dist(rand_dev)));
     }
     executor.shutdown();

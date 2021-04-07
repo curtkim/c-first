@@ -1,0 +1,5 @@
+[requires]
+refl-cpp/20210405@curt/testing
+
+[generators]
+cmake
