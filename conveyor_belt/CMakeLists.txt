@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(conveyor_belt/0.1.0)
 
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
@@ -13,7 +15,7 @@ endforeach()
 
 
 set(TEST_SOURCES
-        struct-vector-test.cpp
+        temp/struct-vector-test.cpp
         track-test.cpp
         timeline-test.cpp
         )
@@ -22,5 +24,5 @@ add_executable(test test.cpp ${TEST_SOURCES})
 target_compile_features(test PUBLIC cxx_std_17)
 
 ## bench
-add_executable(struct-vector-bench struct-vector-bench.cpp)
+add_executable(struct-vector-bench temp/struct-vector-bench.cpp)
 target_link_libraries(struct-vector-bench ${CONAN_LIBS})

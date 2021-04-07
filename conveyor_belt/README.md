@@ -3,7 +3,7 @@
 - spawn process thread using one frame
 - process thread로 부터 tuple<LocationResult, PerceptionResult, DecisionResult, ControlResult>를 받는다.
 - vis thread에 frame과 process result를 넘긴다.
-- vis thread에서 더 이상 사용되지 않는 cell들을 release한다.(index조정 and track release함 호출)
+- io thread에서 vis thread에서 더 이상 사용되지 않는 cell들을 release한다.(index조정 and track release함 호출)
 
 ## thread
 - io thread 
@@ -29,3 +29,7 @@
 - frame
 - track별 release 함수
 
+## step
+1. carla, timeline, sleep 50ms, release cell
+2. viz
+3. persist

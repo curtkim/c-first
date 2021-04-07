@@ -1,6 +1,6 @@
 #pragma once
 
-//#include <iostream>
+#include <iostream>
 
 namespace temp {
 struct LidarData {
@@ -8,10 +8,11 @@ struct LidarData {
   int etc;
 
   LidarData() {
-    //std::cout << "LidarData constructor\n";
+    //std::cout << "LidarData default constructor\n";
   }
 
   LidarData(int value, int etc) : value(value), etc(etc) {
+    //std::cout << "LidarData constructor\n";
   }
 };
 
@@ -20,6 +21,7 @@ struct LidarData2 {
   int etc;
 
   LidarData2(int value, int etc) : value(value), etc(etc) {
+    //std::cout << "LidarData2 constructor\n";
   }
 };
 
