@@ -38,17 +38,14 @@ https://docs.conan.io/en/latest/creating_packages/getting_started.html
 ## With Artifactory
 
     docker pull docker.bintray.io/jfrog/artifactory-cpp-ce:7.17.4
+    mkdir artifactory_data
     docker run --user 1000:1000 -v $(pwd)/artifactory_data:/var/opt/jfrog/artifactory -p 8081:8081 -p 8082:8082 docker.bintray.io/jfrog/artifactory-cpp-ce:7.17.4
     UI Administration/Security/Settings 
     Check 'Allow Anonymouse Access'
 
-
-    conan remote add omega-stable http://localhost:8081/artifactory/api/conan/omega-stable
-    conan upload carla-client/0.9.9.4@demo/testing -r omega-stable --all
-
-    conan remote add curt-stable http://localhost:8081/artifactory/api/conan/curt_stable
+    conan remote add curt http://localhost:8081/artifactory/api/conan/curt
     conan user -p <PASSWORD> -r <REMOTE> <USERNAME>
-    conan upload Ipopt/3.12.7@curt/testing -r curt-stable --all
+    conan upload Ipopt/3.12.7@curt/testing -r curt --all
 
 
 ## Artifactory Reference
