@@ -21,6 +21,7 @@ class Pangolin(ConanFile):
         "glew/2.2.0",
         "eigen/3.3.9",
     )
+    generators = "cmake"
 
     _cmake = None
 

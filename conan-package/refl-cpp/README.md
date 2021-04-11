@@ -6,5 +6,5 @@
 
     conan export-pkg . curt/testing --package-folder=tmp/package
     conan test test_package refl-cpp/0.12.1@curt/testing --profile=gcc10
-    conan create . 
+    conan create . curt/testing
 
