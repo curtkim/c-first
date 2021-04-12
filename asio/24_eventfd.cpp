@@ -49,10 +49,11 @@ int main() {
     std::exit(0);
   });
 
-  io_context.run();
-//  while(true){
-//    io_context.run_one();
-//  }
+  //io_context.run();
+  while(true){
+    io_context.poll_one();
+  }
+  // https://topic.alibabacloud.com/a/boost-library-asio-io_service-and-run-run_one-poll-poll_one-differences_8_8_10260198.html
   thread.join();
 
   return 0;
