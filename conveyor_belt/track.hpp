@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 #include <chrono>
-#include "nonstd/ring_span.hpp"
+#include "ring_span.hpp"
 
 struct Header {
   long seq;
@@ -18,6 +18,7 @@ public:
   int max_size;
   int front = 0;
   int rear = 0;
+
   long seq = 0;
 
 public:
@@ -48,7 +49,7 @@ public:
       throw "queue is full";
     }
     else {
-      std::get<0>(data[rear]) = Header{seq++, std::chrono::system_clock::now()};
+      std::get<0>(data[rear]) = Header{++seq, std::chrono::system_clock::now()};
       std::get<1>(data[rear]) = item;
       rear = ++rear%max_size;
     }
@@ -63,7 +64,12 @@ public:
     }
   }
 
-  nonstd::ring_span<std::tuple<Header, T>> span() {
-    return nonstd::ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, rear);
+  ring_span<std::tuple<Header, T>> span() {
+    return ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, size());
+  }
+
+  const int size() {
+    int temp = rear - front;
+    return temp >=0 ? temp : max_size + temp;
   }
 };

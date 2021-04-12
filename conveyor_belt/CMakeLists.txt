@@ -16,11 +16,11 @@ endforeach()
 
 set(TEST_SOURCES
         temp/struct-vector-test.cpp
-        track-test.cpp
-        timeline-test.cpp
+        test/track-test.cpp
+        test/timeline-test.cpp
         )
 
-add_executable(test test.cpp ${TEST_SOURCES})
+add_executable(test test/main.cpp ${TEST_SOURCES})
 target_compile_features(test PUBLIC cxx_std_17)
 
 ## bench
