@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <assert.h>
 
+
 template< class RS, bool is_const >
 class ring_iterator
 {
@@ -195,7 +196,7 @@ public:
     , m_capacity ( static_cast<size_type>( end   - begin ) )
     , m_front_idx( static_cast<size_type>( first - begin ) )
   {
-    assert( m_size <= m_capacity );
+    assert( m_size <= m_capacity);
   }
 
   // observers:

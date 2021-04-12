@@ -22,6 +22,7 @@ set(TEST_SOURCES
 
 add_executable(test test/main.cpp ${TEST_SOURCES})
 target_compile_features(test PUBLIC cxx_std_17)
+target_link_libraries(test ${CONAN_LIBS})
 
 ## bench
 add_executable(struct-vector-bench temp/struct-vector-bench.cpp)

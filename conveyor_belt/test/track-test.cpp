@@ -57,4 +57,17 @@ TEST_CASE("track") {
     track.enqueue(5);
     REQUIRE(track.size() == 3);
   }
+
+
+  SUBCASE("long enqueue dequeue") {
+    Track<long> track = {5};
+    for(int i = 0; i < 10; i++){
+      track.enqueue(i);
+      auto span = track.span();
+      REQUIRE(span.size() == 1);
+      REQUIRE(std::get<1>(span.front()) == i);
+      for(auto item : span)
+        track.dequeue();
+    }
+  }
 }
