@@ -15,9 +15,9 @@
 bool processing = false;
 bool callback = false;
 
-void process(Frame& frame, int efd){
+void process(const Frame& frame, int efd){
   spdlog::info("process {} {} {} {}", frame.lidar1.size(), frame.camera1.size(), frame.camera2.size(), frame.gps1.size());
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   const uint64_t value = 1;
   int ret = write(efd, &value, sizeof(uint64_t));
@@ -28,15 +28,14 @@ void process(Frame& frame, int efd){
 
 void read_from_stream(asio::posix::stream_descriptor& stream, asio::mutable_buffer& buffer) {
   async_read(stream, buffer, [&stream, &buffer](const std::error_code ec, std::size_t) {
-    spdlog::info("read");
+    spdlog::info("read from eventfd");
     processing = false;
     callback = true;
     read_from_stream(stream, buffer);
   });
 }
 
-int main()
-{
+int main() {
   spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] %v");
 
   Timeline timeline;
