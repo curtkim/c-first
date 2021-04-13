@@ -17,7 +17,6 @@ struct Frame {
   ring_span<std::tuple<Header, int>> camera1;
   ring_span<std::tuple<Header, int>> camera2;
   ring_span<std::tuple<Header, int>> gps1;
-
 };
 
 
