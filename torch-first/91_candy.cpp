@@ -1,5 +1,5 @@
 #include <torch/script.h>
-#include <torch/torch.h>
+//#include <torch/torch.h>
 #include "utils/image_io.h"
 
 using image_io::load_image;
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
   auto moduleCandy = torch::jit::load(modelNameCandy, device);
 
   auto image = load_image("resources/parrots.png");
-  std::cout << image.sizes() << std::endl;
+  std::cout << "image.sizes() = " << image.sizes() << std::endl;
 
   auto image2 = image.
     to(torch::kFloat). // For inference

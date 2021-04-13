@@ -1,4 +1,5 @@
-#include <torch/script.h>
+//#include <torch/script.h>
+#include <torch/torch.h>
 #include <iostream>
 
 using namespace std;
@@ -13,8 +14,7 @@ void create() {
   assert(tensor.equal(torch::tensor({
     {1, 0},
     {0, 1}
-  })));
-
+  }, at::kFloat)));
 
   // rand
   std::cout << torch::rand({3,2}) << std::endl;
@@ -24,8 +24,6 @@ void create() {
 
   // direct
   std::cout << torch::tensor({5.5f, 3.f}) << std::endl;
-
-
 }
 
 void op() {

@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 project(torch-simple LANGUAGES CXX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #find_package(Torch REQUIRED PATHS "/home/curt/projects/c-first/conan-package/torch_prebuilt/libtorch")
-find_package(Torch REQUIRED PATHS "/home/curt/.conan/data/torch/1.6.0/curt/prebuilt/package/06cb18a658a30c9ee232f93db1f894f286607974")
+find_package(Torch REQUIRED PATHS "/home/curt/.conan/data/torch/1.8.1/curt/prebuilt/package/156b4f8deb813b75883a341f019bbe9e947cc3f9")
 
 foreach(ITEM ${TORCH_LIBRARIES})
 	message( ${ITEM} )

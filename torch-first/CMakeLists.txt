@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 project(torch-first LANGUAGES CUDA CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -30,13 +30,16 @@ foreach(APP
 		02_torch_first
 		)
 	add_executable(${APP} ${APP}.cpp)
-	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
+	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
 	target_compile_features(${APP} PUBLIC cxx_std_17)
+	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 endforeach()
 
 # CUDA
 foreach(APP
 		04_cuda_detect
+		21_torchscript
 		91_candy
 		)
 	add_executable(${APP} ${APP}.cpp)
