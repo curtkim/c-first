@@ -1,0 +1,5 @@
+[requires]
+pangolin/20200520@curt/testing
+
+[generators]
+cmake

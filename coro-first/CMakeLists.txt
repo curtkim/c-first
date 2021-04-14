@@ -8,15 +8,17 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 foreach(APP
-        01_main 01_nested 04_state_machine 05_task
+        01_generator 01_nested
         02_my_first_coroutine 02_my_first_coroutine_return 02_my_first_coroutine_yield
+        04_state_machine 05_task
+        06_future
         11_russian-roulette
-
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+target_link_libraries(06_future pthread)
 
 foreach(APP 21_linux_event_wait )
     add_executable(${APP} ${APP}.cpp coroutine/linux.cpp )

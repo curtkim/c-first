@@ -19,6 +19,7 @@ foreach(APP
     11_daytime_client
     21_stdin_read 21_stdin_read_no_thread 22_stdout_write
     23_pipe_stdout 23_pipe_stdin
+    24_eventfd
     29_alarm
     31_file_write_c 32_file_write_future 33_file_watch
     41_async_tcp_echo_server 41_async_tcp_echo_server_wo_class 42_tcp_echo_client

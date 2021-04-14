@@ -4,20 +4,24 @@ import tempfile
 
 class TorchConan(ConanFile):
     name = "torch"
-    version = "1.8.0"
+    version = "1.8.1"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"cuda": ["9.2", "10.1", "10.2", "None"]}
-    default_options = {"cuda": "10.1"}
+    options = {"cuda": ["9.2", "10.1", "10.2", "11.1", "None"]}
+    default_options = {"cuda": "11.1"}
 
     def build(self):
         cuda_version = "cu102"
         url_tail = ""
+
         if self.options.cuda == "10.1":
             cuda_version = "cu101"
             url_tail = "%2Bcu101"
         elif self.options.cuda == '9.2':        
             cuda_version = "cu92"
             url_tail = "%2Bcu92"
+        elif self.options.cuda == '11.1':        
+            cuda_version = "cu111"
+            url_tail = "%2Bcu111"
         elif self.options.cuda == 'None':
             cuda_version = "cpu"
             url_tail = "%2Bcpu"

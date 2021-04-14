@@ -1,0 +1,5 @@
+[requires]
+cilantro/20210308@curt/testing
+
+[generators]
+cmake

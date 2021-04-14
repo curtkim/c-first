@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.16)
 project(cuda-first LANGUAGES CUDA C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -22,12 +22,12 @@ target_link_libraries(matrix_multiplication_by_rand cublas curand)
 
 include_directories(common)
 
+add_executable(streamOrderedAllocation streamOrderedAllocation.cu)
+add_executable(simpleCallback 1_simple/simpleCallback.cu 1_simple/multithreading.cpp)
+
 foreach(APP asyncAPI simpleCudaGraph simpleStream )
     add_executable(${APP} 1_simple/${APP}.cu)
 endforeach()
-
-add_executable(simpleCallback 1_simple/simpleCallback.cu 1_simple/multithreading.cpp)
-
 
 foreach(APP simpleGL)
     add_executable(${APP} 2_graphic/${APP}.cu)
@@ -81,3 +81,23 @@ foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_mem
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
     target_link_libraries(${APP} PRIVATE cuda cudart nppisu)
 endforeach()
+
+
+set_target_properties(first
+        nvtx_first
+        do_cpu do_gpu
+        cublas_mm
+        matrix_multiplication_by_rand
+        streamOrderedAllocation
+        simpleCallback
+        asyncAPI simpleCudaGraph simpleStream
+        simpleGL
+        opengl_cuda_vertex_interop
+        cannyEdgeDetect freeImageInteropNPP jpegNPP
+        simpleTexture3D
+        vulkanCUDASinewave
+        oceanFFT
+        template_function_pointer
+        practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop
+
+        PROPERTIES CUDA_ARCHITECTURES 61)

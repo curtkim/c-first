@@ -3,7 +3,7 @@
 #include <chrono>
 #include <tuple>
 #include "track.hpp"
-#include "nonstd/ring_span.hpp"
+#include "ring_span.hpp"
 
 // fields(first field가 key column임)
 // idx, name, type, size, minimum_size
@@ -13,11 +13,10 @@ const int QUEUE_SIZE = 10;
 
 
 struct Frame {
-  nonstd::ring_span<std::tuple<Header, long>> lidar1;
-  nonstd::ring_span<std::tuple<Header, int>> camera1;
-  nonstd::ring_span<std::tuple<Header, int>> camera2;
-  nonstd::ring_span<std::tuple<Header, int>> gps1;
-
+  ring_span<std::tuple<Header, long>> lidar1;
+  ring_span<std::tuple<Header, int>> camera1;
+  ring_span<std::tuple<Header, int>> camera2;
+  ring_span<std::tuple<Header, int>> gps1;
 };
 
 
@@ -40,5 +39,16 @@ struct Timeline {
       camera2.span(),
       gps1.span()
     };
+  }
+
+  void release(Frame& frame) {
+    for(auto& item : frame.lidar1)
+      lidar1.dequeue();
+    for(auto& item : frame.camera1)
+      camera1.dequeue();
+    for(auto& item : frame.camera2)
+      camera2.dequeue();
+    for(auto& item : frame.gps1)
+      gps1.dequeue();
   }
 };

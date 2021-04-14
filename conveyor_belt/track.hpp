@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 #include <chrono>
-#include "nonstd/ring_span.hpp"
+#include "ring_span.hpp"
 
 struct Header {
   long seq;
@@ -16,8 +16,9 @@ public:
 
   std::tuple<Header,T>* data;
   int max_size;
-  int front = 0;
-  int rear = 0;
+  int front = -1;
+  int rear = -1;
+
   long seq = 0;
 
 public:
@@ -36,22 +37,34 @@ public:
   }
 
   inline bool is_empty() {
-    return front == rear;
+    //return front == rear;
+    return front == -1;
   }
 
   inline bool is_full() {
-    return front == (rear+1)%max_size;
+    //return front == (rear+1)%max_size;
+    return (front == 0 && rear == max_size-1) || (rear == (front-1)%(max_size-1));
   }
 
   void enqueue(const T item) {
     if (is_full()) {
       throw "queue is full";
     }
-    else {
-      std::get<0>(data[rear]) = Header{seq++, std::chrono::system_clock::now()};
-      std::get<1>(data[rear]) = item;
-      rear = ++rear%max_size;
+    else if (front == -1) /* Insert First Element */
+    {
+      front = rear = 0;
     }
+    else if (rear == max_size-1 && front != 0)
+    {
+      rear = 0;
+    }
+    else
+    {
+      rear++;
+    }
+
+    std::get<0>(data[rear]) = Header{++seq, std::chrono::system_clock::now()};
+    std::get<1>(data[rear]) = item;
   }
 
   const std::tuple<Header,T>& dequeue() {
@@ -59,11 +72,35 @@ public:
       throw "queue is empty";
     }
     else {
-      return data[front++%max_size];
+      //front = (front + 1) % max_size;
+      //return data[front];
+
+      int temp = front;
+      if (front == rear)
+      {
+        front = -1;
+        rear = -1;
+      }
+      else if (front == max_size-1)
+        front = 0;
+      else
+        front++;
+      return data[temp];
     }
   }
 
-  nonstd::ring_span<std::tuple<Header, T>> span() {
-    return nonstd::ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, rear);
+  ring_span<std::tuple<Header, T>> span() {
+    return ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, size());
   }
+
+  const int size() {
+    if (front == -1)
+      return 0;
+
+    //fmt::print("front={} rear={} rear - front= {}\n", front, rear, rear - front);
+    int temp = rear - front + 1;
+    return temp >=0 ? temp : max_size + temp;
+  }
+
+
 };

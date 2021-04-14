@@ -1,7 +1,7 @@
 [requires]
-torch/1.7.0@curt/prebuilt
+torch/1.8.1@curt/prebuilt
 stb/20200203
-carla-client/0.9.10.1@demo/testing
+carla-client/0.9.11@demo/testing
 readerwriterqueue/1.0.2@demo/testing
 glfw/3.3.2@demo/testing
 glad/0.1.33
@@ -11,4 +11,4 @@ glm/0.9.9.7
 cmake
 
 [options]
-torch:cuda=10.2
+torch:cuda=11.1
