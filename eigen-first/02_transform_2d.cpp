@@ -29,4 +29,6 @@ int main() {
   cout << "------------------" << endl;
 
   cout << t * mVertices.colwise().homogeneous() << endl;
+  MatrixXf transformed = t * mVertices.colwise().homogeneous();
+  cout << transformed.rows() << " " << transformed.cols() << endl;
 }
