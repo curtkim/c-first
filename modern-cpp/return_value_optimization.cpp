@@ -1,38 +1,45 @@
+// https://www.linkedin.com/pulse/c-return-value-optimization-dipanjan-das-roy
+// https://www.youtube.com/watch?v=80TXwV_sdCY
 #include <iostream>
+#include <vector>
+#include <assert.h>
 
 using namespace std;
 
+class BigObject{
+public:
+  string name;
 
-struct Snitch {   // Note: All methods have side effects
-  Snitch() { cout << "c'tor" << endl; }
-  ~Snitch() { cout << "d'tor" << endl; }
-
-  Snitch(const Snitch&) { cout << "copy c'tor" << endl; }
-  Snitch(Snitch&&) { cout << "move c'tor" << endl; }
-
-  Snitch& operator=(const Snitch&) {
-    cout << "copy assignment" << endl;
-    return *this;
-  }
-
-  Snitch& operator=(Snitch&&) {
-    cout << "move assignment" << endl;
-    return *this;
+  ~BigObject(){
+    cout << "Destroyed " << name << "\n";
   }
 };
 
+BigObject* addr = nullptr;
 
-Snitch ExampleRVO() {
-  return Snitch();
+BigObject getBigObject() {
+  BigObject obj{"hello"};
+  addr = &obj;
+  return obj;
 }
 
-Snitch Named_ExampleNRVO() {
-  Snitch snitch; //  object with a name
-  return snitch;
+
+vector<int>* addr2 = nullptr;
+
+vector<int> getVector() {
+  vector<int> v{1,2,3,4,5,6,7,8,9,0};
+  addr2 = &v;
+  return v;
 }
 
 int main() {
-  //Snitch snitch = ExampleRVO();
+  // Copy elision
+  auto obj = getBigObject();
+  assert(addr == &obj);
 
-  Snitch snitch = Named_ExampleNRVO();
+  // Implicit move
+  auto vector = getVector();
+  assert(addr2 == &vector);
+
+  return 0;
 }

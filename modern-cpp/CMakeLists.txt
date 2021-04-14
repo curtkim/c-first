@@ -87,6 +87,7 @@ foreach(APP
         test_string_view_small
         test_string_view_long
         return_value_optimization
+        return_value_optimization2
         decltype_first
         const
         const_by_lambda
