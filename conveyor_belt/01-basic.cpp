@@ -4,6 +4,10 @@
 #include <asio.hpp>
 #include <spdlog/spdlog.h>
 
+#include <sys/syscall.h>
+#include <unistd.h>
+#include <nvToolsExt.h>
+
 #include "track.hpp"
 #include "timeline.hpp"
 
@@ -45,21 +49,26 @@ void log_frame(const Frame& frame, std::string_view msg) {
 }
 
 void process(const Frame& frame, int efd){
+  nvtxRangePush(__FUNCTION__);
   log_frame(frame, "process");
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
 
   const uint64_t value = 1;
   int ret = write(efd, &value, sizeof(uint64_t));
   if (ret != 8)
     handle_error("[producer] failed to write eventfd");
   spdlog::info("processed");
+  nvtxRangePop();
 }
 
 void visualize(std::atomic_ref<Frame> frame_ref){
+  nvtxNameOsThread(syscall(SYS_gettid), "VIZ Thread");
   while(1){
+    nvtxRangePush(__FUNCTION__);
     const Frame& frame = frame_ref.load();
     log_frame(frame, "visualize");
     std::this_thread::sleep_for(std::chrono::milliseconds(30));
+    nvtxRangePop();
   }
 }
 
@@ -73,6 +82,7 @@ void read_from_stream(asio::posix::stream_descriptor& stream, asio::mutable_buff
 }
 
 int main() {
+  nvtxNameOsThread(syscall(SYS_gettid), "IO Thread");
   spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] %v");
 
   Timeline timeline;
@@ -83,8 +93,8 @@ int main() {
   std::atomic_ref<Frame> frame_v_ref(frame_v);
 
   size_t pool_size = 1;
-  size_t max_pool_size = 2;
-  size_t max_queue_size = 2;
+  size_t max_pool_size = 1;
+  size_t max_queue_size = 1;
   std::chrono::seconds keep_alive_time = std::chrono::seconds(5);
 
   std::thread visualize_thread(visualize, frame_v_ref);
@@ -108,22 +118,34 @@ int main() {
 
   TimerContext* lidar1Timer = setInterval(io_service, [&timeline](){
     spdlog::info("lidar1");
+    nvtxRangePush("lidar1");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     timeline.lidar1.enqueue(1);
+    nvtxRangePop();
   }, 100);
 
   TimerContext* camera1Timer = setInterval(io_service, [&timeline](){
     spdlog::info("camera1");
+    nvtxRangePush("camera1");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     timeline.camera1.enqueue(1);
+    nvtxRangePop();
   }, 100);
 
   TimerContext* camera2Timer = setInterval(io_service, [&timeline](){
     spdlog::info("camera2");
+    nvtxRangePush("camera2");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     timeline.camera2.enqueue(1);
+    nvtxRangePop();
   }, 100);
 
   TimerContext* gps1Timer = setInterval(io_service, [&timeline](){
     spdlog::info("gps1");
+    nvtxRangePush("gps1");
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
     timeline.gps1.enqueue(1);
+    nvtxRangePop();
   }, 30);
 
   //io_service.run();

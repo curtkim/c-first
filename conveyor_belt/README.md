@@ -33,3 +33,9 @@
 1. carla, timeline, sleep 50ms, release cell
 2. viz
 3. persist
+
+## nsys howto
+  
+    nsys profile -o 01-basic.qdstrm --force-overwrite=true bin/01-basic
+    nsys-ui
+
