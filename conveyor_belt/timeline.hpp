@@ -9,7 +9,7 @@
 // idx, name, type, size, minimum_size
 
 
-const int QUEUE_SIZE = 10;
+const int QUEUE_SIZE = 20;
 
 
 struct Frame {
