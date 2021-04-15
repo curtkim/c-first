@@ -36,13 +36,17 @@ foreach(APP
 	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 endforeach()
 
+
+
 # CUDA
 foreach(APP
 		04_cuda_detect
+		05_tensor_create_from_gpu_memory
 		21_torchscript
 		91_candy
 		)
 	add_executable(${APP} ${APP}.cpp)
+	target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
 	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
 	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY} image_io)
 	target_compile_features(${APP} PUBLIC cxx_std_17)
