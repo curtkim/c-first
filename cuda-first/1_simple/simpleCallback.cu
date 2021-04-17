@@ -27,6 +27,9 @@
 
 #include "multithreading.h"
 
+#include <thread>
+#include <iostream>
+
 const int N_workloads  = 8;
 const int N_elements_per_workload = 100000;
 
@@ -56,8 +59,9 @@ __global__ void incKernel(int *data, int N)
 
 CUT_THREADPROC launch(void *void_arg)
 {
-
   heterogeneous_workload *workload = (heterogeneous_workload *) void_arg;
+
+  std::cout << "launch " << std::this_thread::get_id() << " id=" << workload->id << "\n";
 
   // Select GPU for this CPU thread
   checkCudaErrors(cudaSetDevice(workload->cudaDeviceID));
@@ -93,6 +97,7 @@ CUT_THREADPROC postprocess(void *void_arg)
 {
   heterogeneous_workload *workload = (heterogeneous_workload *) void_arg;
   // ... GPU is done with processing, continue on new CPU thread...
+  std::cout << "postprocess " << std::this_thread::get_id() << " id=" << workload->id << "\n";
 
   // Select GPU for this CPU thread
   checkCudaErrors(cudaSetDevice(workload->cudaDeviceID));
