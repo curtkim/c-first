@@ -15,7 +15,7 @@ class Pangolin(ConanFile):
         "shared": [True, False], 
         "fPIC": [True, False]
     }
-    default_options = "shared=True", "fPIC=False"
+    default_options = "shared=True", "fPIC=True", "glew:shared=True"
 
     requires = (
         "glew/2.2.0",
