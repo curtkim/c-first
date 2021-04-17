@@ -6,10 +6,12 @@ add_definitions("-std=c++11")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+message("CONAN_LIBS: ${CONAN_LIBS}") # print m
+
 foreach(APP 01_first 02_transform 02_transform_2d 03_quaternion 04_roll_pitch_yaw 05_c_data
         12_raw_buffer 13_as_parameter)
     add_executable(${APP} ${APP}.cpp)
-    target_link_libraries(${APP} ${CONAN_LIBS})
+    target_link_libraries(${APP}) # eigen header-only라서  ${CONAN_LIBS}이 필요없다.
 endforeach()
 
 add_library(mallochook SHARED mallochook.c)
