@@ -41,7 +41,9 @@ class Cilantro(ConanFile):
         git.clone("https://github.com/kzampog/cilantro.git", "master")
         git.run("reset --hard " + "c92b0d784f96e2f1ebb54101ad9e5137b123a61f")
 
-        # find_package(Eigen3 REQUIRED NO_MODULE)제거
+        tools.replace_in_file(self._source_subfolder + "/CMakeLists.txt", "find_package(Eigen3 REQUIRED NO_MODULE)",'')
+
+        # 제거
         # target_link에서 eigen제거
 
     def build(self):
