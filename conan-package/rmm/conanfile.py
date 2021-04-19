@@ -20,7 +20,7 @@ class Rmm(ConanFile):
 
     requires = (
         "spdlog/1.8.5",
-        "thrust/1.9.5",
+        #"thrust/1.9.5", cuda에서 기본 제공한다. thrust는 header-only
     )
     generators = "cmake"
     _cmake = None
