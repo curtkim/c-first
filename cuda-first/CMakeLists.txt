@@ -13,6 +13,7 @@ target_link_libraries(nvtx_first PUBLIC nvToolsExt)
 
 add_executable(do_cpu do_cpu.cpp)
 add_executable(do_gpu do_gpu.cu)
+add_executable(cuda_struct cuda_struct.cu)
 
 add_executable(cublas_mm cublas_mm.cu)
 target_link_libraries(cublas_mm cublas)
@@ -85,7 +86,7 @@ endforeach()
 
 set_target_properties(first
         nvtx_first
-        do_cpu do_gpu
+        do_cpu do_gpu cuda_struct
         cublas_mm
         matrix_multiplication_by_rand
         streamOrderedAllocation
