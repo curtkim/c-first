@@ -8,9 +8,11 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 foreach(APP 01_vector 02_vector 03_transform 04_tranform_saxpy 05_reduction 06_tiled_range
-        11_stream_concurrent
-        21_with_eigen)
-    add_executable(${APP} ${APP}.cu)
+        07_reduce_by_key 08_bouding_box 09_bucket_sort2d
+
+        51_stream_concurrent
+        91_with_eigen)
+    add_executable(${APP} ${APP}.cu )
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_include_directories(${APP} PUBLIC /usr/local/cuda/include)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
