@@ -114,7 +114,9 @@ int main(int argc, const char *argv[]) {
     // Find a camera blueprint.
     auto *lidar_bp = blueprint_library->Find("sensor.lidar.ray_cast");
     assert(lidar_bp != nullptr);
-    //const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
+    const_cast<carla::client::ActorBlueprint *>(lidar_bp)->SetAttribute("range", "200");
+    const_cast<carla::client::ActorBlueprint *>(lidar_bp)->SetAttribute("rotation_frequency", "10");
+    const_cast<carla::client::ActorBlueprint *>(lidar_bp)->SetAttribute("points_per_second", std::to_string(360*50*10*32));
 
 
     // Spawn a camera attached to the vehicle.
@@ -133,6 +135,8 @@ int main(int argc, const char *argv[]) {
           << " pt_count(0):" << lidar_data->GetPointCount(0)
           << " pt_count(10):" << lidar_data->GetPointCount(10)
           << " pt_count(20):" << lidar_data->GetPointCount(20)
+          << " horizontalAngle: " << lidar_data->GetHorizontalAngle()
+          << " size: " << lidar_data->size()
           << std::endl;
 
       char buffer[9u];
@@ -149,7 +153,7 @@ int main(int argc, const char *argv[]) {
       carla::pointcloud::PointCloudIO::SaveToDisk(filename, lidar_data->begin(), lidar_data->end());
     });
 
-    std::this_thread::sleep_for(5s);
+    std::this_thread::sleep_for(30s);
 
     // Remove actors from the simulation.
     lidar->Destroy();

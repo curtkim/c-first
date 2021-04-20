@@ -26,8 +26,8 @@ class CarlaClient(ConanFile):
 
     requires = (
         "boost/1.72.0",
-        "rpclib/2.2.1@demo/testing",
-        "carla-recast/20190509@demo/testing",        
+        "rpclib/2.2.1@curt/testing",
+        "carla-recast/20190509@curt/testing",        
         "libpng/1.6.37",
         "libtiff/4.2.0",
         "libjpeg/9d",

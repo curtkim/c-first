@@ -1,0 +1,5 @@
+[requires]
+tinyply/2.3.2
+
+[generators]
+cmake

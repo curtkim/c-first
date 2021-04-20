@@ -1,13 +1,13 @@
 [requires]
-carla-client/0.9.11@demo/testing
+carla-client/0.9.11@curt/testing
 nlohmann_json/3.7.3
 rxcpp/4.1.0
-glfw/3.3.2@demo/testing
+glfw/3.3.4
 glad/0.1.33
 glm/0.9.9.7
 lodepng/cci.20200615
 asio/1.17.0
-readerwriterqueue/1.0.2@demo/testing
+readerwriterqueue/1.0.2@curt/testing
 
 [generators]
 cmake
