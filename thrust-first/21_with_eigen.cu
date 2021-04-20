@@ -40,8 +40,19 @@ struct elementwise_maximum<VectorType, typename std::enable_if<is_eigen_matrix<V
         return a.array().max(b.array()).matrix();
     }
 };
-
 }
+
+namespace curt {
+
+    template <typename VectorType>
+    struct elementwise_minimum {
+        __device__ VectorType operator()(const VectorType &a, const VectorType &b) {
+            return a.array().min(b.array()).matrix();
+        }
+    };
+}
+
+
 
 int main(void)
 {
@@ -62,6 +73,17 @@ int main(void)
 
     Vector3f max = thrust::reduce(points.begin()+1, points.end(), init, cupoch::elementwise_maximum<Vector3f>());
     std::cout << max << "\n";
+
+    Vector3f min2 = thrust::reduce(points.begin()+1, points.end(), init, curt::elementwise_minimum<Vector3f>());
+    std::cout << min2 << "\n";
+
+    /* 왜 컴파일이 안되는지 알기 어렵다.
+    auto minimum = [] __device__ (const Vector3f &a, const Vector3f &b) -> Vector3f {
+        return a.array().min(b.array()).matrix();
+    };
+    Vector3f min3 = thrust::reduce(points.begin()+1, points.end(), init, minimum);
+    std::cout << min3 << "\n";
+    */
 
     return 0;
 }
