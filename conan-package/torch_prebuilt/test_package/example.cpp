@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <torch/torch.h>
 
+#include <ATen/cuda/CUDAContext.h>
+
 using namespace std;
 
 int main() {
@@ -19,6 +21,8 @@ int main() {
   cout << c << endl;
 
   cout << a.sum(at::kInt) << endl;
+
+  at::Allocator * allocator = at::cuda::getCUDADeviceAllocator();
 
   return 0;
 }

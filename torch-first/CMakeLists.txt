@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(torch-first LANGUAGES CUDA CXX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CUDA_DYNAMIC_LIBRARY cuda nvrtc nvToolsExt cudart cufft curand cudnn cublas)
 
@@ -28,8 +29,10 @@ foreach(APP
 		00_aten
 		01_aten_named
 		02_torch_first
+		05_tensor_create_from_gpu_memory
 		)
 	add_executable(${APP} ${APP}.cpp)
+	target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
 	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
 	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
 	target_compile_features(${APP} PUBLIC cxx_std_17)
@@ -41,7 +44,6 @@ endforeach()
 # CUDA
 foreach(APP
 		04_cuda_detect
-		05_tensor_create_from_gpu_memory
 		21_torchscript
 		91_candy
 		)
@@ -53,9 +55,12 @@ foreach(APP
 	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 endforeach()
 
+foreach(APP 11_cuda_accessor 12_cuda_modify)
+	add_executable(${APP} ${APP}.cu)
+	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
+	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
+	target_compile_features(${APP} PUBLIC cxx_std_17)
+	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 
-add_executable(11_cuda_accessor 11_cuda_accessor.cu)
-target_link_directories(11_cuda_accessor PUBLIC /usr/local/cuda/lib64)
-target_link_libraries(11_cuda_accessor PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
-target_compile_features(11_cuda_accessor PUBLIC cxx_std_17)
-set_target_properties(11_cuda_accessor PROPERTIES LINK_WHAT_YOU_USE "TRUE")
+	set_target_properties(${APP} PROPERTIES CUDA_ARCHITECTURES 61)
+endforeach()

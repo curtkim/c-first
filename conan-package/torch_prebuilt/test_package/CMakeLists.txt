@@ -11,6 +11,7 @@ conan_basic_setup()
 #endforeach()
 
 add_executable(example example.cpp)
+target_include_directories(example PRIVATE /usr/local/cuda/include)
 target_link_directories(example PUBLIC /usr/local/cuda/lib64)
 target_link_directories(example PUBLIC /usr/local/cuda/lib64/stubs)
 target_link_libraries(example ${CONAN_LIBS} cuda nvrtc nvToolsExt cudart cufft curand cudnn cublas)

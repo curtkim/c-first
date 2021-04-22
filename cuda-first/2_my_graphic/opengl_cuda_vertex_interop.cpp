@@ -1,8 +1,11 @@
 // Include standard headers
 #include <string>
 #include <tuple>
+#include <vector>
 #include <stdio.h>
+
 #include <glad/glad.h>
+
 // Include GLFW
 #include <GLFW/glfw3.h>
 
@@ -10,14 +13,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//#include <helper_gl.h>
-
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 #include <nvToolsExt.h>
 
 // Utilities and timing functions
-#include <helper_functions.h>    // includes cuda.h and cuda_runtime_api.h
+//#include <helper_functions.h>    // includes cuda.h and cuda_runtime_api.h
 // CUDA helper functions
 #include <helper_cuda.h>         // helper functions for CUDA error check
 
@@ -71,15 +72,9 @@ void runCuda(struct cudaGraphicsResource **vbo_resource, float g_fAnim)
   nvtxRangePush(__FUNCTION__);
   // map OpenGL buffer object for writing from CUDA
   float4 *dptr;
-  checkCudaErrors(cudaGraphicsMapResources(1, vbo_resource, 0));
   size_t num_bytes;
+  checkCudaErrors(cudaGraphicsMapResources(1, vbo_resource, 0));
   checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **)&dptr, &num_bytes, *vbo_resource));
-  //printf("CUDA mapped VBO: May access %ld bytes\n", num_bytes);
-
-  // execute the kernel
-  //    dim3 block(8, 8, 1);
-  //    dim3 grid(mesh_width / block.x, mesh_height / block.y, 1);
-  //    kernel<<< grid, block>>>(dptr, mesh_width, mesh_height, g_fAnim);
 
   launch_kernel(dptr, mesh_width, mesh_height, g_fAnim);
 
@@ -87,6 +82,7 @@ void runCuda(struct cudaGraphicsResource **vbo_resource, float g_fAnim)
   checkCudaErrors(cudaGraphicsUnmapResources(1, vbo_resource, 0));
   nvtxRangePop();
 }
+
 
 auto load_dynamic_model(int width, int height, int time = 0) {
 
@@ -142,31 +138,26 @@ auto init_cuda_model(){
 
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
+
   // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
   glBindVertexArray(VAO);
-
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
   // initialize buffer object
   unsigned int size = mesh_width * mesh_height * 4 * sizeof(float);
   glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
-
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
-
   // register this buffer object with CUDA
+  // cudaGraphicsMapFlagsWriteDiscard : kernel이 write하고 opengl이 render하고 버려지는 것 같다.
   checkCudaErrors(cudaGraphicsGLRegisterBuffer(&cuda_vbo_resource, VBO, cudaGraphicsMapFlagsWriteDiscard));
-
-  //createVBO(&VBO, &cuda_vbo_resource, cudaGraphicsMapFlagsWriteDiscard);
 
   return std::make_tuple(VAO, VBO, mesh_width * mesh_height, cuda_vbo_resource);
 }
 
 int main(int argc, char **argv) {
 
-  // Initialise GLFW
   if (!glfwInit()) {
     fprintf(stderr, "Failed to initialize GLFW\n");
     getchar();
@@ -195,12 +186,9 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  int devID = findCudaDevice(argc, (const char **)argv);
-  printf("devID= %d\n", devID);
-
-
   // Ensure we can capture the escape key being pressed below
   glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+
 
   Shader ourShader(vertex_shader, fragment_shader);
   ourShader.use();
@@ -210,7 +198,6 @@ int main(int argc, char **argv) {
   //auto [VAO, VBO, point_length] = load_dynamic_model(mesh_width, mesh_height);
   auto [VAO, VBO, point_length, cuda_vbo_resource] = init_cuda_model();
   glBindVertexArray(VAO);
-
 
   // default initialization
   glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -223,7 +210,6 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     runCuda(&cuda_vbo_resource, g_fAnim);
-    //runCudaTest(g_fAnim);
 
     nvtxRangePush("opengl render");
     // create transformations
