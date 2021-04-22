@@ -1,6 +1,6 @@
 [requires]
-glfw/3.3.2@curt/testing
-fmt/6.1.2
+glfw/3.3.4
+fmt/7.1.3
 
 
 [generators]
