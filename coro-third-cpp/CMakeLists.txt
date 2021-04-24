@@ -10,6 +10,7 @@ foreach(APP
         03_http_client
         04_file_server
         05_link_cp
+        06_timeout
         )
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} uring)
