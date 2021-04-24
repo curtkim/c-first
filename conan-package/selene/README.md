@@ -6,6 +6,6 @@
     conan package . --source-folder=tmp/source --build-folder=tmp/build --package-folder=tmp/package
 
     conan export-pkg . curt/testing --package-folder=tmp/package
-    conan test test_package rmm/0.20.0a@curt/testing
+    conan test test_package selene/0.3.1@curt/testing
     conan create . curt/testing
 
