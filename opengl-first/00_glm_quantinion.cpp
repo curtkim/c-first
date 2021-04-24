@@ -48,6 +48,11 @@ void assertSimilar(glm::quat a, glm::quat b){
 }
 
 int main() {
+//  auto vec3 = glm::vec3{1,0,0};
+//  auto& [a,b,c] = vec3;
+//  std::cout << "structured binding glm::vec " << a << b << c << "\n";
+
+
   // Creates an identity quaternion (no rotation)
   glm::quat quat1;
 
