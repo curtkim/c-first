@@ -46,7 +46,7 @@ foreach(APP 21_io_timerfd 22_io_signalfd 23_io_eventfd)
 endforeach()
 
 foreach(APP 31_epoll_eventfd_worker 32_epoll_timerfd 33_epoll_signalfd 36_epoll_eventfd_single_efd
-        41_cpu_affinity 42_cpu_affinity_thread 43_getcpu)
+        41_cpu_affinity 42_cpu_affinity_thread 43_cpu_affinity_each_thread 44_getcpu)
     add_executable(${APP} ${APP}.c)
     target_link_libraries(${APP} PUBLIC pthread m)
 endforeach()
