@@ -435,7 +435,7 @@ void InitializeEncoder(EncoderClass &pEnc, NvEncoderInitParam encodeCLIOptions, 
     pEnc->CreateEncoder(&initializeParams);
 }
 
-void EncodeCuda(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, std::ifstream &fpIn, std::ofstream &fpOut)
+void encodeByCuda(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat, NvEncoderInitParam encodeCLIOptions, CUcontext cuContext, std::ifstream &fpIn, std::ofstream &fpOut)
 {
     std::unique_ptr<NvEncoderCuda> pEnc(new NvEncoderCuda(cuContext, nWidth, nHeight, eFormat));
 
@@ -621,7 +621,7 @@ int main(int argc, char **argv)
         if (bOutputInVideoMem) {
             EncodeCudaOpInVidMem(nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut, szOutFilePath, cuStreamType);
         } else {
-            EncodeCuda          (nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut);
+            encodeByCuda(nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut);
         }
         
         fpOut.close();
