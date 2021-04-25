@@ -1,11 +1,26 @@
 //#include <torch/script.h>
-#include <torch/torch.h>
+#include "precompile.hpp"
 #include <iostream>
 
 using namespace std;
 using namespace torch;
 
+Tensor my_sum(Tensor& tensor) {
+    return tensor.sum();
+}
+
+
+void function_param(){
+    cout << "\n================= "<< __FUNCTION__ << endl;
+    Tensor tensor = at::eye(2, at::kLong);
+    Tensor tensor2 = my_sum(tensor);
+    cout << tensor2 << " " << "\n";
+
+    //assert(tensor.equal(torch::tensor({2}, at::kLong)));
+}
+
 void create() {
+  cout << "\n================= "<< __FUNCTION__ << endl;
   // eye
   Tensor tensor = at::eye(2);
   std::cout << tensor << std::endl;
@@ -86,6 +101,7 @@ void broadcast() {
 
 int main() {
 
+  function_param();
   create();
   op();
   by_index();

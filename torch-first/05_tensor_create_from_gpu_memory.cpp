@@ -58,12 +58,13 @@ void use_allocator() {
                     .dtype(torch::kFloat32)
                     .device(torch::kCUDA);
 
-    auto device = torch::globalContext().getDeviceFromPtr(d_data.get(), options.device().type());
-    std::cout << "device of DataPtr: " << device << "\n";
-
     torch::Tensor cudaTest = torch::from_blob(d_data.get(), {N}, options);
     std::cout << cudaTest << std::endl;
     std::cout << cudaTest.sum() << std::endl;
+
+    // getDeviceFromPtr
+    auto device = torch::globalContext().getDeviceFromPtr(d_data.get(), options.device().type());
+    std::cout << "device of DataPtr: " << device << "\n";
 }
 
 

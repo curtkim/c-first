@@ -47,7 +47,7 @@ void op() {
 void accessors() {
   at::Tensor foo = at::eye(5, kInt);
 
-  // assert foo is 2-dimensional and holds floats.
+  // assert foo is 2-dimensional and holds ints.
   auto foo_a = foo.accessor<int,2>();
 
   for(int i = 0; i < foo_a.size(0); i++) {

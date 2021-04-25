@@ -28,7 +28,6 @@ add_library(image_io OBJECT utils/image_io.cpp)
 foreach(APP
 		00_aten
 		01_aten_named
-		02_torch_first
 		05_tensor_create_from_gpu_memory
 		)
 	add_executable(${APP} ${APP}.cpp)
@@ -39,6 +38,14 @@ foreach(APP
 	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 endforeach()
 
+
+add_executable(02_torch_first 02_torch_first.cpp)
+target_precompile_headers(02_torch_first PRIVATE precompile.hpp)
+target_include_directories(02_torch_first PRIVATE /usr/local/cuda/include)
+target_link_directories(02_torch_first PUBLIC /usr/local/cuda/lib64)
+target_link_libraries(02_torch_first PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
+target_compile_features(02_torch_first PUBLIC cxx_std_17)
+set_target_properties(02_torch_first PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 
 
 # CUDA
