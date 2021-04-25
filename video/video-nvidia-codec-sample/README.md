@@ -1,3 +1,7 @@
+## install
+
+    sudo apt-get install libavformat-dev libavcodec-dev
+
 ## sample
 
     wget https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4 -o target_1280.mp4
@@ -13,8 +17,18 @@
     # frame count    
     ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=nokey=1:noprint_wrappers=1 target_1280.mp4
     901
-    
+
+    # framehash (https://video.stackexchange.com/questions/7903/how-to-losslessly-encode-a-jpg-image-sequence-to-a-video-in-ffmpeg)
+    ffmpeg -i target_1280.mp4 -map 0:v -f framehash -
+
+    #stream_index, packet_dts, packet_pts, packet_duration, packet_size, hash    
+    #0,          0,          0,        1,  1382400, ea4d89982b4d8546ae7cea7e2b466b67142009294eff296bc499fc14e8c2dedd
+    #0,          1,          1,        1,  1382400, 9cbca941374f0f888ce76da4248569aad2d90192dc4525ef4ce04ac2352e882c
+
+
     ffmpeg -i target_1280.mp4 target_1280.yuv
+    ffplay -hide_banner -video_size 1280x720 target_1280.yuv
+
     cmake-build-debug/bin/AppEncCuda -i target_1280.yuv -s 1280x720 -if iyuv -codec h264 -o target_1280.h264
     cmake-build-debug/bin/AppDec -i target_1280.h264 -o target_1280.nv12
 

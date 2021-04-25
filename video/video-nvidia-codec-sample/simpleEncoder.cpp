@@ -25,6 +25,13 @@ void EncodeCuda(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat, NvEncoder
   }
 
   int nFrameSize = enc.GetFrameSize();
+  assert(nFrameSize == (int)1280*720*1.5);
+
+  // nFrameSize=1382400 921600 1152000 1382400
+  // encoderInputFrame->chromaOffsets: 1105920 1382400
+
+  printf("nFrameSize=%d %d %d %d\n", nFrameSize, 1280*720, (int)(1280*720*1.25), (int)(1280*720*1.5));
+  printf("NV_ENC_BUFFER_FORMAT_IYUV=%d\n", NV_ENC_BUFFER_FORMAT_IYUV);
 
   uint8_t hostFrame[nFrameSize];
 
@@ -39,6 +46,10 @@ void EncodeCuda(int nWidth, int nHeight, NV_ENC_BUFFER_FORMAT eFormat, NvEncoder
     if (nRead == nFrameSize)
     {
       const NvEncInputFrame* encoderInputFrame = enc.GetNextInputFrame();
+      // nRead=1382400 encodeWidth=1280, encoder.pitch=1536, encoderInputFrame->numChromaPlanes=2 encoderInputFrame->bufferFormat=256 encoderInputFrame->chromaOffsets: 1105920 1382400
+      printf("nRead=%d encodeWidth=%d, encoderInputFrame->pitch=%d, encoderInputFrame->numChromaPlanes=%d encoderInputFrame->bufferFormat=%d encoderInputFrame->chromaOffsets: %d %d\n",
+             nRead, enc.GetEncodeWidth(), encoderInputFrame->pitch, encoderInputFrame->numChromaPlanes,
+             encoderInputFrame->bufferFormat, encoderInputFrame->chromaOffsets[0], encoderInputFrame->chromaOffsets[1]);
       NvEncoderCuda::CopyToDeviceFrame(cuContext, hostFrame, 0, (CUdeviceptr)encoderInputFrame->inputPtr,
                                        (int)encoderInputFrame->pitch,
                                        enc.GetEncodeWidth(),
@@ -83,8 +94,8 @@ int main() {
 
   NvEncoderInitParam encodeCLIOptions;
 
-  std::ifstream fpIn("../../target_1280.yuv", std::ifstream::in | std::ifstream::binary);
-  std::ofstream fpOut("../../target_1280.h264", std::ios::out | std::ios::binary);
+  std::ifstream fpIn("../../../target_1280.yuv", std::ifstream::in | std::ifstream::binary);
+  std::ofstream fpOut("../../../target_1280.h264", std::ios::out | std::ios::binary);
 
   EncodeCuda(nWidth, nHeight, eFormat, encodeCLIOptions, cuContext, fpIn, fpOut);
 }
