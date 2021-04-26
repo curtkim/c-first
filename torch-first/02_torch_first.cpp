@@ -1,5 +1,6 @@
 //#include <torch/script.h>
 #include "precompile.hpp"
+#include <assert.h>
 #include <iostream>
 
 using namespace std;
@@ -100,6 +101,14 @@ void broadcast() {
 }
 
 int main() {
+
+  auto a = at::zeros({2,2}, at::device(at::kCUDA).dtype(at::kLong));
+  auto b = a;
+
+  // after copy assignment operator, cuda memory는 같다.
+  assert(a.data_ptr() == b.data_ptr());
+  assert(&a != &b);
+
 
   function_param();
   create();
