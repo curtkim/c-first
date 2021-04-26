@@ -1,17 +1,10 @@
+#include "all.hpp"
 #include <iostream>
 #include <atomic>
-
-#include <asio.hpp>
-#include <spdlog/spdlog.h>
-
-#include <sys/syscall.h>
-#include <unistd.h>
-#include <nvToolsExt.h>
 
 #include "track.hpp"
 #include "timeline.hpp"
 
-#include "timer.hpp"
 #include "thread_pool_executor.hpp"
 
 #define handle_error(msg) \
