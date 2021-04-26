@@ -15,6 +15,7 @@
 #include <iostream>
 #include <cstddef>
 #include <cstring>
+#include <type_traits>
 
 class rule_of_three
 {
@@ -56,6 +57,13 @@ public:
   operator const char *() const { return cstring; } // accessor
 
 };
+
+static_assert(std::is_destructible_v<rule_of_three>);
+static_assert(std::is_copy_constructible_v<rule_of_three>);
+static_assert(std::is_copy_assignable_v<rule_of_three>);
+static_assert(std::is_move_constructible_v<rule_of_three>);
+static_assert(std::is_move_assignable_v<rule_of_three>);
+
 
 int main()
 {
