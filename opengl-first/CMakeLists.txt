@@ -48,7 +48,7 @@ target_link_libraries(02_second_grid_with_camera ${CONAN_LIBS} ${OPENGL_LIBRARY}
 target_compile_features(02_second_grid_with_camera PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid_with_camera PUBLIC STB_IMAGE_IMPLEMENTATION)
 
-foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box)
+foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box 73_egl_geometry_shader)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
   target_compile_features(${APP} PUBLIC cxx_std_17)
