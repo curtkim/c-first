@@ -2,6 +2,7 @@
 
 #include "track.hpp"
 #include "ring_span.hpp"
+#include "11_opengl.hpp"
 
 #define handle_error(msg) \
     do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -9,10 +10,25 @@
 
 using namespace std::chrono_literals;
 
+const int WIDTH = 800;
+const int HEIGHT = 600;
+
 struct DeviceBuffer {
     void* ptr;
 };
 
+unsigned int loadTexture(const DeviceBuffer& device_buffer ) {
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WIDTH, HEIGHT, 0, GL_BGRA, GL_UNSIGNED_BYTE, image->data());
+    glGenerateMipmap(GL_TEXTURE_2D);
+    return texture1;
+}
 
 // anonymous namespace
 namespace {
@@ -89,6 +105,50 @@ void process(const Frame& frame, int efd){
 
 void visualize(std::atomic_ref<Frame> frame_ref){
     nvtxNameOsThread(syscall(SYS_gettid), "VIZ Thread");
+
+    GLFWwindow *window = make_window();
+    auto[VAO, VBO, EBO] = load_model();
+    glBindVertexArray(VAO);
+
+    while (!glfwWindowShouldClose(window))
+    {
+        nvtxRangePush(__FUNCTION__);
+        auto start_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
+        // input
+        // -----
+        processInput(window);
+
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        const Frame& frame = frame_ref.load();
+        log_frame(frame, "visualize");
+
+        auto& [header, device_buffer] = frame.camera1.front();
+        unsigned int texture = loadTexture(device_buffer);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDeleteTextures(1, &texture);
+
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+        nvtxRangePop();
+
+        auto end_time = std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch());
+
+        long diff = (end_time - start_time).count();
+        long duration = 1000/30;
+        if (diff < duration) {
+            std::cout << "sleep " << duration -diff << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(duration -diff ));
+        }
+    }
+
+
     while(1){
         nvtxRangePush(__FUNCTION__);
         const Frame& frame = frame_ref.load();
@@ -96,6 +156,10 @@ void visualize(std::atomic_ref<Frame> frame_ref){
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         nvtxRangePop();
     }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 }
 
 
@@ -177,6 +241,7 @@ int main() {
 
     // Register a callback to save images to disk.
     camera->Listen([&q](auto data) {
+        nvtxRangePush("camera_listen");
         auto image = boost::static_pointer_cast<csd::Image>(data);
         size_t size = image->GetWidth() * image->GetHeight() * 3;
 
@@ -186,11 +251,13 @@ int main() {
             handle_error("cudaMalloc");
         }
         spdlog::info("listen cudaMalloc size={} ptr={}", size, buffer.ptr);
+        cudaMemcpy(buffer.ptr, image->data(), size, cudaMemcpyHostToDevice);
 
         bool succeeded = q.enqueue(buffer);
         if(!succeeded){
             handle_error("q.enqueue");
         }
+        nvtxRangePop();
     });
 
     TimerContext* timer = setInterval(io_service, [](){

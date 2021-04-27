@@ -18,7 +18,7 @@ endforeach()
 
 target_precompile_headers(01-basic PRIVATE 01_all.hpp)
 target_precompile_headers(11_carla PRIVATE 11_all.hpp)
-target_link_libraries(11_carla cuda cudart )
+target_link_libraries(11_carla cuda cudart X11)
 
 
 set(TEST_SOURCES

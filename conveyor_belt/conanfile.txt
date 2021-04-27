@@ -3,10 +3,13 @@
 asio/1.18.1
 doctest/2.4.4
 nanobench/4.3.0
-carla-client/0.9.11@curt/testing
 fmt/7.1.3
 spdlog/1.8.5
+carla-client/0.9.11@curt/testing
 readerwriterqueue/1.0.2@curt/testing
+glfw/3.3.4
+glad/0.1.33
+glm/0.9.9.7
 
 [generators]
 cmake
