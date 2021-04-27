@@ -13,7 +13,7 @@
 #include <thread>
 #include <iostream>
 
-#include "common/utils.hpp"
+#include "common/utils_glfw.hpp"
 #include "common/shader.hpp"
 #include "common/camera.hpp"
 

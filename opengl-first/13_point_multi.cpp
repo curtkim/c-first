@@ -15,7 +15,7 @@
 
 #include "common/shader.hpp"
 #include "common/camera.hpp"
-#include "common/utils.hpp"
+#include "common/utils_glfw.hpp"
 
 std::string vertex_shader = R"(
 #version 330 core

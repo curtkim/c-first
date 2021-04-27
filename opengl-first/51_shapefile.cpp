@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "common/shader.hpp"
-#include "common/utils.hpp"
+#include "common/utils_glfw.hpp"
 #include "common/camera.hpp"
 #include "51_shapefile.hpp"
 

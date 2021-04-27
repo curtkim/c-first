@@ -1,6 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <stb_image.h>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 unsigned int load_texture(const char * filename, bool flip_vertically, int color_type) {
     unsigned int texture_id;
@@ -30,4 +34,33 @@ unsigned int load_texture(const char * filename, bool flip_vertically, int color
 
     stbi_image_free(data);
     return texture_id;
+}
+
+
+void save_context_to_file(const char* file_name, const int width, const int height){
+    unsigned char* imageData = (unsigned char *)malloc(width * height * 3);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+
+    GLsizei nrChannels = 3;
+    GLsizei stride = nrChannels * width;
+    stbi_flip_vertically_on_write(true);
+    stbi_write_png(file_name, width, height, nrChannels, imageData, stride);
+
+    free(imageData);
+}
+
+// stride4를 가진 것이 어떤 이점이 있는지 모르겠다. pitch인가?
+void save_context_to_file_stride4(char* filepath, int width, int height) {
+    GLsizei nrChannels = 3;
+    GLsizei stride = nrChannels * width;
+    stride += (stride % 4) ? (4 - stride % 4) : 0;
+    GLsizei bufferSize = stride * height;
+
+    std::vector<char> buffer(bufferSize);
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glReadBuffer(GL_FRONT);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+
+    stbi_flip_vertically_on_write(true);
+    stbi_write_png(filepath, width, height, nrChannels, buffer.data(), stride);
 }

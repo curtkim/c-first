@@ -14,7 +14,7 @@
 
 #include "common/shader.hpp"
 #include "common/camera.hpp"
-#include "common/utils.hpp"
+#include "common/utils_glfw.hpp"
 
 
 #include "20_points_renderable.hpp"

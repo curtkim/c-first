@@ -1,9 +1,6 @@
 #include <EGL/egl.h>
 #include <glad/glad.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-
 EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
   // 1. Initialize EGL
   EGLDisplay eglDpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -46,16 +43,4 @@ EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
 
   eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
   return eglDpy;
-}
-
-void save_context_to_file(const char* file_name, const int width, const int height){
-    unsigned char* imageData = (unsigned char *)malloc(width * height * 3);
-    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-
-    GLsizei nrChannels = 3;
-    GLsizei stride = nrChannels * width;
-    stbi_flip_vertically_on_write(true);
-    stbi_write_png(file_name, width, height, nrChannels, imageData, stride);
-
-    free(imageData);
 }

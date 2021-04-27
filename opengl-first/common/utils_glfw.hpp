@@ -1,6 +1,7 @@
 #pragma once
 
-#include "utils_opengl.hpp"
+// Include GLFW
+#include <GLFW/glfw3.h>
 
 GLFWwindow * make_window(int w, int h) {
   GLFWwindow * window;

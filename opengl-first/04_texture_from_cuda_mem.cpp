@@ -1,9 +1,12 @@
+// cuda memory에 있는 texture를 사용한다.
+// 아직 완성되지 않음
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "common/shader.hpp"
-#include "common/utils.hpp"
+#include "common/utils_glfw.hpp"
+#include "common/utils_opengl.hpp"
 
 
 const char *BG_VERTEX_SHADER = R"(

@@ -31,7 +31,6 @@ foreach(APP
         32_mouse_map_control_wo_camera
         41_load-model-libigl
         42_load_ply
-        43_save_png
         51_shapefile
         61_opengl_thread
         62_thread_render_loop

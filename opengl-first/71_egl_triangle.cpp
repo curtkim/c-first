@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "common/shader_s.h"
+#include "common/utils_opengl.hpp"
 
 #include "70_egl.hpp"
 

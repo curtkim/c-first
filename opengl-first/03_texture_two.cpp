@@ -3,8 +3,8 @@
 #include <GLFW/glfw3.h>
 
 #include "common/shader.hpp"
-#include "common/utils.hpp"
-
+#include "common/utils_glfw.hpp"
+#include "common/utils_opengl.hpp"
 
 const char *BG_VERTEX_SHADER = R"(
 #version 330 core
