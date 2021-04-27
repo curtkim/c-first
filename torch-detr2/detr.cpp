@@ -43,18 +43,20 @@ namespace detr {
     at::Dict<at::IValue, at::IValue> dict = output.toGenericDict();
     at::Tensor probas = dict.at("pred_logits").toTensor();
     at::Tensor boxes = dict.at("pred_boxes").toTensor();
-    //std::cout << "probas.sizes() " << probas.sizes() << std::endl;
-    //std::cout << "boxes.sizes() " << boxes.sizes() << std::endl;
+    std::cout << "probas.sizes() " << probas.sizes() << std::endl;
+    std::cout << "boxes.sizes() " << boxes.sizes() << std::endl;
 
     at::Tensor probas2 = probas.softmax(-1).index({
       0,
       at::indexing::Ellipsis,
       at::indexing::Slice(at::indexing::None, -1)
     });
-    //std::cout << "probas2.sizes() " << probas2.sizes() << std::endl;
+    std::cout << "probas2.sizes() " << probas2.sizes() << std::endl;
 
     const auto [values, indices] = probas2.max(-1);
     at::Tensor keep = values.gt(0.9);
+    std::cout << "keep " << keep << std::endl;
+
     return boxes.index({0, keep});
     //std::cout << "keep.sizes() " << keep.sizes() << std::endl;
 

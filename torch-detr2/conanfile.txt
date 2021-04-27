@@ -1,9 +1,9 @@
 [requires]
 torch/1.8.1@curt/prebuilt
 stb/20200203
-carla-client/0.9.11@demo/testing
-readerwriterqueue/1.0.2@demo/testing
-glfw/3.3.2@demo/testing
+carla-client/0.9.11@curt/testing
+readerwriterqueue/1.0.2@curt/testing
+glfw/3.3.4
 glad/0.1.33
 glm/0.9.9.7
 

@@ -97,6 +97,7 @@ int main(int argc, const char *argv[]) {
     while(!q.try_dequeue(pImage)){}
 
     nvtxRangePush("detect");
+
     auto img = torch::from_blob(pImage->data(), {HEIGHT, WIDTH, 4}, torch::kUInt8)
       .clone()
       .to(torch::kFloat32)
@@ -104,10 +105,11 @@ int main(int argc, const char *argv[]) {
       .index({torch::indexing::Slice(0, 3), torch::indexing::Ellipsis})
       .div_(255)
       .to(torch_device);
-    //std::cout << img.sizes() << std::endl;
+    std::cout << img.sizes() << std::endl;
     auto bounding_boxes = detr::detect(detr_model, img);
     auto end_time = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     long diff_detr = (end_time - start_time).count();
+    std::cout << "diff_detr " << diff_detr << "\n";
     nvtxRangePop();
 
     nvtxRangePush("viz");
