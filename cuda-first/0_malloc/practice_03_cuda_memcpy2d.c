@@ -103,7 +103,7 @@ void imageCopyBetweenGPU(gpuMemory *srcMem, gpuMemory *dstMem)
   printf("====================================================\n\n");
 }
 
-void imageWriteToGPU(gpuMemory *gpuMem, const char *filepath)
+void imageWriteFromGPU(gpuMemory *gpuMem, const char *filepath)
 {
   int width = (int)gpuMem->widthByte / 3;
   int height = (int)gpuMem->height;
@@ -136,7 +136,7 @@ int main()
 
   imageCopyBetweenGPU(&mem1, &mem2);
 
-  imageWriteToGPU(&mem2, "output.jpg");
+    imageWriteFromGPU(&mem2, "output.jpg");
 
   cudaFree(mem1.memory);
   cudaFree(mem2.memory);

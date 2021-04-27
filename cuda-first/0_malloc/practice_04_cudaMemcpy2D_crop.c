@@ -106,7 +106,7 @@ void imageCropUsingMemcpy(gpuMemory *srcMem, int srcRoiX, int srcRoiY, int srcRo
   printf("====================================================\n\n");
 }
 
-void imageWriteToGPU(gpuMemory *gpuMem, const char *filepath)
+void imageWriteFromGPU(gpuMemory *gpuMem, const char *filepath)
 {
   int width = (int)gpuMem->widthByte / 3;
   int height = (int)gpuMem->height;
@@ -140,7 +140,7 @@ int main()
   //imageCopyBetweenGPU(&mem1, &mem2);
   imageCropUsingMemcpy(&mem1, 533, 400, 533, 400, &mem2, 0, 0);
 
-  imageWriteToGPU(&mem2, "output.jpg");
+  imageWriteFromGPU(&mem2, "output.jpg");
 
   cudaFree(mem1.memory);
   cudaFree(mem2.memory);
