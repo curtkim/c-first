@@ -34,11 +34,9 @@ foreach(APP
         43_save_png
         51_shapefile
         61_opengl_thread
-        72_omega_box
         82_thread_another
         90_map_buffer
         90_without_cuda
-
         )
   add_executable(${APP} ${APP}.cpp common/shader.cpp ) # memory_tracking.cpp
   target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
@@ -51,7 +49,7 @@ target_link_libraries(02_second_grid ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(02_second_grid PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid PUBLIC STB_IMAGE_IMPLEMENTATION)
 
-foreach(APP 81_egl 81_egl_triangle)
+foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box)
 add_executable(${APP} ${APP}.cpp)
 target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
 target_compile_features(${APP} PUBLIC cxx_std_17)

@@ -1,6 +1,5 @@
 #include <EGL/egl.h>
 #include <glad/glad.h>
-#include <iostream>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
@@ -49,34 +48,14 @@ EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
   return eglDpy;
 }
 
-int main()
-{
-  const int width = 800;
-  const int height = 600;
+void save_context_to_file(const char* file_name, const int width, const int height){
+    unsigned char* imageData = (unsigned char *)malloc(width * height * 3);
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, imageData);
 
-  EGLDisplay eglDisplay = initEGL(width, height);
+    GLsizei nrChannels = 3;
+    GLsizei stride = nrChannels * width;
+    stbi_flip_vertically_on_write(true);
+    stbi_write_png(file_name, width, height, nrChannels, imageData, stride);
 
-  // from now on use your OpenGL context
-  if(!gladLoadGL()) {
-    std::cout << "Failed to initialize GLAD\n";
-    return -1;
-  }
-
-  // DrawCode(Red background)
-  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  unsigned char* imageData = (unsigned char *)malloc(width * height * 3);
-  glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-
-  GLsizei nrChannels = 3;
-  GLsizei stride = nrChannels * width;
-  stbi_flip_vertically_on_write(true);
-  stbi_write_png("egl.png", width, height, nrChannels, imageData, stride);
-
-  free(imageData);
-
-  // 6. Terminate EGL when finished
-  eglTerminate(eglDisplay);
-  return 0;
+    free(imageData);
 }
