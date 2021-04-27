@@ -24,7 +24,6 @@ foreach(APP
         01_triangle
         01_triangle_curt_style
         03_texture_two
-        04_texture_from_cuda_mem
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
         21_renderable
         31_mouse
@@ -49,7 +48,7 @@ target_compile_features(02_second_grid_with_camera PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid_with_camera PUBLIC STB_IMAGE_IMPLEMENTATION)
 
 foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box 73_egl_geometry_shader)
-  add_executable(${APP} ${APP}.cpp)
+  add_executable(${APP} egl/${APP}.cpp)
   target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
   target_compile_features(${APP} PUBLIC cxx_std_17)
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)

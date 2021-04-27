@@ -2,11 +2,11 @@
 #include <glad/glad.h>
 #include <iostream>
 
-#include "common/shader_s.h"
+#include "../common/shader_s.h"
 #include <tuple>
 
 #include "70_egl.hpp"
-#include "common/utils_opengl.hpp"
+#include "../common/utils_opengl.hpp"
 
 const char *BG_VERTEX_SHADER = R"(
 #version 330 core

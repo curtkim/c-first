@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "70_egl.hpp"
-#include "common/utils_opengl.hpp"
+#include "../common/utils_opengl.hpp"
 
 int main()
 {
