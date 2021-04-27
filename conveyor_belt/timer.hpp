@@ -54,7 +54,7 @@ auto setTimeout(asio::io_service &io_svc, const std::function<void()> &func, siz
 
   struct ret {
     operator TimerContext*() {
-      std::cout << " ** " << std::endl;
+      //std::cout << " ** " << std::endl;
       ctx->autofree = false;
       return ctx;
     }

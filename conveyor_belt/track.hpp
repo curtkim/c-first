@@ -92,6 +92,10 @@ public:
   ring_span<std::tuple<Header, T>> span() {
     return ring_span<std::tuple<Header, T>>(data, data+max_size, data+front, size());
   }
+  ring_span<std::tuple<Header, T>> span(const ring_span<std::tuple<Header, T>>& prev_span) {
+    return ring_span<std::tuple<Header, T>>(data, data+max_size, data+front+prev_span.size(), size() - prev_span.size());
+  }
+
 
   const int size() {
     if (front == -1)

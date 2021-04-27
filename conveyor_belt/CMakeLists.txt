@@ -10,13 +10,15 @@ foreach(APP
         01-basic 11_carla)
     add_executable(${APP} ${APP}.cpp)
 
-    target_precompile_headers(${APP} PRIVATE all.hpp)
-
     target_include_directories(${APP} PUBLIC /usr/local/cuda/include)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
-    target_link_libraries(${APP} ${CONAN_LIBS} atomic nvToolsExt cuda cudart)
+    target_link_libraries(${APP} ${CONAN_LIBS} atomic nvToolsExt )
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
+
+target_precompile_headers(01-basic PRIVATE 01_all.hpp)
+target_precompile_headers(11_carla PRIVATE 11_all.hpp)
+target_link_libraries(11_carla cuda cudart )
 
 
 set(TEST_SOURCES

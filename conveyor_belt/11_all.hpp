@@ -8,12 +8,16 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-#include <cuda_runtime.h>
 #include <nvToolsExt.h>
+#include <cuda_runtime.h>
 
 #include <readerwriterqueue.h>
 
 #include <asio.hpp>
+
+#include "thread_pool_executor.hpp"
+#include "timer.hpp"
+
 
 #include <carla/client/ActorBlueprint.h>
 #include <carla/client/BlueprintLibrary.h>
@@ -27,5 +31,3 @@
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
 
-#include "thread_pool_executor.hpp"
-#include "timer.hpp"

@@ -1,5 +1,4 @@
-#include "all.hpp"
-
+#include "11_all.hpp"
 
 #include "track.hpp"
 #include "ring_span.hpp"
@@ -13,6 +12,7 @@ using namespace std::chrono_literals;
 struct DeviceBuffer {
     void* ptr;
 };
+
 
 // anonymous namespace
 namespace {
@@ -29,6 +29,12 @@ namespace {
         Frame frame(){
             return Frame{
                     camera1.span(),
+            };
+        }
+
+        Frame frame(const Frame& prev) {
+            return Frame{
+                    camera1.span(prev.camera1),
             };
         }
 
@@ -108,6 +114,7 @@ int main() {
     namespace cg = carla::geom;
     namespace csd = carla::sensor::data;
 
+    cudaSetDevice(1);
 
     nvtxNameOsThread(syscall(SYS_gettid), "IO Thread");
     spdlog::set_pattern("[%H:%M:%S.%e] [thread %t] %v");
@@ -217,7 +224,7 @@ int main() {
             }
 
             if( timeline.camera1.size() > 0){
-                frame = timeline.frame();
+                frame = timeline.frame(frame_v);
                 spdlog::info("frame begin === camera.seq={}~{}",
                              std::get<0>(frame.camera1.front()).seq,
                              std::get<0>(frame.camera1.back()).seq);
