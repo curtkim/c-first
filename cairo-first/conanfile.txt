@@ -1,0 +1,8 @@
+[requires]
+cairo/1.17.4
+fmt/7.1.3
+
+[generators]
+cmake
+
+[options]
