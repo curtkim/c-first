@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.15)
-project(conan-opengl)
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+project(conan-opengl LANGUAGES CUDA CXX)
 
 find_package(OpenGL REQUIRED)
 
@@ -47,9 +48,17 @@ target_link_libraries(02_second_grid_with_camera ${CONAN_LIBS} ${OPENGL_LIBRARY}
 target_compile_features(02_second_grid_with_camera PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid_with_camera PUBLIC STB_IMAGE_IMPLEMENTATION)
 
-foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box 73_egl_geometry_shader)
+foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box 73_egl_geometry_shader )
   add_executable(${APP} egl/${APP}.cpp)
   target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
   target_compile_features(${APP} PUBLIC cxx_std_17)
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
+
+
+add_executable(74_egl_cuda_vertex egl/74_egl_cuda_vertex.cpp egl/simple_kernel.cu)
+target_link_libraries(74_egl_cuda_vertex EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
+target_compile_features(74_egl_cuda_vertex PUBLIC cxx_std_17)
+target_compile_definitions(74_egl_cuda_vertex PUBLIC STB_IMAGE_IMPLEMENTATION)
+target_include_directories(74_egl_cuda_vertex PRIVATE /usr/local/cuda/include)
+target_link_directories(74_egl_cuda_vertex PRIVATE /usr/local/cuda/lib64)
