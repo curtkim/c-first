@@ -21,7 +21,10 @@ endforeach()
 
 foreach(APP
         00_glm_quantinion
-        01_first
+        01_triangle
+        01_triangle_curt
+        03_texture_two
+        04_texture_from_cuda_mem
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
         21_renderable
         31_mouse
@@ -31,7 +34,6 @@ foreach(APP
         43_save_png
         51_shapefile
         61_opengl_thread
-        71_omega
         72_omega_box
         82_thread_another
         90_map_buffer
@@ -49,7 +51,7 @@ target_link_libraries(02_second_grid ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(02_second_grid PUBLIC cxx_std_17)
 target_compile_definitions(02_second_grid PUBLIC STB_IMAGE_IMPLEMENTATION)
 
-foreach(APP 81_egl)
+foreach(APP 81_egl 81_egl_triangle)
 add_executable(${APP} ${APP}.cpp)
 target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
 target_compile_features(${APP} PUBLIC cxx_std_17)

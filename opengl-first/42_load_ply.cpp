@@ -43,7 +43,7 @@ void main() {
 }
 )";
 
-std::vector<float> parse_ply(const std::string& filename) {
+std::vector<float> parse_ply_pointcloud(const std::string& filename) {
   std::ifstream infile(filename);
 
   std::string line;
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
     4, 8,
   };
 
-  auto pointcloud = parse_ply("00000_lidar.ply");
+  auto pointcloud = parse_ply_pointcloud("00000_lidar.ply");
 
   // 3. model
   auto grid = GridRenderable(g_vertex_buffer_data, indices);

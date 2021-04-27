@@ -11,8 +11,6 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 
-GLFWwindow *window;
-
 #include "common/shader.hpp"
 
 void saveImage(char* filepath, GLFWwindow* w) {
@@ -22,10 +20,12 @@ void saveImage(char* filepath, GLFWwindow* w) {
   GLsizei stride = nrChannels * width;
   stride += (stride % 4) ? (4 - stride % 4) : 0;
   GLsizei bufferSize = stride * height;
+
   std::vector<char> buffer(bufferSize);
   glPixelStorei(GL_PACK_ALIGNMENT, 4);
   glReadBuffer(GL_FRONT);
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+
   stbi_flip_vertically_on_write(true);
   stbi_write_png(filepath, width, height, nrChannels, buffer.data(), stride);
 }
@@ -45,7 +45,7 @@ int main(void) {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // Open a window and create its OpenGL context
-  window = glfwCreateWindow(1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
   if (window == NULL) {
     fprintf(stderr,
             "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");

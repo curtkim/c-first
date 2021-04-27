@@ -120,7 +120,6 @@ int main() {
   // load and create a texture
   // -------------------------
   unsigned int texture0 = load_texture("00000_camera0.png", true, GL_RGBA);
-  unsigned int texture1 = load_texture("00000_camera1.png", true, GL_RGBA);
 
   // build and compile our shader zprogram
   // ------------------------------------
@@ -143,20 +142,13 @@ int main() {
 
     // render container
     ourShader.use();
+    // camera1
     glBindVertexArray(VAO);
     {
-      glViewport(0, height/2, width/2, height/2);
+      glViewport(0, 0, width, height);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture0);
 
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    }
-    {
-      glViewport(0, 0, width/2, height/2);
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, texture1);
-
-      // render container
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
@@ -169,7 +161,6 @@ int main() {
   // optional: de-allocate all resources once they've outlived their purpose:
   // ------------------------------------------------------------------------
   glDeleteTextures(1, &texture0);
-  glDeleteTextures(1, &texture1);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
