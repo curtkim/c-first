@@ -22,7 +22,7 @@ endforeach()
 foreach(APP
         00_glm_quantinion
         01_triangle
-        01_triangle_curt
+        01_triangle_curt_style
         03_texture_two
         04_texture_from_cuda_mem
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
@@ -34,7 +34,7 @@ foreach(APP
         43_save_png
         51_shapefile
         61_opengl_thread
-        82_thread_another
+        62_thread_render_loop
         90_map_buffer
         90_without_cuda
         )
@@ -44,14 +44,14 @@ foreach(APP
   target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()
 
-add_executable(02_second_grid 02_second_grid.cpp common/shader.cpp common/camera2.cpp)
-target_link_libraries(02_second_grid ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
-target_compile_features(02_second_grid PUBLIC cxx_std_17)
-target_compile_definitions(02_second_grid PUBLIC STB_IMAGE_IMPLEMENTATION)
+add_executable(02_second_grid_with_camera 02_second_grid_with_camera.cpp common/shader.cpp common/camera2.cpp)
+target_link_libraries(02_second_grid_with_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(02_second_grid_with_camera PUBLIC cxx_std_17)
+target_compile_definitions(02_second_grid_with_camera PUBLIC STB_IMAGE_IMPLEMENTATION)
 
 foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box)
-add_executable(${APP} ${APP}.cpp)
-target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
-target_compile_features(${APP} PUBLIC cxx_std_17)
-target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
+  add_executable(${APP} ${APP}.cpp)
+  target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
+  target_compile_features(${APP} PUBLIC cxx_std_17)
+  target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
 endforeach()

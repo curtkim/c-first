@@ -160,6 +160,8 @@ void opengl_main(moodycamel::ReaderWriterQueue<float> & q) {
   glfwTerminate();
 }
 
+// main에 opengl관련 코드가 없다.
+// readerWriterQueue만을 공유
 int main(int argc, char *argv[]) {
 
   moodycamel::ReaderWriterQueue<float> q(5);
