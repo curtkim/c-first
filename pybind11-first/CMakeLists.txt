@@ -43,3 +43,4 @@ pybind11_add_module(nested2_format2 nested2/format2/nested2_format2_pybind.cpp)
 target_include_directories(nested2_format2 PRIVATE .)
 
 
+pybind11_add_module(scoped_enum scoped_enum.cpp)

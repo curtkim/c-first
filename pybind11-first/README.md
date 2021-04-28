@@ -1,3 +1,8 @@
+## cmake python 설정
+
+    -DPYTHON_EXECUTABLE=/home/curt/.pyenv/versions/3.8.3/bin/python
+
+
 ## howto
     
     mkdir build && cd build
@@ -11,6 +16,8 @@
     PYTHONPATH=lib python ../test_oop.py 
     PYTHONPATH=lib python ../test_nested.py
     PYTHONPATH=lib python ../myopencv.py
+
+    PYTHONPATH=lib python ../scoped_enum_test.py
 
 
 ## reference
