@@ -43,46 +43,40 @@ void fig_2_30() {
   using Image = PNGImage;
   using ImagePair = std::pair<PNGImage, PNGImage>;
 
-  tbb::parallel_pipeline(
-    8,
-    tbb::make_filter<void, Image>(
-      tbb::filter::serial_in_order,
-      [&](tbb::flow_control &fc) -> Image {
-        if (uint64_t frame_number = getNextFrameNumber()) {
+  auto generate_image = [](tbb::flow_control &fc) -> Image {
+      if (uint64_t frame_number = getNextFrameNumber()) {
           return getLeftImage(frame_number);
-        } else {
+      } else {
           fc.stop();
           return Image{};
-        }
-      }) &
-    tbb::make_filter<Image, ImagePair>(
-      tbb::filter::serial_in_order,
-      [&](Image left) -> ImagePair {
-        return ImagePair(left, getRightImage(left.frameNumber));
-      }) &
-    tbb::make_filter<ImagePair, ImagePair>(
-      tbb::filter::parallel,
-      [&](ImagePair p) -> ImagePair {
-        increasePNGChannel(p.first, Image::redOffset, 10);
-        return p;
-      }) &
-    tbb::make_filter<ImagePair, ImagePair>(
-      tbb::filter::parallel,
-      [&](ImagePair p) -> ImagePair {
-        increasePNGChannel(p.second, Image::blueOffset, 10);
-        return p;
-      }) &
-    tbb::make_filter<ImagePair, Image>(
-      tbb::filter::parallel,
-      [&](ImagePair p) -> Image {
-        mergePNGImages(p.second, p.first);
-        return p.second;
-      }) &
-    tbb::make_filter<Image, void>(
-      tbb::filter::parallel,
-      [&](Image img) {
-        img.write();
-      })
+      }
+  };
+  auto make_pair = [](Image left) -> ImagePair {
+      return ImagePair(left, getRightImage(left.frameNumber));
+  };
+  auto increase_first_png_channel = [](ImagePair p) -> ImagePair {
+      increasePNGChannel(p.first, Image::redOffset, 10);
+      return p;
+  };
+  auto increase_second_png_channel = [](ImagePair p) -> ImagePair {
+    increasePNGChannel(p.second, Image::redOffset, 10);
+    return p;
+  };
+  auto merge_pair = [](ImagePair p) -> Image {
+      mergePNGImages(p.second, p.first);
+      return p.second;
+  };
+  auto write_image = [](Image img) {img.write();};
+
+
+  tbb::parallel_pipeline(
+    8,
+    tbb::make_filter<void, Image>(tbb::filter::serial_in_order, generate_image) &
+    tbb::make_filter<Image, ImagePair>(tbb::filter::serial_in_order, make_pair) &
+    tbb::make_filter<ImagePair, ImagePair>(tbb::filter::parallel, increase_first_png_channel) &
+    tbb::make_filter<ImagePair, ImagePair>(tbb::filter::parallel, increase_second_png_channel) &
+    tbb::make_filter<ImagePair, Image>(tbb::filter::parallel, merge_pair) &
+    tbb::make_filter<Image, void>(tbb::filter::parallel, write_image)
   );
 }
 

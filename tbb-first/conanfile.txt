@@ -1,8 +1,8 @@
 [requires]
-tbb/2020.1
-parallelstl/20181004@conan/stable
+tbb/2020.3
+onedpl/20200330  #parallelstl/20181004@conan/stable
 fmt/6.1.2
-lodepng/20200520@curt/testing
+lodepng/cci.20200615
 
 [generators]
 cmake

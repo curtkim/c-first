@@ -12,44 +12,42 @@ CaseStringPtr getCaseString(std::ofstream &f);
 
 void writeCaseString(std::ofstream &f, CaseStringPtr s);
 
+char toggle_char(char c){
+    if (std::islower(c))
+        return std::toupper(c);
+    else if (std::isupper(c))
+        return std::tolower(c);
+    else
+        return c;
+}
 
 void fig_2_27(int num_tokens, std::ofstream &caseBeforeFile, std::ofstream &caseAfterFile) {
 
+  using namespace tbb;
+
+  auto get_case_string = [&caseBeforeFile](tbb::flow_control &fc) -> CaseStringPtr {
+      CaseStringPtr s_ptr = getCaseString(caseBeforeFile);
+      if (!s_ptr)
+          fc.stop();
+      return s_ptr;
+  };
+
+  /* make the change case filter */
+  auto change_case = [](CaseStringPtr s_ptr) -> CaseStringPtr {
+      std::transform(s_ptr->begin(), s_ptr->end(), s_ptr->begin(), toggle_char);
+      return s_ptr;
+  };
+
+  /* make the write filter */
+  auto write_string = [&caseAfterFile](CaseStringPtr s_ptr) -> void {
+      writeCaseString(caseAfterFile, s_ptr);
+  };
+
   tbb::parallel_pipeline(
     num_tokens,
-
-    tbb::make_filter<void, CaseStringPtr>(
-      tbb::filter::serial_in_order,
-      [&](tbb::flow_control &fc) -> CaseStringPtr {
-        CaseStringPtr s_ptr = getCaseString(caseBeforeFile);
-        if (!s_ptr)
-          fc.stop();
-        return s_ptr;
-      }) & // concatenation operation
-
-    /* make the change case filter */
-    tbb::make_filter<CaseStringPtr, CaseStringPtr>(
-      tbb::filter::parallel,
-      [](CaseStringPtr s_ptr) -> CaseStringPtr {
-        std::transform(
-          s_ptr->begin(), s_ptr->end(), s_ptr->begin(),
-          [](char c) -> char {
-                         if (std::islower(c))
-                           return std::toupper(c);
-                         else if (std::isupper(c))
-                           return std::tolower(c);
-                         else
-                           return c;
-                       });
-        return s_ptr;
-      }) & // concatenation operation
-
-    /* make the write filter */
-    tbb::make_filter<CaseStringPtr, void>(
-      tbb::filter::serial_in_order,
-      [&](CaseStringPtr s_ptr) -> void {
-        writeCaseString(caseAfterFile, s_ptr);
-      })
+    tbb::make_filter<void, CaseStringPtr>(filter::serial_in_order, get_case_string) &
+    tbb::make_filter<CaseStringPtr, CaseStringPtr>(filter::parallel, change_case) &
+    tbb::make_filter<CaseStringPtr, void>(tbb::filter::serial_in_order, write_string)
   );
 }
 
