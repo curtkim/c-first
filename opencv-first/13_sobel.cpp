@@ -4,7 +4,7 @@
 
 int main(int argc, char * argv[])
 {
-    cv::Mat imgIn = cv::imread("../../in.png"), imgBlur, imgGray, imgOut, sobelX, sobelY, gradX, gradY;
+    cv::Mat imgIn = cv::imread("../../data/in.png"), imgBlur, imgGray, imgOut, sobelX, sobelY, gradX, gradY;
 
     cv::GaussianBlur(imgIn, imgBlur, cv::Size(3, 3), 0, 0, cv::BORDER_DEFAULT);
 

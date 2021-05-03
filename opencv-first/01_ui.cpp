@@ -6,7 +6,7 @@ using namespace cv;
 int main(int argc, char** argv )
 {
   Mat image;
-  image = imread( "../../in.png", 1 );
+  image = imread( "../../data/in.png", 1 );
   if ( !image.data )
   {
     printf("No image data \n");

@@ -30,7 +30,7 @@ Mat& ScanImageAndReduceRandomAccess(Mat& I, const uchar * table);
 int main( int argc, char* argv[])
 {
   Mat I, J;
-  I = imread("../../in.png", IMREAD_GRAYSCALE); // IMREAD_COLOR
+  I = imread("../../data/in.png", IMREAD_GRAYSCALE); // IMREAD_COLOR
   if (I.empty())
   {
     cout << "The image could not be loaded." << endl;

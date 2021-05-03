@@ -10,15 +10,18 @@ void create() {
   Mat A(2,2, CV_8UC3, Scalar(0,0,255));
   cout << "A = " << endl << " " << A << endl;
 
-
   Mat B(A);
   cout << "B = " << endl << " " << B << endl;
+  printf("%ld %ld\n", A.data, B.data); // shallow copy
+
 
   int sz[2] = {2,2};
-  Mat C(2,sz, CV_8UC(1), Scalar::all(0));
+  Mat C(2, sz, CV_8UC(1), Scalar::all(0));
   cout << "C = " << endl << " " << C << endl;
 
-  Mat D = (Mat_<double>({0, -1, 0, -1, 5, -1, 0, -1, 0})).reshape(3);
+  Mat D = (Mat_<double>({0, -1, 0,
+                         -1, 5, -1,
+                         0, -1, 0})).reshape(3);
   cout << "D = " << endl << " " << D << endl << endl;
 }
 
