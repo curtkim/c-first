@@ -7,7 +7,8 @@ project(thrust-first LANGUAGES CXX CUDA)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-foreach(APP 01_vector 02_vector 03_transform 04_tranform_saxpy 05_reduction 06_tiled_range
+foreach(APP 00_struct
+        01_vector 02_vector 03_transform 04_tranform_saxpy 05_reduction 06_tiled_range
         07_reduce_by_key 08_bouding_box 09_bucket_sort2d
         10_device_ptr
         11_iterator
