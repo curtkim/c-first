@@ -57,8 +57,15 @@ endforeach()
 
 
 add_executable(74_egl_cuda_vertex egl/74_egl_cuda_vertex.cpp egl/simple_kernel.cu)
-target_link_libraries(74_egl_cuda_vertex EGL ${CONAN_LIBS} ${OPENGL_LIBRARY})
-target_compile_features(74_egl_cuda_vertex PUBLIC cxx_std_17)
-target_compile_definitions(74_egl_cuda_vertex PUBLIC STB_IMAGE_IMPLEMENTATION)
-target_include_directories(74_egl_cuda_vertex PRIVATE /usr/local/cuda/include)
-target_link_directories(74_egl_cuda_vertex PRIVATE /usr/local/cuda/lib64)
+add_executable(75_egl_cuda_texture egl/75_egl_cuda_texture.cpp)
+
+foreach(APP 74_egl_cuda_vertex 75_egl_cuda_texture)
+  target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY} cuda cudart)
+  target_compile_features(${APP} PUBLIC cxx_std_17)
+  target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
+  target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+  target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+endforeach()
+
+set_target_properties(74_egl_cuda_vertex 75_egl_cuda_texture
+        PROPERTIES CUDA_ARCHITECTURES 61)

@@ -5,8 +5,15 @@
 #include "../common/shader_s.h"
 #include <tuple>
 
+#include <cuda_runtime.h>
+#include <cuda_gl_interop.h>
+
 #include "70_egl.hpp"
 #include "../common/utils_opengl.hpp"
+#include "../common/helper_cuda.h"
+
+//#include <thrust/device_vector.h>
+
 
 const char *BG_VERTEX_SHADER = R"(
 #version 330 core
@@ -36,55 +43,8 @@ void main()
 }
 )";
 
-const char *BOX_VERTEX_SHADER = R"(
-#version 330 core
-layout (location = 0) in vec2 position;
-
-void main()
-{
-  gl_Position = vec4(position, 0., 1.);
-}
-)";
-
-const char *BOX_FRAGMENT_SHADER = R"(
-#version 330
-out vec4 f_color;
-void main() {
-  f_color = vec4(1.0f, .0f, .0f, 1.0f);
-}
-)";
-
-
-auto load_model() {
-
-    unsigned int VBO_BOX, VAO_BOX;
-
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    const float vertices[] = {
-            // positions
-            0.5f, 0.5f,   // top right
-            0.5f, -0.5f,  // bottom right
-            -0.5f, -0.5f, // bottom left
-            -0.5f, 0.5f, // top left
-            0.5f, 0.5f,  // top right
-    };
-
-    glGenVertexArrays(1, &VAO_BOX);
-    glGenBuffers(1, &VBO_BOX);
-
-    glBindVertexArray(VAO_BOX);
-
-    // 1. vertex
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_BOX);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *) 0);
-    glEnableVertexAttribArray(0);
-
-    return std::make_tuple(VBO_BOX, VAO_BOX, sizeof(vertices)/sizeof(vertices[0])/2);
-}
+const int width = 800;
+const int height = 600;
 
 
 void draw() {
@@ -127,20 +87,57 @@ void draw() {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
-    auto [VBO_BOX, VAO_BOX, box_length] = load_model();
+    struct COLOR {
+        uint8_t R;
+        uint8_t G;
+        uint8_t B;
+    };
+    COLOR RED = {255, 0, 0};
+    COLOR images[height*width];
+    for(int i = 0; i < height*width; i++)
+        images[i] = RED;
 
-    Shader boxShader(BOX_VERTEX_SHADER, BOX_FRAGMENT_SHADER); // you can name your shader files however you like
+
 
     // load and create a texture
     // -------------------------
-    unsigned int texture0 = load_texture("00000_camera0.png", true, GL_RGBA);
+    unsigned int texture0;// = load_texture("00000_camera0.png", true, GL_RGBA);
+    {
+        glGenTextures(1, &texture0);
+        std::cout << "glGenTextures " << texture0 << std::endl;
+        glBindTexture(GL_TEXTURE_2D, texture0);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+    }
+
+    /*
+    struct ResourcePair {
+        struct cudaGraphicsResource* resouce;
+        cudaArray* array;
+    };
+    ResourcePair res;
+    */
+
+    cudaGraphicsResource* cuda_resource;
+    //void* devPtr;
+    cudaArray *cuda_array;
+    //size_t dev_ptr_size;
+
+    checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_resource, texture0, GL_TEXTURE_2D, cudaGraphicsMapFlagsWriteDiscard));
+    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource, 0));
+    checkCudaErrors(cudaGraphicsSubResourceGetMappedArray(&cuda_array, cuda_resource, 0, 0));
+    //std::cout << "dev_ptr_size " << dev_ptr_size << std::endl;
+    cudaMemcpy(cuda_array, images, height * width * sizeof(COLOR), cudaMemcpyHostToDevice);
+
 
     // build and compile our shader zprogram
     // ------------------------------------
     Shader bgShader(BG_VERTEX_SHADER, BG_FRAGMENT_SHADER); // you can name your shader files however you like
     bgShader.use(); // don't forget to activate/use the shader before setting uniforms!
     bgShader.setInt("texture0", 0);
-
 
     // render container
     bgShader.use();
@@ -153,45 +150,35 @@ void draw() {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
-    boxShader.use();
-    glBindVertexArray(VAO_BOX);
-    {
-        glLineWidth(3);
-        glDrawArrays(GL_LINE_STRIP, 0, box_length);
-    }
-
+    checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
+    checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
-    glDeleteVertexArrays(1, &VAO_BOX);
-    glDeleteBuffers(1, &VBO_BOX);
     glDeleteTextures(1, &texture0);
 }
 
 
 int main()
 {
-  const int width = 800;
-  const int height = 600;
+    EGLDisplay eglDisplay = initEGL(width, height);
 
-  EGLDisplay eglDisplay = initEGL(width, height);
+    // from now on use your OpenGL context
+    if(!gladLoadGL()) {
+        std::cout << "Failed to initialize GLAD\n";
+        return -1;
+    }
 
-  // from now on use your OpenGL context
-  if(!gladLoadGL()) {
-    std::cout << "Failed to initialize GLAD\n";
-    return -1;
-  }
+    // DrawCode(Red background)
+    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    draw();
 
-  // DrawCode(Red background)
-  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
-  draw();
+    save_context_to_file("egl_cuda_texture.png", width, height);
 
-  save_context_to_file("egl_texture_box.png", width, height);
-
-  // 6. Terminate EGL when finished
-  eglTerminate(eglDisplay);
-  return 0;
+    // 6. Terminate EGL when finished
+    eglTerminate(eglDisplay);
+    return 0;
 }
