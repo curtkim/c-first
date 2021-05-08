@@ -41,6 +41,12 @@ target_include_directories(opengl_cuda_vertex_interop PRIVATE /usr/local/cuda/in
 target_compile_features(opengl_cuda_vertex_interop PUBLIC cxx_std_17)
 
 
+add_executable(postProcessGL 3_image/postProcessGL.cpp 3_image/postProcessGL_kernel.cu)
+target_link_libraries(postProcessGL PUBLIC ${CONAN_LIBS} ${OPENGL_LIBRARY} X11 nvToolsExt)
+target_include_directories(postProcessGL PRIVATE /usr/local/cuda/include)
+target_compile_features(postProcessGL PUBLIC cxx_std_17)
+
+
 foreach(APP cannyEdgeDetect freeImageInteropNPP jpegNPP)
     add_executable(${APP} 7_library/${APP}.cpp)
     #target_link_libraries(${APP} PUBLIC glut GL GLU)
@@ -83,6 +89,15 @@ foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_mem
     target_link_libraries(${APP} PRIVATE cuda cudart nppisu)
 endforeach()
 
+foreach(APP npp_min_max)
+    add_executable(${APP} ${APP}.cpp)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+    target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_link_libraries(${APP} PRIVATE cuda cudart npps nppist)
+endforeach()
+
+
 
 set_target_properties(first
         nvtx_first
@@ -93,6 +108,7 @@ set_target_properties(first
         simpleCallback
         asyncAPI simpleCudaGraph simpleStream
         simpleGL
+        postProcessGL
         opengl_cuda_vertex_interop
         cannyEdgeDetect freeImageInteropNPP jpegNPP
         simpleTexture3D
