@@ -57,7 +57,7 @@ endforeach()
 
 
 add_executable(74_egl_cuda_vertex egl/74_egl_cuda_vertex.cpp egl/simple_kernel.cu)
-add_executable(75_egl_cuda_texture egl/75_egl_cuda_texture.cpp)
+add_executable(75_egl_cuda_texture egl/75_egl_cuda_texture.cu)
 
 foreach(APP 74_egl_cuda_vertex 75_egl_cuda_texture)
   target_link_libraries(${APP} EGL ${CONAN_LIBS} ${OPENGL_LIBRARY} cuda cudart)

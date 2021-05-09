@@ -12,7 +12,8 @@
 #include "../common/utils_opengl.hpp"
 #include "../common/helper_cuda.h"
 
-//#include <thrust/device_vector.h>
+#include <thrust/device_vector.h>
+#include <thrust/device_ptr.h>
 
 
 const char *BG_VERTEX_SHADER = R"(
@@ -87,16 +88,32 @@ void draw() {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
+    /*
     struct COLOR {
         uint8_t R;
         uint8_t G;
         uint8_t B;
     };
-    COLOR RED = {255, 0, 0};
+    COLOR RED = {127, 0, 0};
     COLOR images[height*width];
     for(int i = 0; i < height*width; i++)
         images[i] = RED;
-
+    */
+    /*
+    char images[height*width*3];
+    for(int i = 0; i < height*width; i++){
+        images[3*i] = 127;
+        images[3*i+1] = 0;
+        images[3*i+2] = 0;
+    }
+    */
+    thrust::host_vector<uint8_t> images;
+    images.resize(width*height*3);
+    for(int i = 0; i < height*width; i++){
+        images[3*i] = 127;
+        images[3*i+1] = 0;
+        images[3*i+2] = 0;
+    }
 
 
     // load and create a texture
@@ -107,11 +124,17 @@ void draw() {
         std::cout << "glGenTextures " << texture0 << std::endl;
         glBindTexture(GL_TEXTURE_2D, texture0);
         // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     }
+
+    unsigned int image_pixel_buffer_;
+    glGenBuffers(1, &image_pixel_buffer_);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, image_pixel_buffer_);
+    glBufferData(GL_PIXEL_UNPACK_BUFFER, width*height*3, 0, GL_STATIC_DRAW);
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
     /*
     struct ResourcePair {
@@ -123,15 +146,32 @@ void draw() {
 
     cudaGraphicsResource* cuda_resource;
     //void* devPtr;
-    cudaArray *cuda_array;
+    //cudaArray *cuda_array;
     //size_t dev_ptr_size;
 
-    checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_resource, texture0, GL_TEXTURE_2D, cudaGraphicsMapFlagsWriteDiscard));
-    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource, 0));
-    checkCudaErrors(cudaGraphicsSubResourceGetMappedArray(&cuda_array, cuda_resource, 0, 0));
-    //std::cout << "dev_ptr_size " << dev_ptr_size << std::endl;
-    cudaMemcpy(cuda_array, images, height * width * sizeof(COLOR), cudaMemcpyHostToDevice);
+    uint8_t *raw_render_image_ptr;
+    size_t n_bytes;
 
+    checkCudaErrors(cudaGraphicsGLRegisterBuffer(&cuda_resource, image_pixel_buffer_, cudaGraphicsMapFlagsNone));
+    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource));
+    checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **)&raw_render_image_ptr, &n_bytes, cuda_resource));
+    std::cout << n_bytes << " " << width*height*3 << std::endl;
+
+    thrust::device_ptr<uint8_t> dev_render_image_ptr = thrust::device_pointer_cast(raw_render_image_ptr);
+    thrust::copy(images.begin(), images.end(), dev_render_image_ptr);
+    //checkCudaErrors(cudaMemcpy(raw_render_image_ptr, images, height*width*3, cudaMemcpyHostToDevice));
+    //cudaStreamSynchronize(0);
+    checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource));
+
+//    checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_resource, texture0, GL_TEXTURE_2D, cudaGraphicsMapFlagsWriteDiscard));
+//    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource, 0));
+//    checkCudaErrors(cudaGraphicsSubResourceGetMappedArray(&cuda_array, cuda_resource, 0, 0));
+//    //std::cout << "dev_ptr_size " << dev_ptr_size << std::endl;
+//    cudaMemcpy(cuda_array, images, height * width * sizeof(COLOR), cudaMemcpyHostToDevice);
+
+
+    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // build and compile our shader zprogram
     // ------------------------------------
@@ -150,7 +190,7 @@ void draw() {
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
-    checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
+    //checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
     checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
 
     glDeleteVertexArrays(1, &VAO);
@@ -158,6 +198,7 @@ void draw() {
     glDeleteBuffers(1, &EBO);
 
     glDeleteTextures(1, &texture0);
+    glDeleteBuffers(1, &image_pixel_buffer_);
 }
 
 
