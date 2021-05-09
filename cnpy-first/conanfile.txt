@@ -1,0 +1,5 @@
+[requires]
+cnpy/cci.20180601
+
+[generators]
+cmake
