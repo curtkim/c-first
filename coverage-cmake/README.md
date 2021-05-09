@@ -39,3 +39,4 @@
 
 ## Reference
 https://github.com/codecov/example-cpp11-cmake
+https://github.com/zethon/CppCCQTemplate
