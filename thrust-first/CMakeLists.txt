@@ -22,3 +22,9 @@ foreach(APP 00_struct
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
     set_target_properties(${APP} PROPERTIES CUDA_ARCHITECTURES 61)
 endforeach()
+
+add_executable(99_host 99_host.cpp 99_device.cu)
+target_compile_features(99_host PUBLIC cxx_std_17)
+target_include_directories(99_host PUBLIC /usr/local/cuda/include)
+target_link_directories(99_host PUBLIC /usr/local/cuda/lib64)
+set_target_properties(99_host PROPERTIES CUDA_ARCHITECTURES 61)
