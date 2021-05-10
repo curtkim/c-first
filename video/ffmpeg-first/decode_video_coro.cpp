@@ -12,8 +12,6 @@ extern "C" {
 
 #define INBUF_SIZE 4096
 
-typedef std::function<void(const AVFrame *, int)> CALLBACK_TYPE;
-
 
 static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize, char *filename)
 {
@@ -131,6 +129,7 @@ coro_exp::generator<std::tuple<AVFrame *, int>> decodeFile(FILE *f, AVCodecID co
   avcodec_free_context(&codecContext);
   av_frame_free(&frame);
   av_packet_free(&packet);
+  printf("av_frame_free av_packet_free\n");
 }
 
 
@@ -163,6 +162,7 @@ int main(int argc, char **argv)
     snprintf(buf, sizeof(buf), "%s-%d", outfilename, frame_number);
     pgm_save(frame->data[0], frame->linesize[0], frame->width, frame->height, buf);
   }
+  printf("fclose\n");
   fclose(f);
 
   return 0;

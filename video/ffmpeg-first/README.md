@@ -1,5 +1,9 @@
 https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples
 
+## install
+
+    sudo apt-get install -y libavformat-dev libavcodec-dev libavutil-dev libswscale-dev libswresample-dev
+
 ## encode
 
     ffmpeg -codecs | grep DEV
