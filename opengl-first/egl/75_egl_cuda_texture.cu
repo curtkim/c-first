@@ -110,7 +110,7 @@ void draw() {
     thrust::host_vector<uint8_t> images;
     images.resize(width*height*3);
     for(int i = 0; i < height*width; i++){
-        images[3*i] = 127;
+        images[3*i] = 255;
         images[3*i+1] = 0;
         images[3*i+2] = 0;
     }
@@ -185,19 +185,22 @@ void draw() {
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, image_pixel_buffer_);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, 0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
         // render container
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
-
-    //checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
-    checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 
     glDeleteTextures(1, &texture0);
+
+    //checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
+    checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
     glDeleteBuffers(1, &image_pixel_buffer_);
 }
 
