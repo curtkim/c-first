@@ -53,6 +53,7 @@ foreach(APP
 		04_cuda_detect
 		21_torchscript
 		91_candy
+		92_heat_equation
 		)
 	add_executable(${APP} ${APP}.cpp)
 	target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
