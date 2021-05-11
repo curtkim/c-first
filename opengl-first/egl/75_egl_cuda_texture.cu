@@ -88,25 +88,18 @@ void draw() {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
-    /*
+    // 방법1 init
     struct COLOR {
         uint8_t R;
         uint8_t G;
         uint8_t B;
     };
-    COLOR RED = {127, 0, 0};
-    COLOR images[height*width];
+    COLOR RED = {255, 0, 0};
+    COLOR images2[height*width];
     for(int i = 0; i < height*width; i++)
-        images[i] = RED;
-    */
-    /*
-    char images[height*width*3];
-    for(int i = 0; i < height*width; i++){
-        images[3*i] = 127;
-        images[3*i+1] = 0;
-        images[3*i+2] = 0;
-    }
-    */
+        images2[i] = RED;
+
+    // 방법2 init
     thrust::host_vector<uint8_t> images;
     images.resize(width*height*3);
     for(int i = 0; i < height*width; i++){
@@ -130,45 +123,45 @@ void draw() {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     }
 
+    // PIXEL_UNPACK_BUFFER bind
     unsigned int image_pixel_buffer_;
     glGenBuffers(1, &image_pixel_buffer_);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, image_pixel_buffer_);
     glBufferData(GL_PIXEL_UNPACK_BUFFER, width*height*3, 0, GL_STATIC_DRAW);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
-    /*
-    struct ResourcePair {
-        struct cudaGraphicsResource* resouce;
-        cudaArray* array;
-    };
-    ResourcePair res;
-    */
 
-    cudaGraphicsResource* cuda_resource;
-    //void* devPtr;
-    //cudaArray *cuda_array;
-    //size_t dev_ptr_size;
+    // image_pixel_buffer에 연결된 cudaGraphicsResource 등록해서
+    // map하고
+    // pointer를 얻어서
+    // copy하고
+    // unmap한다.
+    cudaGraphicsResource *cuda_resource;
+    {
+        uint8_t *raw_render_image_ptr;
+        size_t n_bytes;
 
-    uint8_t *raw_render_image_ptr;
-    size_t n_bytes;
+        checkCudaErrors(cudaGraphicsGLRegisterBuffer(&cuda_resource, image_pixel_buffer_, cudaGraphicsMapFlagsNone));
+        checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource));
+        checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **) &raw_render_image_ptr, &n_bytes, cuda_resource));
+        std::cout << n_bytes << " " << width * height * 3 << std::endl;
 
-    checkCudaErrors(cudaGraphicsGLRegisterBuffer(&cuda_resource, image_pixel_buffer_, cudaGraphicsMapFlagsNone));
-    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource));
-    checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void **)&raw_render_image_ptr, &n_bytes, cuda_resource));
-    std::cout << n_bytes << " " << width*height*3 << std::endl;
+        // 방법1 copy
+        checkCudaErrors(cudaMemcpy(raw_render_image_ptr, images2, height*width*3, cudaMemcpyHostToDevice));
 
-    thrust::device_ptr<uint8_t> dev_render_image_ptr = thrust::device_pointer_cast(raw_render_image_ptr);
-    thrust::copy(images.begin(), images.end(), dev_render_image_ptr);
-    //checkCudaErrors(cudaMemcpy(raw_render_image_ptr, images, height*width*3, cudaMemcpyHostToDevice));
-    //cudaStreamSynchronize(0);
-    checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource));
+        // 방법2 copy
+        //thrust::device_ptr<uint8_t> dev_render_image_ptr = thrust::device_pointer_cast(raw_render_image_ptr);
+        //thrust::copy(images.begin(), images.end(), dev_render_image_ptr);
 
-//    checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_resource, texture0, GL_TEXTURE_2D, cudaGraphicsMapFlagsWriteDiscard));
-//    checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource, 0));
-//    checkCudaErrors(cudaGraphicsSubResourceGetMappedArray(&cuda_array, cuda_resource, 0, 0));
-//    //std::cout << "dev_ptr_size " << dev_ptr_size << std::endl;
-//    cudaMemcpy(cuda_array, images, height * width * sizeof(COLOR), cudaMemcpyHostToDevice);
+        checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource));
+        checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
 
+        //checkCudaErrors(cudaGraphicsGLRegisterImage(&cuda_resource, texture0, GL_TEXTURE_2D, cudaGraphicsMapFlagsWriteDiscard));
+        //checkCudaErrors(cudaGraphicsMapResources(1, &cuda_resource, 0));
+        //checkCudaErrors(cudaGraphicsSubResourceGetMappedArray(&cuda_array, cuda_resource, 0, 0));
+        // //std::cout << "dev_ptr_size " << dev_ptr_size << std::endl;
+        //cudaMemcpy(cuda_array, images, height * width * sizeof(COLOR), cudaMemcpyHostToDevice);
+    }
 
     glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -185,6 +178,8 @@ void draw() {
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture0);
+
+        // 아래 3줄이 필요함.
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, image_pixel_buffer_);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, 0);
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -199,8 +194,6 @@ void draw() {
 
     glDeleteTextures(1, &texture0);
 
-    //checkCudaErrors(cudaGraphicsUnmapResources(1, &cuda_resource, 0));
-    checkCudaErrors(cudaGraphicsUnregisterResource(cuda_resource));
     glDeleteBuffers(1, &image_pixel_buffer_);
 }
 
@@ -215,7 +208,6 @@ int main()
         return -1;
     }
 
-    // DrawCode(Red background)
     glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     draw();
