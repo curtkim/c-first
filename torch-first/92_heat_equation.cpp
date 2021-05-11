@@ -17,11 +17,8 @@ int main() {
                                       {0., 1., 0.}}}}, option);
     std::cout << "laplacian: " << laplacian << std::endl;
 
-    auto a = std::chrono::system_clock::now();
     for(int i = 0; i < 1000; i++) {
         C = .01 * torch::nn::functional::conv2d(BC(C), laplacian) + C;
-        long count = (std::chrono::system_clock::now() - a).count();
-        std::cout << count << std::endl;
     }
-    //std::cout << C << std::endl;
+    std::cout << C << std::endl;
 }

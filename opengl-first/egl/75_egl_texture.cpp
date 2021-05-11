@@ -124,7 +124,7 @@ int main()
   glClear(GL_COLOR_BUFFER_BIT);
   draw();
 
-  save_context_to_file("egl_texture.png", width, height);
+  save_context_to_file("75_egl_texture.png", width, height);
 
   // 6. Terminate EGL when finished
   eglTerminate(eglDisplay);

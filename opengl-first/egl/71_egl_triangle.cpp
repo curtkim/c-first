@@ -85,7 +85,7 @@ int main()
   glClear(GL_COLOR_BUFFER_BIT);
   draw();
 
-  save_context_to_file("egl_triangle.png", width, height);
+  save_context_to_file("71_egl_triangle.png", width, height);
 
   // 6. Terminate EGL when finished
   eglTerminate(eglDisplay);

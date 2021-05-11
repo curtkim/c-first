@@ -138,7 +138,7 @@ int main()
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   draw();
-  save_context_to_file("egl_cuda_vertex.png", width, height);
+  save_context_to_file("74_egl_cuda_vertex.png", width, height);
 
   // 6. Terminate EGL when finished
   eglTerminate(eglDisplay);

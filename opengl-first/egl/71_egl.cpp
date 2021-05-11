@@ -22,7 +22,7 @@ int main()
   glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  save_context_to_file("egl.png", width, height);
+  save_context_to_file("71_egl.png", width, height);
 
   // 6. Terminate EGL when finished
   eglTerminate(eglDisplay);

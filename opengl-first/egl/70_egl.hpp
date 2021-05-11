@@ -8,7 +8,7 @@ EGLDisplay initEGL(const int pbufferWidth, const int pbufferHeight) {
   EGLint major, minor;
 
   eglInitialize(eglDpy, &major, &minor);
-  std::cout << "egl version " << major << " " << minor << std::endl;
+  //std::cout << "egl version " << major << " " << minor << std::endl;
 
   // 2. Select an appropriate configuration
   const EGLint configAttribs[] = {

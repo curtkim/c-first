@@ -11,47 +11,58 @@
 const char *BG_VERTEX_SHADER = R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
+layout (location = 1) in float _intensity;
 
-out vec2 TexCoord;
+out float intensity;
 
 void main()
 {
     gl_Position = vec4(aPos, 1.0);
-    TexCoord = aTexCoord;
+    intensity = _intensity;
 }
 )";
 
 const char *BG_FRAGMENT_SHADER = R"(
 #version 330 core
 
-in vec2 TexCoord;
+in float intensity;
 out vec4 FragColor;
 
-// texture sampler
-uniform sampler2D texture0;
+float colormap_red(float x) {
+    if (x < 100.0) {
+        return (-9.55123422981038E-02 * x + 5.86981763554179E+00) * x - 3.13964093701986E+00;
+    } else {
+        return 5.25591836734694E+00 * x - 8.32322857142857E+02;
+    }
+}
+
+float colormap_green(float x) {
+    if (x < 150.0) {
+        return 5.24448979591837E+00 * x - 3.20842448979592E+02;
+    } else {
+        return -5.25673469387755E+00 * x + 1.34195877551020E+03;
+    }
+}
+
+float colormap_blue(float x) {
+    if (x < 80.0) {
+        return 4.59774436090226E+00 * x - 2.26315789473684E+00;
+    } else {
+        return -5.25112244897959E+00 * x + 8.30385102040816E+02;
+    }
+}
+
+vec4 colormap(float x) {
+    float t = x * 255.0;
+    float r = clamp(colormap_red(t) / 255.0, 0.0, 1.0);
+    float g = clamp(colormap_green(t) / 255.0, 0.0, 1.0);
+    float b = clamp(colormap_blue(t) / 255.0, 0.0, 1.0);
+    return vec4(r, g, b, 1.0);
+}
 
 void main()
 {
-    FragColor = texture(texture0, TexCoord);
-}
-)";
-
-const char *BOX_VERTEX_SHADER = R"(
-#version 330 core
-layout (location = 0) in vec2 position;
-
-void main()
-{
-  gl_Position = vec4(position, 0., 1.);
-}
-)";
-
-const char *BOX_FRAGMENT_SHADER = R"(
-#version 330
-out vec4 f_color;
-void main() {
-  f_color = vec4(1.0f, .0f, .0f, 1.0f);
+    FragColor = colormap(intensity);
 }
 )";
 
@@ -94,11 +105,11 @@ void draw() {
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         const float vertices[] = {
-                // positions          // texture coords
-                1.f, 1.f, 0.0f,     1.0f, 1.0f, // top right
-                1.f, -1.f, 0.0f,    1.0f, 0.0f, // bottom right
-                -1.f, -1.f, 0.0f,   0.0f, 0.0f, // bottom left
-                -1.f, 1.f, 0.0f,    0.0f, 1.0f  // top left
+                // positions        // texture coords
+                1.f, 1.f, 0.0f,     1.0f, // top right
+                1.f, -1.f, 0.0f,    1.0f, // bottom right
+                -1.f, -1.f, 0.0f,   0.0f, // bottom left
+                -1.f, 1.f, 0.0f,    0.0f  // top left
         };
 
         const unsigned int indices[] = {
@@ -117,10 +128,10 @@ void draw() {
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
         // position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) 0);
         glEnableVertexAttribArray(0);
         // texture coord attribute
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+        glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) (3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
         // 2. index
@@ -128,71 +139,47 @@ void draw() {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     }
 
-    auto [VBO_BOX, VAO_BOX, box_length] = load_model();
-
-    Shader boxShader(BOX_VERTEX_SHADER, BOX_FRAGMENT_SHADER); // you can name your shader files however you like
-
-    // load and create a texture
-    // -------------------------
-    unsigned int texture0 = load_texture("00000_camera0.png", true, GL_RGBA);
-
     // build and compile our shader zprogram
     // ------------------------------------
     Shader bgShader(BG_VERTEX_SHADER, BG_FRAGMENT_SHADER); // you can name your shader files however you like
     bgShader.use(); // don't forget to activate/use the shader before setting uniforms!
-    bgShader.setInt("texture0", 0);
 
 
     // render container
     bgShader.use();
     glBindVertexArray(VAO);
     {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture0);
-
         // render container
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
-    boxShader.use();
-    glBindVertexArray(VAO_BOX);
-    {
-        glLineWidth(3);
-        glDrawArrays(GL_LINE_STRIP, 0, box_length);
-    }
-
-
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-
-    glDeleteVertexArrays(1, &VAO_BOX);
-    glDeleteBuffers(1, &VBO_BOX);
-    glDeleteTextures(1, &texture0);
 }
 
 
 int main()
 {
-  const int width = 800;
-  const int height = 600;
+    const int width = 800;
+    const int height = 100;
 
-  EGLDisplay eglDisplay = initEGL(width, height);
+    EGLDisplay eglDisplay = initEGL(width, height);
 
-  // from now on use your OpenGL context
-  if(!gladLoadGL()) {
-    std::cout << "Failed to initialize GLAD\n";
-    return -1;
-  }
+    // from now on use your OpenGL context
+    if(!gladLoadGL()) {
+        std::cout << "Failed to initialize GLAD\n";
+        return -1;
+    }
 
-  // DrawCode(Red background)
-  glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
-  draw();
+    // DrawCode(Red background)
+    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    draw();
 
-  save_context_to_file("72_egl_texture_box.png", width, height);
+    save_context_to_file("81_egl_colormap.png", width, height);
 
-  // 6. Terminate EGL when finished
-  eglTerminate(eglDisplay);
-  return 0;
+    // 6. Terminate EGL when finished
+    eglTerminate(eglDisplay);
+    return 0;
 }
