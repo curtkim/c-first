@@ -1,8 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-
 #include <Eigen/Core>
 
 #include <igl/frustum.h>
@@ -14,7 +12,7 @@
 
 #include "common/utils_glfw.hpp"
 #include "common/shader.hpp"
-#include "common/camera2.hpp"
+#include "common/camera3.hpp"
 
 
 std::string vertex_shader = R"(
@@ -115,7 +113,7 @@ auto load_static_model_counter_clock_wise() {
 }
 
 
-Camera2 camera;
+Camera3 camera;
 
 float lastX = w / 2.0f;
 float lastY = h / 2.0f;
@@ -176,8 +174,8 @@ int main(int argc, char *argv[]) {
   camera.camera_scale = 0.1f;
 
   camera.SetMode(FREE);
-  camera.SetPosition(glm::vec3(0.0f, 0.0f, 10.0f));
-  camera.SetLookAt(glm::vec3(0.0f, 0.0f, -1.0f));
+  camera.SetPosition(Eigen::Vector3f(0.0f, 0.0f, 10.0f));
+  camera.SetLookAt(Eigen::Vector3f(0.0f, 0.0f, -1.0f));
   camera.SetClipping(.1, 1000);
   camera.SetFOV(45);
 
@@ -195,6 +193,7 @@ int main(int argc, char *argv[]) {
   float top = tan(35. / 360. * M_PI) * near;
   float right = top * (double)::w / (double)::h;
   igl::frustum(-right, right, -top, top, near, far, proj);
+
   std::cout << "proj" << std::endl;
   std::cout << proj << std::endl;
 
@@ -214,7 +213,7 @@ int main(int argc, char *argv[]) {
     //model.rotate(Eigen::AngleAxisf(0.005 * count++, Eigen::Vector3f(0, 1, 0)));
     //std::cout << model.matrix() << std::endl;
 
-    glm::mat4 model1, view1, proj1;
+    Eigen::Matrix4f model1, view1, proj1;
     camera.Update();
     camera.GetMatricies(proj1, view1, model1);
 
@@ -225,7 +224,7 @@ int main(int argc, char *argv[]) {
     // 8. select program and attach uniforms
     glUseProgram(prog_id);
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "proj"), 1, GL_FALSE, proj.data());
-    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, &view1[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(prog_id, "view"), 1, GL_FALSE, view1.data());
     glUniformMatrix4fv(glGetUniformLocation(prog_id, "model"), 1, GL_FALSE, model.matrix().data());
 
 

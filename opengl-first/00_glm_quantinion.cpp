@@ -52,6 +52,7 @@ int main() {
 //  auto& [a,b,c] = vec3;
 //  std::cout << "structured binding glm::vec " << a << b << c << "\n";
 
+  std::cout << glm::to_string(glm::mat4(1.0)) << std::endl;
 
   // Creates an identity quaternion (no rotation)
   glm::quat quat1;

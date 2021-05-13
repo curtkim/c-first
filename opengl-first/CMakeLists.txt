@@ -46,7 +46,11 @@ endforeach()
 add_executable(02_second_grid_with_camera 02_second_grid_with_camera.cpp common/shader.cpp common/camera2.cpp)
 target_link_libraries(02_second_grid_with_camera ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 target_compile_features(02_second_grid_with_camera PUBLIC cxx_std_17)
-target_compile_definitions(02_second_grid_with_camera PUBLIC STB_IMAGE_IMPLEMENTATION)
+
+add_executable(02_second_grid_with_camera3 02_second_grid_with_camera3.cpp common/shader.cpp common/camera3.cpp)
+target_link_libraries(02_second_grid_with_camera3 ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
+target_compile_features(02_second_grid_with_camera3 PUBLIC cxx_std_17)
+
 
 foreach(APP 71_egl 71_egl_triangle 72_egl_texture_and_box 73_egl_geometry_shader 75_egl_texture
         81_egl_colormap)
