@@ -9,10 +9,9 @@ glslc shader.frag -o cmake-build-debug/frag.spv
 
 ## 환경설정
 
-    # driver설정 위치
-    /usr/share/vulkan/icd.d/
+    # 1. vulkan sdk tar를 풀고 
+    # 2. .bashrc에 추가 
+    source /home/curt/vulkan/1.2.176.1/setup-env.sh
 
-    # sudo apt-get install libvulkan-dev
-    # apt를 통해서 설치할 수 있는것은 Library 파일들과 Vulkan validation layers 용 .json manifest 파일들이다
-    
-    export VK_LAYER_PATH=/usr/share/vulkan/explicit_layer.d/
+    # driver 설정 위치
+    /usr/share/vulkan/icd.d/
