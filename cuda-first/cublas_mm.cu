@@ -61,9 +61,11 @@ int main(void) {
   float alpha = 1.0f;
   float beta = 0.0f;
   startTime(&timer);
-  status = cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, matBcol, matArow,
-                       matAcol, &alpha, thrust::raw_pointer_cast(&B[0]),
-                       matBcol, thrust::raw_pointer_cast(&A[0]), matAcol, &beta,
+  status = cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N,
+                       matBcol, matArow,
+                       matAcol, &alpha,
+                       thrust::raw_pointer_cast(&B[0]), matBcol,
+                       thrust::raw_pointer_cast(&A[0]), matAcol, &beta,
                        thrust::raw_pointer_cast(&C[0]), matBcol);
   stopTime(&timer);
   printf("%f s\n", elapsedTime(timer));
