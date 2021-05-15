@@ -75,7 +75,7 @@ void encodeByCuda(NvEncoderCuda &enc, CUcontext &cuContext, std::ofstream &fpOut
 
 
 int main() {
-    int nWidth = 1280, nHeight = 720;
+    int nWidth = 352, nHeight = 288;
     NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
     GUID codecGuid = NV_ENC_CODEC_H264_GUID;
     GUID presetGuid = NV_ENC_PRESET_P3_GUID;
@@ -88,8 +88,8 @@ int main() {
     CUcontext cuContext = NULL;
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
-
-    std::ofstream fpOut("../../test_1280.h264", std::ios::out | std::ios::binary);
+    std::string out_file = "../../test_1280.h264";
+    std::ofstream fpOut(out_file, std::ios::out | std::ios::binary);
 
     NvEncoderCuda enc(cuContext, nWidth, nHeight, eFormat);
     {
@@ -99,15 +99,7 @@ int main() {
         enc.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
         enc.CreateEncoder(&initializeParams);
     }
-
-    assert(enc.GetFrameSize() == (int) 1280 * 720 * 1.5);
-    // nFrameSize=1382400 921600 1152000 1382400
-    // encoderInputFrame->chromaOffsets: 1105920 1382400
-    printf("nFrameSize=%d %d %d %d\n", enc.GetFrameSize(),
-           1280 * 720, (int) (1280 * 720 * 1.25), (int) (1280 * 720 * 1.5));
-    printf("NV_ENC_BUFFER_FORMAT_IYUV=%d\n", NV_ENC_BUFFER_FORMAT_IYUV);
-
     encodeByCuda(enc, cuContext, fpOut, nWidth, nHeight);
+
+    printf("ffplay %s", out_file.c_str());
 }
-
-
