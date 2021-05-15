@@ -97,6 +97,14 @@ foreach(APP npp_min_max)
     target_link_libraries(${APP} PRIVATE cuda cudart npps nppist)
 endforeach()
 
+foreach(APP npp_image_simple)
+    add_executable(${APP} ${APP}.cu)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+    target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_link_libraries(${APP} PRIVATE cuda cudart nppicc)
+endforeach()
+
 
 
 set_target_properties(first
@@ -116,5 +124,7 @@ set_target_properties(first
         oceanFFT
         template_function_pointer
         practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop
+
+        npp_image_simple
 
         PROPERTIES CUDA_ARCHITECTURES 61)
