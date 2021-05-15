@@ -21,5 +21,8 @@ foreach(APP 01_first 02_second)
             --default-stream per-thread
             --use_fast_math
             -Xcudafe "--diag_suppress=20011 --diag_suppress=20014"
-            >) #-Xcudafe --display_error_number
+            >)
+            #-Xcudafe --display_error_number
+            # 를 추가해서 error no를 보고
+            # --diag_suppress에 추가한다.
 endforeach()
