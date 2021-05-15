@@ -4,7 +4,7 @@
 
 #include <cuda.h>
 #include <nvEncodeAPI.h>
-#include "utils.h"
+#include "../utils.h"
 
 using namespace std;
 

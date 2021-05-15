@@ -216,6 +216,7 @@ public:
         NV_ENC_CONFIG &config = *pParams->encodeConfig;
         for (unsigned i = 0; i < tokens.size(); i++)
         {
+            std::cout << "tokens " << tokens[i] << "\n";
             if (
                 tokens[i] == "-codec"      && ++i ||
                 tokens[i] == "-preset"     && ++i ||
@@ -296,7 +297,7 @@ public:
 
         funcInit(pParams);
         LOG(INFO) << NvEncoderInitParam().MainParamToString(pParams);
-        LOG(TRACE) << NvEncoderInitParam().FullParamToString(pParams);
+        LOG(INFO) << NvEncoderInitParam().FullParamToString(pParams);
     }
 
 private:

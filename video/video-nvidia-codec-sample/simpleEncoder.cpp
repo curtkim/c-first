@@ -1,13 +1,19 @@
 #include <fstream>
 #include <iostream>
+#include <assert.h>
 #include <cuda.h>
 
-#include "Utils/NvCodecUtils.h"
 #include "NvEncoder/NvEncoderCuda.h"
-#include "Utils/Logger.h"
-#include "Utils/NvEncoderCLIOptions.h"
 
-simplelogger::Logger *logger = simplelogger::LoggerFactory::CreateConsoleLogger();
+inline bool check(int e, int iLine, const char *szFile) {
+    if (e < 0) {
+        std::cerr << "General error " << e << " at line " << iLine << " in file " << szFile;
+        return false;
+    }
+    return true;
+}
+#define ck(call) check(call, __LINE__, __FILE__)
+
 
 
 void encodeByCuda(NvEncoderCuda &enc, CUcontext &cuContext, std::ifstream &fpIn, std::ofstream &fpOut) {
@@ -57,22 +63,12 @@ void encodeByCuda(NvEncoderCuda &enc, CUcontext &cuContext, std::ifstream &fpIn,
     std::cout << "Total frames encoded: " << nFrame << std::endl;
 }
 
-void initNvEncoder(NvEncoderCuda &enc, NvEncoderInitParam &encodeCLIOptions, NV_ENC_BUFFER_FORMAT eFormat) {
-    NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
-    NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
-    initializeParams.encodeConfig = &encodeConfig;
-    enc.CreateDefaultEncoderParams(&initializeParams, encodeCLIOptions.GetEncodeGUID(),
-                                   encodeCLIOptions.GetPresetGUID(), encodeCLIOptions.GetTuningInfo());
-
-    // encodeCLIOptions의 내용으로 initializeParams.encodeConfig를 설정한다.
-    encodeCLIOptions.SetInitParams(&initializeParams, eFormat);
-
-    enc.CreateEncoder(&initializeParams);
-}
-
 int main() {
     int nWidth = 1280, nHeight = 720;
     NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
+    GUID codecGuid = NV_ENC_CODEC_H264_GUID;
+    GUID presetGuid = NV_ENC_PRESET_P3_GUID;
+    NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
 
     int iGpu = 0;
     ck(cuInit(0));
@@ -81,19 +77,24 @@ int main() {
     CUcontext cuContext = NULL;
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
-    NvEncoderInitParam encodeCLIOptions;
 
     std::ifstream fpIn("../../../target_1280.yuv", std::ifstream::in | std::ifstream::binary);
     std::ofstream fpOut("../../../target_1280.h264", std::ios::out | std::ios::binary);
 
     NvEncoderCuda enc(cuContext, nWidth, nHeight, eFormat);
-    initNvEncoder(enc, encodeCLIOptions, eFormat);
+    {
+        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
+        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
+        initializeParams.encodeConfig = &encodeConfig;
+        enc.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        enc.CreateEncoder(&initializeParams);
+    }
 
     assert(enc.GetFrameSize() == (int) 1280 * 720 * 1.5);
     // nFrameSize=1382400 921600 1152000 1382400
     // encoderInputFrame->chromaOffsets: 1105920 1382400
-    printf("nFrameSize=%d %d %d %d\n", enc.GetFrameSize(), 1280 * 720, (int) (1280 * 720 * 1.25),
-           (int) (1280 * 720 * 1.5));
+    printf("nFrameSize=%d %d %d %d\n", enc.GetFrameSize(),
+           1280 * 720, (int) (1280 * 720 * 1.25), (int) (1280 * 720 * 1.5));
     printf("NV_ENC_BUFFER_FORMAT_IYUV=%d\n", NV_ENC_BUFFER_FORMAT_IYUV);
 
     encodeByCuda(enc, cuContext, fpIn, fpOut);

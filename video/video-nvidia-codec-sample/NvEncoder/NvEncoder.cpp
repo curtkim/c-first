@@ -75,7 +75,8 @@ NvEncoder::~NvEncoder()
     DestroyHWEncoder();
 }
 
-void NvEncoder::CreateDefaultEncoderParams(NV_ENC_INITIALIZE_PARAMS* pIntializeParams, GUID codecGuid, GUID presetGuid, NV_ENC_TUNING_INFO tuningInfo)
+void NvEncoder::CreateDefaultEncoderParams(NV_ENC_INITIALIZE_PARAMS* pIntializeParams,
+                                           const GUID codecGuid, const GUID presetGuid, const NV_ENC_TUNING_INFO tuningInfo)
 {
     if (!m_hEncoder)
     {

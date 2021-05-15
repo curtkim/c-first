@@ -10,6 +10,7 @@ https://github.com/sberryman/rtsp-yolo-gpu
 
 ## howto
 
+    # 첫 프레임을 보여준다.
     ffplay -hide_banner -video_size 1280x720 -vf "select=eq(n\,0)" target_1280.yuv
     ffplay -hide_banner -vf "select=eq(n\,0)" cmake-build-debug/bin/target_1280.h264
 
