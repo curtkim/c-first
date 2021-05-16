@@ -1,0 +1,7 @@
+[requires]
+carla-client/0.9.11@curt/testing
+asio/1.18.1
+readerwriterqueue/1.0.2@curt/testing
+
+[generators]
+cmake
