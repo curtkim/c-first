@@ -97,7 +97,7 @@ foreach(APP npp_min_max)
     target_link_libraries(${APP} PRIVATE cuda cudart npps nppist)
 endforeach()
 
-foreach(APP npp_image_simple)
+foreach(APP npp_image_simple npp_image_rgb2iyuv)
     add_executable(${APP} ${APP}.cu)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
