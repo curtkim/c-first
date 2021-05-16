@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <random>
 #include <sstream>
 #include <stdexcept>
@@ -11,6 +12,9 @@
 #include <memory>
 
 #include <readerwriterqueue.h>
+
+#include <cuda.h>
+#include "NvEncoder/NvEncoderCuda.h"
 
 #include "precompile.hpp"
 #include "common.hpp"
@@ -25,18 +29,65 @@ using namespace std::chrono_literals;
 using namespace std::string_literals;
 
 
-void encodeing_thread(moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>>& q){
+inline bool check(int e, int iLine, const char *szFile) {
+    if (e < 0) {
+        std::cerr << "General error " << e << " at line " << iLine << " in file " << szFile;
+        return false;
+    }
+    return true;
+}
+#define ck(call) check(call, __LINE__, __FILE__)
 
+
+const int width = 1280;
+const int height = 720;
+
+
+void encodeing_thread(moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>>& q,
+                      NvEncoderCuda& enc, std::ofstream& out){
+    boost::shared_ptr<cs::SensorData> pSensorData;
+
+    while(true){
+        while(!q.try_dequeue(pSensorData)){}
+        auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
+
+        Npp8u *pSrc, *pDst;
+        cudaMalloc(&pSrc, width*height*3);
+        cudaMalloc(&pDst, width*height*3);
+
+    }
 }
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 int main() {
 
-    const int width = 1280;
-    const int height = 720;
-
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
+
+//    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
+//    GUID codecGuid = NV_ENC_CODEC_H264_GUID;
+//    GUID presetGuid = NV_ENC_PRESET_P3_GUID;
+//    NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
+//
+//    int iGpu = 0;
+//    ck(cuInit(0));
+//    CUdevice cuDevice = 0;
+//    ck(cuDeviceGet(&cuDevice, iGpu));
+//    CUcontext cuContext = NULL;
+//    ck(cuCtxCreate(&cuContext, 0, cuDevice));
+//
+//    std::ofstream out("target.h264", std::ios::out | std::ios::binary);
+//
+//    NvEncoderCuda enc(cuContext, width, height, eFormat);
+//    {
+//        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
+//        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
+//        initializeParams.encodeConfig = &encodeConfig;
+//        enc.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+//        enc.CreateEncoder(&initializeParams);
+//    }
+
+
 
     std::string host = "localhost";
     uint16_t port = 2000;
@@ -44,7 +95,7 @@ int main() {
     auto client = cc::Client(host, port, 1);
     client.SetTimeout(10s);
 
-    moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>> q(1);
+    moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>> q(2);
 
     std::cout << "Client API version : " << client.GetClientVersion() << '\n';
     std::cout << "Server API version : " << client.GetServerVersion() << '\n';

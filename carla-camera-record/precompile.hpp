@@ -11,3 +11,5 @@
 #include <carla/image/ImageIO.h>
 #include <carla/image/ImageView.h>
 #include <carla/sensor/data/Image.h>
+
+#include <nppi.h>
