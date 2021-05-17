@@ -1,19 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include <random>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <thread>
-#include <tuple>
-#include <thread>
 #include <chrono>
-#include <ctime>
-#include <memory>
 
 #include <readerwriterqueue.h>
 
 #include <cuda.h>
+#include "nvEncodeAPI.h"
 #include "NvEncoder/NvEncoderCuda.h"
 
 #include "precompile.hpp"
@@ -43,49 +37,34 @@ const int width = 1280;
 const int height = 720;
 
 
-void encodeing_thread(moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>>& q,
-                      NvEncoderCuda& enc, std::ofstream& out){
-    boost::shared_ptr<cs::SensorData> pSensorData;
-
-    while(true){
-        while(!q.try_dequeue(pSensorData)){}
-        auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
-
-        Npp8u *pSrc, *pDst;
-        cudaMalloc(&pSrc, width*height*3);
-        cudaMalloc(&pDst, width*height*3);
-
-    }
-}
-
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 int main() {
 
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-//    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
-//    GUID codecGuid = NV_ENC_CODEC_H264_GUID;
-//    GUID presetGuid = NV_ENC_PRESET_P3_GUID;
-//    NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
-//
-//    int iGpu = 0;
-//    ck(cuInit(0));
-//    CUdevice cuDevice = 0;
-//    ck(cuDeviceGet(&cuDevice, iGpu));
-//    CUcontext cuContext = NULL;
-//    ck(cuCtxCreate(&cuContext, 0, cuDevice));
-//
-//    std::ofstream out("target.h264", std::ios::out | std::ios::binary);
-//
-//    NvEncoderCuda enc(cuContext, width, height, eFormat);
-//    {
-//        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
-//        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
-//        initializeParams.encodeConfig = &encodeConfig;
-//        enc.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
-//        enc.CreateEncoder(&initializeParams);
-//    }
+    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_YUV444;
+    GUID codecGuid = NV_ENC_CODEC_H264_GUID;
+    GUID presetGuid = NV_ENC_PRESET_P3_GUID;
+    NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
+
+    int iGpu = 0;
+    ck(cuInit(0));
+    CUdevice cuDevice = 0;
+    ck(cuDeviceGet(&cuDevice, iGpu));
+    CUcontext cuContext = NULL;
+    ck(cuCtxCreate(&cuContext, 0, cuDevice));
+
+    std::ofstream out("target.h264", std::ios::out | std::ios::binary);
+
+    NvEncoderCuda enc(cuContext, width, height, eFormat);
+    {
+        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
+        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
+        initializeParams.encodeConfig = &encodeConfig;
+        enc.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        enc.CreateEncoder(&initializeParams);
+    }
 
 
 
@@ -153,7 +132,57 @@ int main() {
         }
     });
 
-    std::this_thread::sleep_for(10s);
+    boost::shared_ptr<cs::SensorData> pSensorData;
+    std::vector<std::vector<uint8_t>> vPacket;
+    auto start_time = std::chrono::system_clock::now();
+    long nanosec = 0;
+    while( nanosec < 10'000'000'000) { // 10 second
+        while(!q.try_dequeue(pSensorData)){}
+        printf("get frame\n");
+        auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
+
+        // BGRA(host)
+        // BGR(host)
+        // BGR(device)
+        // YUV(by npp)
+
+        cv::Mat A(height, width, CV_8UC4, pImage->data());
+        cv::Mat B;
+        cvtColor(A, B, CV_BGRA2BGR);
+
+        Npp8u *pSrc, *pDst;
+        cudaMalloc(&pSrc, width*height*3);
+        cudaMalloc(&pDst, width*height*3);
+        cudaMemcpy(pSrc, B.data, height * width * 3, cudaMemcpyHostToDevice);
+
+        NppiSize oSizeROI;
+        oSizeROI.width = width;
+        oSizeROI.height = height;
+        NppStatus res = nppiRGBToYUV_8u_C3R(pSrc, width * 3, pDst, width * 3, oSizeROI);
+        if (res != 0) {
+            printf("oops %d\n", (int) res);
+            std::exit(1);
+        }
+
+        const NvEncInputFrame *encoderInputFrame = enc.GetNextInputFrame();
+        NvEncoderCuda::CopyToDeviceFrame(cuContext, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
+                                         (int) encoderInputFrame->pitch,
+                                         enc.GetEncodeWidth(),
+                                         enc.GetEncodeHeight(),
+                                         CU_MEMORYTYPE_DEVICE,
+                                         encoderInputFrame->bufferFormat,
+                                         encoderInputFrame->chromaOffsets,
+                                         encoderInputFrame->numChromaPlanes);
+        enc.EncodeFrame(vPacket);
+
+        for (std::vector<uint8_t> &packet : vPacket) {
+            printf("%d write\n", packet.size());
+            // For each encoded packet
+            out.write(reinterpret_cast<char *>(packet.data()), packet.size());
+        }
+        nanosec = (std::chrono::system_clock::now() - start_time).count();
+    }
+    out.close();
 
     camera->Stop();
     std::cout << "camera stop" << std::endl;

@@ -2,6 +2,8 @@
 carla-client/0.9.11@curt/testing
 asio/1.18.1
 readerwriterqueue/1.0.2@curt/testing
+opencv/4.5.2
+libwebp/1.2.0
 
 [generators]
 cmake

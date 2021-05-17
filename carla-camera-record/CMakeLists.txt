@@ -21,4 +21,4 @@ foreach(APP main)
     target_precompile_headers(${APP} PRIVATE precompile.hpp)
 endforeach()
 
-target_link_libraries(main PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
+target_link_libraries(main PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart nppicc)
