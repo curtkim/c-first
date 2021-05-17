@@ -16,3 +16,8 @@ endforeach()
 set_target_properties(
         npp_image_rgb2yuv444
         PROPERTIES CUDA_ARCHITECTURES 61)
+
+foreach(APP remove_alpha_channel)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+endforeach()

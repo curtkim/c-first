@@ -4,6 +4,11 @@
 #include <fstream>
 #include <iostream>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/types_c.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
@@ -28,12 +33,19 @@ void convert(const std::string in_file, const std::string out_file) {
     oSizeROI.height = h;
 
     // 2. host -> device src
-    cudaMemcpy(pSrc, imgBuffer, h * w * p, cudaMemcpyHostToDevice);
+    if( p == 3) {
+        cudaMemcpy(pSrc, imgBuffer, h * w * 3, cudaMemcpyHostToDevice);
+    }
+    else if( p == 4){
+        cv::Mat A(h, w, CV_8UC4, imgBuffer);
+        cv::Mat B;
+        cvtColor(A, B, CV_RGBA2RGB);
+        imwrite("00077377_24.png", B);
+        printf("%d %d type=%d %d\n", B.cols, B.cols, B.type(), CV_8UC3);
+        cudaMemcpy(pSrc, B.data, h * w * 3, cudaMemcpyHostToDevice);
+    }
 
-    // 3. conversion
-    NppStatus res =p == 3
-            ? nppiRGBToYUV_8u_C3R(pSrc, w * p, pDst, w * p, oSizeROI)
-            : nppiRGBToYUV_8u_AC4R(pSrc, w * p, pDst, w * p,oSizeROI);
+    NppStatus res = nppiRGBToYUV_8u_C3R(pSrc, w * p, pDst, w * p, oSizeROI);
     if (res != 0) {
         printf("oops %d\n", (int) res);
         return;

@@ -10,6 +10,8 @@ int main() {
 
     Mat image;
     image = imread( "../../data/00077377.png", 1 );
+    printf("dims=%d cols=%d rows=%d\n", image.dims, image.cols, image.rows);
+    printf("type=%d %d\n", image.type(), CV_8UC3);
 
     Mat image24;
     cvtColor(image, image24, CV_RGBA2RGB);

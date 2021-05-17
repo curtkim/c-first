@@ -1,5 +1,8 @@
 [requires]
 stb/20200203
+opencv/4.5.2
 
 [generators]
 cmake
+
+[options]
