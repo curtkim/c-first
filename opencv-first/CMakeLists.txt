@@ -16,6 +16,7 @@ endforeach()
 
 foreach(APP
     01_ui
+    02_cvtColor
     11_mat 12_scan 13_sobel
     50_epipolar_lines 51_contours2 52_delaunay2 53_detect_mser 54_digits_svm 55_kalman 56_kmeans 57_fitellipse
     58_flann_search_dataset)
