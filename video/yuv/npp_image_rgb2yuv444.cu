@@ -17,6 +17,7 @@ void convert(const std::string in_file, const std::string out_file) {
     int h = 0;
     int p = 0;
 
+    // BGRA
     unsigned char *imgBuffer = stbi_load(in_file.c_str(), &w, &h, &p, 0);
     if (!imgBuffer) {
         fprintf(stderr, "Image read error\n");
@@ -25,8 +26,8 @@ void convert(const std::string in_file, const std::string out_file) {
     printf("in=%s\nw=%d h=%d p=%d\nout=%s\n", in_file.c_str(), w, h, p, out_file.c_str());
 
     Npp8u *pSrc, *pDst;
-    cudaMalloc(&pSrc, h * w * p);
-    cudaMalloc(&pDst, h * w * p);
+    cudaMalloc(&pSrc, h * w * 3);
+    cudaMalloc(&pDst, h * w * 3);
 
     NppiSize oSizeROI;
     oSizeROI.width = w;
@@ -38,14 +39,15 @@ void convert(const std::string in_file, const std::string out_file) {
     }
     else if( p == 4){
         cv::Mat A(h, w, CV_8UC4, imgBuffer);
+        imwrite("00077377_32.png", A);
         cv::Mat B;
-        cvtColor(A, B, CV_RGBA2RGB);
+        cvtColor(A, B, CV_BGRA2BGR);
         imwrite("00077377_24.png", B);
-        printf("%d %d type=%d %d\n", B.cols, B.cols, B.type(), CV_8UC3);
+        //printf("%d %d type=%d %d\n", B.cols, B.cols, B.type(), CV_8UC3);
         cudaMemcpy(pSrc, B.data, h * w * 3, cudaMemcpyHostToDevice);
     }
 
-    NppStatus res = nppiRGBToYUV_8u_C3R(pSrc, w * p, pDst, w * p, oSizeROI);
+    NppStatus res = nppiBGRToYUV_8u_C3R(pSrc, w * 3, pDst, w * 3, oSizeROI);
     if (res != 0) {
         printf("oops %d\n", (int) res);
         return;
@@ -58,13 +60,13 @@ void convert(const std::string in_file, const std::string out_file) {
     cudaFree(&pDst);
 
     std::ofstream out(out_file, std::ios::out | std::ios::binary);
-    out.write(reinterpret_cast<const char *>(imgBuffer), h * w * p);
+    out.write(reinterpret_cast<const char *>(imgBuffer), h * w * 3);
     out.close();
 }
 
 
 int main() {
-    convert("../../39769_fill.jpg", "../../39769_fill.yuv444");
+    //convert("../../39769_fill.jpg", "../../39769_fill.yuv444");
     convert("../../00077377.png", "../../00077377.yuv444");
 
     // https://rawpixels.net/ 에서 확인
