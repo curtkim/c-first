@@ -65,7 +65,7 @@ namespace coro_exp {
         return std::suspend_always{};
       }
 
-      auto final_suspend() {
+      auto final_suspend() noexcept(true) {
         return std::suspend_always{};
       }
 
