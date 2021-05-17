@@ -2,7 +2,7 @@
 #include <coroutine>
 #include <iostream>
 
-struct HelloWorldCoro {f
+struct HelloWorldCoro {
   struct promise_type { // compiler looks for `promise_type`
     HelloWorldCoro get_return_object() { return this; }
 
