@@ -34,12 +34,14 @@ int main() {
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
 
-    std::ofstream outs[2] = {
+    std::ofstream outs[3] = {
             std::ofstream("03_cam3_thread1_npp0.h264", std::ios::out | std::ios::binary),
             std::ofstream("03_cam3_thread1_npp1.h264", std::ios::out | std::ios::binary),
+            std::ofstream("03_cam3_thread1_npp2.h264", std::ios::out | std::ios::binary),
     };
 
-    NvEncoderCuda encoders[2] = {
+    NvEncoderCuda encoders[3] = {
+            NvEncoderCuda(cuContext, width, height, eFormat),
             NvEncoderCuda(cuContext, width, height, eFormat),
             NvEncoderCuda(cuContext, width, height, eFormat),
     };
@@ -58,9 +60,16 @@ int main() {
         encoders[1].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
         encoders[1].CreateEncoder(&initializeParams);
     }
+    {
+        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
+        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
+        initializeParams.encodeConfig = &encodeConfig;
+        encoders[2].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        encoders[2].CreateEncoder(&initializeParams);
+    }
 
 
-    moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(2);
+    moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(3);
 
 
     auto world = init_carla_world("localhost", 2000, MAP_NAME);
@@ -96,18 +105,35 @@ int main() {
                                 },
                                 &(*vehicle));
 
+    auto camera2 = spawn_sensor(world, "sensor.camera.rgb",
+                                {
+                                        {"fov", "135"},
+                                        {"sensor_tick",  "0.033"},
+                                        {"image_size_x", std::to_string(width)},
+                                        {"image_size_y", std::to_string(height)},
+                                },
+                                cg::Transform{
+                                        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+                                        cg::Rotation{-15.0f, 0.0f, 0.0f}
+                                },
+                                &(*vehicle));
+
     // Register a callback to save images to disk.
     camera0->Listen([&q](auto data) {
         bool success = q.try_enqueue(std::make_tuple(0, data));
         if (!success) {
-            // q max_size 2라서 loop가 꺼내가지 않으면 실패가 발생한다.
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
         }
     });
     camera1->Listen([&q](auto data) {
         bool success = q.try_enqueue(std::make_tuple(1, data));
         if (!success) {
-            // q max_size 2라서 loop가 꺼내가지 않으면 실패가 발생한다.
+            std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
+        }
+    });
+    camera2->Listen([&q](auto data) {
+        bool success = q.try_enqueue(std::make_tuple(2, data));
+        if (!success) {
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
         }
     });
@@ -120,7 +146,7 @@ int main() {
     cudaMalloc(&pSrc, width*height*4);
     cudaMalloc(&pDst, width*height*3/2);
 
-    while (nanosec < 10'000'000'000) { // 10 second
+    while (nanosec < 20'000'000'000) { // 20 second
         while (!q.try_dequeue(tuple)) {}
         int idx = std::get<0>(tuple);
         auto pImage = boost::static_pointer_cast<csd::Image>(std::get<1>(tuple));
@@ -174,14 +200,18 @@ int main() {
 
     outs[0].close();
     outs[1].close();
+    outs[2].close();
 
     camera0->Stop();
     camera1->Stop();
+    camera2->Stop();
     std::cout << "camera stop" << std::endl;
 
     // Remove actors from the simulation.
     camera0->Destroy();
     camera1->Destroy();
+    camera2->Destroy();
+
     vehicle->Destroy();
     std::cout << "Actors destroyed." << std::endl;
 }
