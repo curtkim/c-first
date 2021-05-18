@@ -6,6 +6,7 @@ inline bool ends_with(std::string const & value, std::string const & ending)
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
+// cuda
 inline bool check(int e, int iLine, const char *szFile) {
     if (e < 0) {
         std::cerr << "General error " << e << " at line " << iLine << " in file " << szFile;

@@ -22,6 +22,9 @@
 #include <cuda.h>
 #include "nvEncodeAPI.h"
 #include "NvEncoder/NvEncoderCuda.h"
+#include <nvToolsExt.h>
+
+#include <sys/syscall.h>
 
 #include <iostream>
 #include <fstream>

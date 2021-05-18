@@ -3,21 +3,21 @@
 #include "common.hpp"
 #include "carla_utils.hpp"
 
-namespace cc = carla::client;
-namespace cg = carla::geom;
-namespace cs = carla::sensor;
-namespace csd = carla::sensor::data;
-
-using namespace std::chrono_literals;
-using namespace std::string_literals;
-
-
 const int width = 1600;
 const int height = 1200;
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
 int main() {
+
+    nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
+
+
+    namespace cc = carla::client;
+    namespace cg = carla::geom;
+    namespace cs = carla::sensor;
+    namespace csd = carla::sensor::data;
+
 
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
@@ -99,9 +99,11 @@ int main() {
         // BGR(device)
         // YUV(by npp)
 
+        nvtxRangePush("CV_BGRA2YUV_I420");
         cv::Mat A(height, width, CV_8UC4, pImage->data());
         cv::Mat B;
         cvtColor(A, B, CV_BGRA2YUV_I420);
+        nvtxRangePop();
 
         /*
         Npp8u *pSrc, *pDst;
@@ -118,6 +120,7 @@ int main() {
             std::exit(1);
         }
         */
+        nvtxRangePush("encoder_copy_frame");
         const NvEncInputFrame *encoderInputFrame = enc.GetNextInputFrame();
         NvEncoderCuda::CopyToDeviceFrame(cuContext, B.data, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                          (int) encoderInputFrame->pitch,
@@ -127,13 +130,19 @@ int main() {
                                          encoderInputFrame->bufferFormat,
                                          encoderInputFrame->chromaOffsets,
                                          encoderInputFrame->numChromaPlanes);
-        enc.EncodeFrame(vPacket);
+        nvtxRangePop();
 
+        nvtxRangePush("encode");
+        enc.EncodeFrame(vPacket);
+        nvtxRangePop();
+
+        nvtxRangePush("file_write");
         for (std::vector<uint8_t> &packet : vPacket) {
             printf("%ld write\n", packet.size());
             // For each encoded packet
             out.write(reinterpret_cast<char *>(packet.data()), packet.size());
         }
+        nvtxRangePop();
         nanosec = (std::chrono::system_clock::now() - start_time).count();
     }
     out.close();

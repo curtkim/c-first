@@ -19,7 +19,7 @@ foreach(APP 01_cam1_thread1_cvcolor)
     target_link_directories(${APP} PUBLIC /opt/nvidia/Video_Codec_SDK_${VIDEO_SDK_VERSION}/Lib/linux/stubs/x86_64)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
     target_precompile_headers(${APP} PRIVATE precompile.hpp)
-    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart nppicc)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart nppicc nvToolsExt)
 endforeach()
 
 
