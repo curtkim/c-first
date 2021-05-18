@@ -18,3 +18,13 @@
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+
+#include <cuda.h>
+#include "nvEncodeAPI.h"
+#include "NvEncoder/NvEncoderCuda.h"
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <thread>
+#include <chrono>

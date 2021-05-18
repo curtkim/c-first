@@ -1,18 +1,7 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <thread>
-#include <chrono>
-
-#include <readerwriterqueue.h>
-
-#include <cuda.h>
-#include "nvEncodeAPI.h"
-#include "NvEncoder/NvEncoderCuda.h"
-
 #include "precompile.hpp"
+#include <readerwriterqueue.h>
 #include "common.hpp"
-
+#include "carla_utils.hpp"
 
 namespace cc = carla::client;
 namespace cg = carla::geom;
@@ -23,19 +12,8 @@ using namespace std::chrono_literals;
 using namespace std::string_literals;
 
 
-inline bool check(int e, int iLine, const char *szFile) {
-    if (e < 0) {
-        std::cerr << "General error " << e << " at line " << iLine << " in file " << szFile;
-        return false;
-    }
-    return true;
-}
-#define ck(call) check(call, __LINE__, __FILE__)
-
-
 const int width = 1600;
 const int height = 1200;
-
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
 
@@ -67,66 +45,41 @@ int main() {
     }
 
 
-
-    std::string host = "localhost";
-    uint16_t port = 2000;
-
-    auto client = cc::Client(host, port, 1);
-    client.SetTimeout(10s);
-
     moodycamel::ReaderWriterQueue<boost::shared_ptr<cs::SensorData>> q(2);
 
-    std::cout << "Client API version : " << client.GetClientVersion() << '\n';
-    std::cout << "Server API version : " << client.GetServerVersion() << '\n';
 
-    auto world = client.GetWorld();
-    if (!ends_with(MAP_NAME, world.GetMap()->GetName())) {
-        std::cout << "load map " << MAP_NAME << std::endl;
-        world = client.LoadWorld(MAP_NAME);
-    }
-    std::cout << "current map name: " << world.GetMap()->GetName() << std::endl;
-
-    // Get a random vehicle blueprint.
-    auto blueprint_library = world.GetBlueprintLibrary();
-    auto blueprint = blueprint_library->Find("vehicle.tesla.model3");
-
-    // Find a valid spawn point.
-    auto map = world.GetMap();
-    auto transform = carla::geom::Transform(carla::geom::Location(-36.6, -194.9, 0.27),
-                                            carla::geom::Rotation(0, 1.4395, 0));
-
-    // Spawn the vehicle.
-    auto actor = world.SpawnActor(*blueprint, transform);
-    std::cout << "Spawned " << actor->GetDisplayId() << '\n';
-    auto vehicle = boost::static_pointer_cast<cc::Vehicle>(actor);
+    auto world = init_carla_world("localhost", 2000, MAP_NAME);
+    auto vehicle = spawn_vehicle(world, "vehicle.tesla.model3",
+                                 carla::geom::Transform(
+                                         carla::geom::Location(-36.6, -194.9, 0.27),
+                                         carla::geom::Rotation(0, 1.4395, 0)));
     vehicle->SetAutopilot(true);
 
-    // Move spectator so we can see the vehicle from the simulator window.
-    auto spectator = world.GetSpectator();
-    transform.location += 32.0f * transform.GetForwardVector();
-    transform.location.z += 2.0f;
-    transform.rotation.yaw += 180.0f;
-    transform.rotation.pitch = -15.0f;
-    spectator->SetTransform(transform);
 
+//    // Move spectator so we can see the vehicle from the simulator window.
+//    auto spectator = world.GetSpectator();
+//    transform.location += 32.0f * transform.GetForwardVector();
+//    transform.location.z += 2.0f;
+//    transform.rotation.yaw += 180.0f;
+//    transform.rotation.pitch = -15.0f;
+//    spectator->SetTransform(transform);
 
-    auto *camera_bp = blueprint_library->Find("sensor.camera.rgb");
-    assert(camera_bp != nullptr);
-    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("sensor_tick", "0.033");
-    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("image_size_x", std::to_string(width));
-    const_cast<carla::client::ActorBlueprint *>(camera_bp)->SetAttribute("image_size_y", std::to_string(height));
-
-    // Spawn a camera attached to the vehicle.
-    auto camera_transform = cg::Transform{
-            cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-            cg::Rotation{-15.0f, 0.0f, 0.0f}}; // pitch, yaw, roll.
-    auto cam_actor = world.SpawnActor(*camera_bp, camera_transform, actor.get());
-    auto camera = boost::static_pointer_cast<cc::Sensor>(cam_actor);
+    auto camera = spawn_sensor(world, "sensor.camera.rgb",
+                               {
+                                       {"sensor_tick",  "0.033"},
+                                       {"image_size_x", std::to_string(width)},
+                                       {"image_size_y", std::to_string(height)},
+                               },
+                               cg::Transform{
+                                       cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+                                       cg::Rotation{-15.0f, 0.0f, 0.0f}
+                               },
+                               &(*vehicle));
 
     // Register a callback to save images to disk.
     camera->Listen([&q](auto data) {
         bool success = q.try_enqueue(data);
-        if( !success){
+        if (!success) {
             // q max_size 2라서 loop가 꺼내가지 않으면 실패가 발생한다.
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
         }
@@ -136,8 +89,8 @@ int main() {
     std::vector<std::vector<uint8_t>> vPacket;
     auto start_time = std::chrono::system_clock::now();
     long nanosec = 0;
-    while( nanosec < 60'000'000'000) { // 10 second
-        while(!q.try_dequeue(pSensorData)){}
+    while (nanosec < 10'000'000'000) { // 10 second
+        while (!q.try_dequeue(pSensorData)) {}
         printf("get frame\n");
         auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
 
@@ -177,7 +130,7 @@ int main() {
         enc.EncodeFrame(vPacket);
 
         for (std::vector<uint8_t> &packet : vPacket) {
-            printf("%d write\n", packet.size());
+            printf("%ld write\n", packet.size());
             // For each encoded packet
             out.write(reinterpret_cast<char *>(packet.data()), packet.size());
         }
