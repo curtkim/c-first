@@ -33,8 +33,8 @@ inline bool check(int e, int iLine, const char *szFile) {
 #define ck(call) check(call, __LINE__, __FILE__)
 
 
-const int width = 1280;
-const int height = 720;
+const int width = 1600;
+const int height = 1200;
 
 
 static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
@@ -43,7 +43,7 @@ int main() {
 
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_YUV444;
+    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
     GUID codecGuid = NV_ENC_CODEC_H264_GUID;
     GUID presetGuid = NV_ENC_PRESET_P3_GUID;
     NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
@@ -136,7 +136,7 @@ int main() {
     std::vector<std::vector<uint8_t>> vPacket;
     auto start_time = std::chrono::system_clock::now();
     long nanosec = 0;
-    while( nanosec < 10'000'000'000) { // 10 second
+    while( nanosec < 60'000'000'000) { // 10 second
         while(!q.try_dequeue(pSensorData)){}
         printf("get frame\n");
         auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
@@ -148,8 +148,9 @@ int main() {
 
         cv::Mat A(height, width, CV_8UC4, pImage->data());
         cv::Mat B;
-        cvtColor(A, B, CV_BGRA2BGR);
+        cvtColor(A, B, CV_BGRA2YUV_I420);
 
+        /*
         Npp8u *pSrc, *pDst;
         cudaMalloc(&pSrc, width*height*3);
         cudaMalloc(&pDst, width*height*3);
@@ -158,18 +159,18 @@ int main() {
         NppiSize oSizeROI;
         oSizeROI.width = width;
         oSizeROI.height = height;
-        NppStatus res = nppiRGBToYUV_8u_C3R(pSrc, width * 3, pDst, width * 3, oSizeROI);
+        NppStatus res = nppiBGRToYUV_8u_C3R(pSrc, width * 3, pDst, width * 3, oSizeROI);
         if (res != 0) {
             printf("oops %d\n", (int) res);
             std::exit(1);
         }
-
+        */
         const NvEncInputFrame *encoderInputFrame = enc.GetNextInputFrame();
-        NvEncoderCuda::CopyToDeviceFrame(cuContext, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
+        NvEncoderCuda::CopyToDeviceFrame(cuContext, B.data, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                          (int) encoderInputFrame->pitch,
                                          enc.GetEncodeWidth(),
                                          enc.GetEncodeHeight(),
-                                         CU_MEMORYTYPE_DEVICE,
+                                         CU_MEMORYTYPE_HOST,
                                          encoderInputFrame->bufferFormat,
                                          encoderInputFrame->chromaOffsets,
                                          encoderInputFrame->numChromaPlanes);
