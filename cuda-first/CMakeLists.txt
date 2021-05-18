@@ -90,15 +90,15 @@ foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_mem
 endforeach()
 
 foreach(APP npp_min_max)
-    add_executable(${APP} ${APP}.cpp)
+    add_executable(${APP} npp/${APP}.cpp)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
     target_link_libraries(${APP} PRIVATE cuda cudart npps nppist)
 endforeach()
 
-foreach(APP npp_image_simple npp_image_rgb2yuv444)
-    add_executable(${APP} ${APP}.cu)
+foreach(APP npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R)
+    add_executable(${APP} npp/${APP}.cu)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
@@ -125,6 +125,6 @@ set_target_properties(first
         template_function_pointer
         practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop
 
-        npp_image_simple
+        npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R
 
         PROPERTIES CUDA_ARCHITECTURES 61)
