@@ -33,7 +33,7 @@ int main() {
     CUcontext cuContext = NULL;
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
-    std::ofstream out("01_cam1_thread1_cvcolor.h264", std::ios::out | std::ios::binary);
+    std::ofstream out("02_cam1_thread1_npp.h264", std::ios::out | std::ios::binary);
 
     NvEncoderCuda enc(cuContext, width, height, eFormat);
     {
@@ -89,29 +89,39 @@ int main() {
     std::vector<std::vector<uint8_t>> vPacket;
     auto start_time = std::chrono::system_clock::now();
     long nanosec = 0;
+    Npp8u *pSrc, *pDst;
+    cudaMalloc(&pSrc, width*height*4);
+    cudaMalloc(&pDst, width*height*3/2);
+
     while (nanosec < 10'000'000'000) { // 10 second
         while (!q.try_dequeue(pSensorData)) {}
         printf("get frame\n");
         auto pImage = boost::static_pointer_cast<csd::Image>(pSensorData);
 
-        // BGRA(host)
-        // BGR(host)
-        // BGR(device)
-        // YUV(by npp)
+        {
+            nvtxRangePush("nppiBGRToYUV420_8u_AC4P3R");
+            cudaMemcpy(pSrc, pImage->data(), height * width * 4, cudaMemcpyHostToDevice);
 
-        nvtxRangePush("CV_BGRA2YUV_I420");
-        cv::Mat A(height, width, CV_8UC4, pImage->data());
-        cv::Mat B;
-        cvtColor(A, B, CV_BGRA2YUV_I420);
-        nvtxRangePop();
+            NppiSize oSizeROI{width, height};
+
+            Npp8u *pDst3[3] = {pDst, pDst + (width * height), pDst + (width * height) * 5 / 4};
+            int rDstStep[3] = {width * sizeof(Npp8u), (width / 2) * sizeof(Npp8u), (width / 2) * sizeof(Npp8u)};
+
+            NppStatus res = nppiBGRToYUV420_8u_AC4P3R(pSrc, width * 4, pDst3, rDstStep, oSizeROI);
+            if (res != 0) {
+                printf("oops %d\n", (int) res);
+                std::exit(1);
+            }
+            nvtxRangePop();
+        }
 
         nvtxRangePush("encoder_copy_frame");
         const NvEncInputFrame *encoderInputFrame = enc.GetNextInputFrame();
-        NvEncoderCuda::CopyToDeviceFrame(cuContext, B.data, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
+        NvEncoderCuda::CopyToDeviceFrame(cuContext, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                          (int) encoderInputFrame->pitch,
                                          enc.GetEncodeWidth(),
                                          enc.GetEncodeHeight(),
-                                         CU_MEMORYTYPE_HOST,
+                                         CU_MEMORYTYPE_DEVICE,
                                          encoderInputFrame->bufferFormat,
                                          encoderInputFrame->chromaOffsets,
                                          encoderInputFrame->numChromaPlanes);
@@ -128,8 +138,12 @@ int main() {
             out.write(reinterpret_cast<char *>(packet.data()), packet.size());
         }
         nvtxRangePop();
+
         nanosec = (std::chrono::system_clock::now() - start_time).count();
     }
+    cudaFree(pSrc);
+    cudaFree(pDst);
+
     out.close();
 
     camera->Stop();
