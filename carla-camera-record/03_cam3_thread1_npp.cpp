@@ -6,25 +6,22 @@
 const int width = 1600;
 const int height = 1200;
 
-static const std::string MAP_NAME = "/Game/Carla/Maps/Town03";
+NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
+GUID codecGuid = NV_ENC_CODEC_H264_GUID;
+GUID presetGuid = NV_ENC_PRESET_P3_GUID;
+NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
+
+static const int COUNT = 3;
 
 int main() {
-
-    nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
-
-
     namespace cc = carla::client;
     namespace cg = carla::geom;
     namespace cs = carla::sensor;
     namespace csd = carla::sensor::data;
 
 
+    nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
-
-    NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
-    GUID codecGuid = NV_ENC_CODEC_H264_GUID;
-    GUID presetGuid = NV_ENC_PRESET_P3_GUID;
-    NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
 
     int iGpu = 0;
     ck(cuInit(0));
@@ -33,105 +30,79 @@ int main() {
     CUcontext cuContext = NULL;
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
-
-    std::ofstream outs[3] = {
+    std::ofstream outs[COUNT] = {
             std::ofstream("03_cam3_thread1_npp0.h264", std::ios::out | std::ios::binary),
             std::ofstream("03_cam3_thread1_npp1.h264", std::ios::out | std::ios::binary),
             std::ofstream("03_cam3_thread1_npp2.h264", std::ios::out | std::ios::binary),
     };
 
-    NvEncoderCuda encoders[3] = {
+    NvEncoderCuda encoders[COUNT] = {
             NvEncoderCuda(cuContext, width, height, eFormat),
             NvEncoderCuda(cuContext, width, height, eFormat),
             NvEncoderCuda(cuContext, width, height, eFormat),
     };
 
-    {
+    for(auto& encoder : encoders) {
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
         initializeParams.encodeConfig = &encodeConfig;
-        encoders[0].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
-        encoders[0].CreateEncoder(&initializeParams);
+        encoder.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        encoder.CreateEncoder(&initializeParams);
     }
-    {
-        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
-        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
-        initializeParams.encodeConfig = &encodeConfig;
-        encoders[1].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
-        encoders[1].CreateEncoder(&initializeParams);
-    }
-    {
-        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
-        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
-        initializeParams.encodeConfig = &encodeConfig;
-        encoders[2].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
-        encoders[2].CreateEncoder(&initializeParams);
-    }
-
 
     moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(3);
 
 
-    auto world = init_carla_world("localhost", 2000, MAP_NAME);
+    auto world = init_carla_world("localhost", 2000, "/Game/Carla/Maps/Town03");
     auto vehicle = spawn_vehicle(world, "vehicle.tesla.model3",
                                  carla::geom::Transform(
                                          carla::geom::Location(-36.6, -194.9, 0.27),
                                          carla::geom::Rotation(0, 1.4395, 0)));
     vehicle->SetAutopilot(true);
 
-    auto camera0 = spawn_sensor(world, "sensor.camera.rgb",
-                               {
-                                       {"fov", "90"},
-                                       {"sensor_tick",  "0.033"},
-                                       {"image_size_x", std::to_string(width)},
-                                       {"image_size_y", std::to_string(height)},
-                               },
-                               cg::Transform{
-                                       cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                                       cg::Rotation{-15.0f, 0.0f, 0.0f}
-                               },
-                               &(*vehicle));
+    std::vector<boost::shared_ptr<cc::Sensor>> cameras;
+    std::tuple<int, cg::Transform> sensor_configs[] = {
+            {90, cg::Transform{
+                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
+                    },
+            {45, cg::Transform{
+                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
+            },
+            {135, cg::Transform{
+                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
+                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
+            },
+    };
 
-    auto camera1 = spawn_sensor(world, "sensor.camera.rgb",
-                                {
-                                        {"fov", "45"},
-                                        {"sensor_tick",  "0.033"},
-                                        {"image_size_x", std::to_string(width)},
-                                        {"image_size_y", std::to_string(height)},
-                                },
-                                cg::Transform{
-                                        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                                        cg::Rotation{-15.0f, 0.0f, 0.0f}
-                                },
-                                &(*vehicle));
-
-    auto camera2 = spawn_sensor(world, "sensor.camera.rgb",
-                                {
-                                        {"fov", "135"},
-                                        {"sensor_tick",  "0.033"},
-                                        {"image_size_x", std::to_string(width)},
-                                        {"image_size_y", std::to_string(height)},
-                                },
-                                cg::Transform{
-                                        cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                                        cg::Rotation{-15.0f, 0.0f, 0.0f}
-                                },
-                                &(*vehicle));
+    for(auto& sensor_config : sensor_configs) {
+        auto & [fov, tf] = sensor_config;
+        cameras.push_back(spawn_sensor(world, "sensor.camera.rgb",
+                                       {
+                                               {"fov", std::to_string(fov)},
+                                               {"sensor_tick",  "0.033"},
+                                               {"image_size_x", std::to_string(width)},
+                                               {"image_size_y", std::to_string(height)},
+                                       },
+                                       tf,
+                                       &(*vehicle)));
+    }
 
     // Register a callback to save images to disk.
-    camera0->Listen([&q](auto data) {
+    cameras[0]->Listen([&q](auto data) {
         bool success = q.try_enqueue(std::make_tuple(0, data));
         if (!success) {
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
         }
     });
-    camera1->Listen([&q](auto data) {
+    cameras[1]->Listen([&q](auto data) {
         bool success = q.try_enqueue(std::make_tuple(1, data));
         if (!success) {
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
         }
     });
-    camera2->Listen([&q](auto data) {
+    cameras[2]->Listen([&q](auto data) {
         bool success = q.try_enqueue(std::make_tuple(2, data));
         if (!success) {
             std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
@@ -198,19 +169,16 @@ int main() {
     cudaFree(pSrc);
     cudaFree(pDst);
 
-    outs[0].close();
-    outs[1].close();
-    outs[2].close();
+    for(auto& out : outs)
+        out.close();
 
-    camera0->Stop();
-    camera1->Stop();
-    camera2->Stop();
+    for(auto camera : cameras)
+       camera->Stop();
     std::cout << "camera stop" << std::endl;
 
     // Remove actors from the simulation.
-    camera0->Destroy();
-    camera1->Destroy();
-    camera2->Destroy();
+    for(auto camera : cameras)
+        camera->Destroy();
 
     vehicle->Destroy();
     std::cout << "Actors destroyed." << std::endl;
