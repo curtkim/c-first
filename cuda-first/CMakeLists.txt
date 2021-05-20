@@ -81,6 +81,13 @@ file(COPY 5_simulation/ocean.vert DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_executable(template_function_pointer template_function_pointer.cu)
 
 
+add_executable(threadMigration 6_advance/threadMigration.cpp)
+target_include_directories(threadMigration PRIVATE /usr/local/cuda/include)
+target_link_directories(threadMigration PRIVATE /usr/local/cuda/lib64)
+target_link_libraries(threadMigration PUBLIC ${CONAN_LIBS})
+target_link_libraries(threadMigration PRIVATE cuda cudart )
+
+
 foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop)
     add_executable(${APP} 0_malloc/${APP}.c)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
@@ -126,5 +133,7 @@ set_target_properties(first
         practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop
 
         npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R
+
+        threadMigration
 
         PROPERTIES CUDA_ARCHITECTURES 61)
