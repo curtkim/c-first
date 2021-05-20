@@ -6,6 +6,8 @@
 const int width = 1600;
 const int height = 1200;
 
+const long DURATION = 10'000'000'000;
+
 NV_ENC_BUFFER_FORMAT eFormat = NV_ENC_BUFFER_FORMAT_IYUV;
 GUID codecGuid = NV_ENC_CODEC_H264_GUID;
 GUID presetGuid = NV_ENC_PRESET_P3_GUID;
@@ -38,23 +40,30 @@ int main() {
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    int iGpu = 0;
-    ck(cuInit(0));
-    CUdevice cuDevice = 0;
-    ck(cuDeviceGet(&cuDevice, iGpu));
-    CUcontext cuContext = NULL;
-    ck(cuCtxCreate(&cuContext, 0, cuDevice));
-
-    std::ofstream outs[COUNT] = {
-            std::ofstream("03_cam3_thread1_npp0.h264", std::ios::out | std::ios::binary),
-            std::ofstream("03_cam3_thread1_npp1.h264", std::ios::out | std::ios::binary),
-            std::ofstream("03_cam3_thread1_npp2.h264", std::ios::out | std::ios::binary),
+    /* why error?
+    std::vector<std::ofstream> outs(COUNT);
+    for(int i = 0 ; i < COUNT; i++)
+        outs.push_back(std::ofstream(string_format("03_cam3_thread1_npp%d.h264", i), std::ios::out | std::ios::binary));
+    */
+    std::ofstream outs[COUNT]{
+            std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 0), std::ios::out | std::ios::binary),
+            std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 1), std::ios::out | std::ios::binary),
+            std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 2), std::ios::out | std::ios::binary),
     };
 
+    ck(cuInit(0));
+    CUdevice cuDevice0 = 0;
+    CUdevice cuDevice1 = 1;
+    ck(cuDeviceGet(&cuDevice0, 0));
+    ck(cuDeviceGet(&cuDevice1, 1));
+    CUcontext cuContext0 = NULL;
+    ck(cuCtxCreate(&cuContext0, 0, cuDevice0));
+
+
     NvEncoderCuda encoders[COUNT] = {
-            NvEncoderCuda(cuContext, width, height, eFormat),
-            NvEncoderCuda(cuContext, width, height, eFormat),
-            NvEncoderCuda(cuContext, width, height, eFormat),
+            NvEncoderCuda(cuContext0, width, height, eFormat),
+            NvEncoderCuda(cuContext0, width, height, eFormat),
+            NvEncoderCuda(cuContext0, width, height, eFormat),
     };
 
     for(auto& encoder : encoders) {
@@ -109,8 +118,9 @@ int main() {
     cudaMalloc(&pSrc, width*height*4);
     cudaMalloc(&pDst, width*height*3/2);
 
-    while (nanosec < 20'000'000'000) { // 20 second
+    while (nanosec < DURATION) { // 20 second
         while (!q.try_dequeue(tuple)) {}
+
         int idx = std::get<0>(tuple);
         auto pImage = boost::static_pointer_cast<csd::Image>(std::get<1>(tuple));
 
@@ -134,7 +144,7 @@ int main() {
 
         nvtxRangePush("encoder_copy_frame");
         const NvEncInputFrame *encoderInputFrame = encoders[idx].GetNextInputFrame();
-        NvEncoderCuda::CopyToDeviceFrame(cuContext, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
+        NvEncoderCuda::CopyToDeviceFrame(cuContext0, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                          (int) encoderInputFrame->pitch,
                                          encoders[idx].GetEncodeWidth(),
                                          encoders[idx].GetEncodeHeight(),
