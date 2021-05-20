@@ -40,16 +40,18 @@ int main() {
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    /* why error?
-    std::vector<std::ofstream> outs(COUNT);
+    std::vector<std::ofstream> outs;
+    outs.reserve(COUNT);
     for(int i = 0 ; i < COUNT; i++)
-        outs.push_back(std::ofstream(string_format("03_cam3_thread1_npp%d.h264", i), std::ios::out | std::ios::binary));
-    */
+        outs.emplace_back(string_format("03_cam3_thread1_npp%d.h264", i), std::ios::out | std::ios::binary);
+
+    /*
     std::ofstream outs[COUNT]{
             std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 0), std::ios::out | std::ios::binary),
             std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 1), std::ios::out | std::ios::binary),
             std::ofstream(string_format("03_cam3_thread1_npp%d.h264", 2), std::ios::out | std::ios::binary),
     };
+    */
 
     ck(cuInit(0));
     CUdevice cuDevice0 = 0;
@@ -59,12 +61,17 @@ int main() {
     CUcontext cuContext0 = NULL;
     ck(cuCtxCreate(&cuContext0, 0, cuDevice0));
 
-
+    /*
     NvEncoderCuda encoders[COUNT] = {
             NvEncoderCuda(cuContext0, width, height, eFormat),
             NvEncoderCuda(cuContext0, width, height, eFormat),
             NvEncoderCuda(cuContext0, width, height, eFormat),
     };
+    */
+    std::vector<NvEncoderCuda> encoders;
+    encoders.reserve(COUNT);
+    for(int i = 0 ; i < COUNT; i++)
+        encoders.emplace_back(cuContext0, width, height, eFormat);
 
     for(auto& encoder : encoders) {
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
