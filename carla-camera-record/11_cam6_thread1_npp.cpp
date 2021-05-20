@@ -54,19 +54,11 @@ int main() {
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
 
-    /* why error?
-    std::vector<std::ofstream> outs(COUNT);
+    std::vector<std::ofstream> outs;
+    outs.reserve(COUNT);
     for(int i = 0 ; i < COUNT; i++)
-        outs.push_back(std::ofstream(string_format("03_cam3_thread1_npp%d.h264", i), std::ios::out | std::ios::binary));
-    */
-    std::ofstream outs[COUNT]{
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 0), std::ios::out | std::ios::binary),
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 1), std::ios::out | std::ios::binary),
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 2), std::ios::out | std::ios::binary),
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 3), std::ios::out | std::ios::binary),
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 4), std::ios::out | std::ios::binary),
-            std::ofstream(string_format("04_cam6_thread1_npp%d.h264", 5), std::ios::out | std::ios::binary),
-    };
+        outs.emplace_back(string_format("04_cam6_thread1_npp%d.h264", i), std::ios::out | std::ios::binary);
+
 
     ck(cuInit(0));
     CUdevice cuDevice0 = 0;
@@ -80,22 +72,36 @@ int main() {
     cudaSetDevice(1);
     ck(cuCtxCreate(&cuContext1, 0, cuDevice1));
 
+    cudaSetDevice(0);
+    NvEncoderCuda encoders0[3] = {
+            NvEncoderCuda(cuContext0, width, height, eFormat),
+            NvEncoderCuda(cuContext0, width, height, eFormat),
+            NvEncoderCuda(cuContext0, width, height, eFormat),
+    };
 
-    NvEncoderCuda encoders[COUNT] = {
-            NvEncoderCuda(cuContext0, width, height, eFormat),
-            NvEncoderCuda(cuContext0, width, height, eFormat),
-            NvEncoderCuda(cuContext0, width, height, eFormat),
+    cudaSetDevice(1);
+    NvEncoderCuda encoders1[3] = {
             NvEncoderCuda(cuContext1, width, height, eFormat),
             NvEncoderCuda(cuContext1, width, height, eFormat),
             NvEncoderCuda(cuContext1, width, height, eFormat),
     };
 
-    for(auto& encoder : encoders) {
+    cudaSetDevice(0);
+    for(int i = 0 ; i < COUNT/2; i++){
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
         initializeParams.encodeConfig = &encodeConfig;
-        encoder.CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
-        encoder.CreateEncoder(&initializeParams);
+        encoders0[i].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        encoders0[i].CreateEncoder(&initializeParams);
+    }
+
+    cudaSetDevice(1);
+    for(int i = 0 ; i < COUNT/2; i++){
+        NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
+        NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
+        initializeParams.encodeConfig = &encodeConfig;
+        encoders1[i].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
+        encoders1[i].CreateEncoder(&initializeParams);
     }
 
     moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(3);
@@ -145,10 +151,13 @@ int main() {
     while (nanosec < DURATION) { // 20 second
         while (!q.try_dequeue(tuple)) {}
 
-        int idx = std::get<0>(tuple);
+        int seq = std::get<0>(tuple);
+        int group = seq/3;
+        int idx = seq%3;
+
         auto pImage = boost::static_pointer_cast<csd::Image>(std::get<1>(tuple));
 
-        printf("get frame %d\n", idx);
+        printf("get frame %d\n", seq);
         {
             nvtxRangePush("nppiBGRToYUV420_8u_AC4P3R");
             cudaMemcpy(pSrc, pImage->data(), height * width * 4, cudaMemcpyHostToDevice);
@@ -167,11 +176,13 @@ int main() {
         }
 
         nvtxRangePush("encoder_copy_frame");
-        const NvEncInputFrame *encoderInputFrame = encoders[idx].GetNextInputFrame();
+        auto& encoder = (group == 0 ? encoders0 : encoders1)[idx];
+
+        const NvEncInputFrame *encoderInputFrame = encoder.GetNextInputFrame();
         NvEncoderCuda::CopyToDeviceFrame(cuContext0, pDst, 0, (CUdeviceptr) encoderInputFrame->inputPtr,
                                          (int) encoderInputFrame->pitch,
-                                         encoders[idx].GetEncodeWidth(),
-                                         encoders[idx].GetEncodeHeight(),
+                                         encoder.GetEncodeWidth(),
+                                         encoder.GetEncodeHeight(),
                                          CU_MEMORYTYPE_DEVICE,
                                          encoderInputFrame->bufferFormat,
                                          encoderInputFrame->chromaOffsets,
@@ -179,7 +190,7 @@ int main() {
         nvtxRangePop();
 
         nvtxRangePush("encode");
-        encoders[idx].EncodeFrame(vPacket);
+        encoder.EncodeFrame(vPacket);
         nvtxRangePop();
 
         nvtxRangePush("file_write");

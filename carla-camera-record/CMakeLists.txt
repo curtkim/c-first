@@ -25,7 +25,7 @@ foreach(APP
 endforeach()
 
 
-foreach(APP 00_vector_of_ofstream)
+foreach(APP 90_vector_of_ofstream)
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
