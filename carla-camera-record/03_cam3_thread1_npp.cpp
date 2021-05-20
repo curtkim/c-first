@@ -11,6 +11,21 @@ GUID codecGuid = NV_ENC_CODEC_H264_GUID;
 GUID presetGuid = NV_ENC_PRESET_P3_GUID;
 NV_ENC_TUNING_INFO tuningInfo = NV_ENC_TUNING_INFO_HIGH_QUALITY;
 
+const std::tuple<int, carla::geom::Transform> sensor_configs[] = {
+        {90, carla::geom::Transform{
+                carla::geom::Location{1.5f, 0.0f, 1.5f},   // x, y, z.
+                carla::geom::Rotation{0.0f, 0.0f, 0.0f}}
+        },
+        {45, carla::geom::Transform{
+                carla::geom::Location{1.5f, 0.0f, 1.5f},   // x, y, z.
+                carla::geom::Rotation{0.0f, 0.0f, 0.0f}}
+        },
+        {135, carla::geom::Transform{
+                carla::geom::Location{1.5f, 0.0f, 1.5f},   // x, y, z.
+                carla::geom::Rotation{0.0f, 0.0f, 0.0f}}
+        },
+};
+
 static const int COUNT = 3;
 
 int main() {
@@ -61,20 +76,6 @@ int main() {
     vehicle->SetAutopilot(true);
 
     std::vector<boost::shared_ptr<cc::Sensor>> cameras;
-    std::tuple<int, cg::Transform> sensor_configs[] = {
-            {90, cg::Transform{
-                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
-                    },
-            {45, cg::Transform{
-                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
-            },
-            {135, cg::Transform{
-                    cg::Location{-5.5f, 0.0f, 2.8f},   // x, y, z.
-                    cg::Rotation{-15.0f, 0.0f, 0.0f}}
-            },
-    };
 
     for(auto& sensor_config : sensor_configs) {
         auto & [fov, tf] = sensor_config;
@@ -90,24 +91,15 @@ int main() {
     }
 
     // Register a callback to save images to disk.
-    cameras[0]->Listen([&q](auto data) {
-        bool success = q.try_enqueue(std::make_tuple(0, data));
-        if (!success) {
-            std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
-        }
-    });
-    cameras[1]->Listen([&q](auto data) {
-        bool success = q.try_enqueue(std::make_tuple(1, data));
-        if (!success) {
-            std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
-        }
-    });
-    cameras[2]->Listen([&q](auto data) {
-        bool success = q.try_enqueue(std::make_tuple(2, data));
-        if (!success) {
-            std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
-        }
-    });
+    for(int i = 0; i < COUNT; i++){
+        auto& camera = cameras[i];
+        camera->Listen([&q, i](auto data) {
+          bool success = q.try_enqueue(std::make_tuple(i, data));
+          if (!success) {
+              std::cout << std::this_thread::get_id() << " fail enqueue frame=" << data->GetFrame() << std::endl;
+          }
+        });
+    }
 
     std::tuple<int, boost::shared_ptr<cs::SensorData>> tuple;
     std::vector<std::vector<uint8_t>> vPacket;
