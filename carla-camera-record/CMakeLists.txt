@@ -9,7 +9,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 
-foreach(APP 01_cam1_thread1_cvcolor 02_cam1_thread1_npp 03_cam3_thread1_npp)
+foreach(APP 01_cam1_thread1_cvcolor 02_cam1_thread1_npp 03_cam3_thread1_npp 04_cam6_thread1_npp)
     add_executable(${APP} ${APP}.cpp
             NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
