@@ -21,6 +21,16 @@
 *
 *    Refer to the CUDA programming guide 4.5.3.3 on Context Management
 *
+*
+*   // cuCtxCreate만으로 cuCtxPushCurrent가 되는 것인가?
+*   CUresult status = cuCtxCreate(&hcuContext, 0, hcuDevice);
+*
+*   // cuCtxPushCurrent: Attach the caller CUDA context to the thread context.
+*   CUresult status = cuCtxPushCurrent(pParams->hcuContext);
+*
+*   // Here we must release the CUDA context from the thread context
+*   status = cuCtxPopCurrent(NULL);
+
 ******************************************************************************/
 
 #define MAXTHREADS  256

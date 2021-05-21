@@ -19,6 +19,16 @@
  * attached to both GPUs.
  */
 
+
+/**
+ * 아래의 함수를 사용함.
+ *
+ * cudaGetDeviceCount
+ * cudaSetDevice
+ * cudaStreamCreate
+ * cudaStreamSynchronize
+ */
+
 // System includes
 #include <stdio.h>
 #include <assert.h>
