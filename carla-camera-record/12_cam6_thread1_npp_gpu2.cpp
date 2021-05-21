@@ -44,6 +44,7 @@ const std::tuple<int, carla::geom::Transform> sensor_configs[] = {
 
 static const int COUNT = 6;
 
+
 int main() {
     namespace cc = carla::client;
     namespace cg = carla::geom;
@@ -53,6 +54,7 @@ int main() {
 
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread : " << std::this_thread::get_id() << std::endl;
+    printf("w=%d h=%d", width, height);
 
     std::vector<std::ofstream> outs;
     outs.reserve(COUNT);
@@ -65,28 +67,38 @@ int main() {
     CUdevice cuDevice1 = 1;
     ck(cuDeviceGet(&cuDevice0, 0));
     ck(cuDeviceGet(&cuDevice1, 1));
+
     CUcontext cuContext0 = NULL;
     CUcontext cuContext1 = NULL;
-    cudaSetDevice(0);
     ck(cuCtxCreate(&cuContext0, 0, cuDevice0));
-    cudaSetDevice(1);
+    cuCtxPopCurrent(NULL);
     ck(cuCtxCreate(&cuContext1, 0, cuDevice1));
+    cuCtxPopCurrent(NULL);
+
+    printf("sizeof(CUdevice)=%ld sizeof(CUcontext)=%ld\n", sizeof(CUdevice), sizeof(CUcontext));
+    printf("cuDevice0=%d cuContext0=%#018x\n", cuDevice0, cuContext0);
+    printf("cuDevice1=%d cuContext1=%#018x\n", cuDevice1, cuContext1);
 
     cudaSetDevice(0);
+    cuCtxPushCurrent(cuContext0);
     NvEncoderCuda encoders0[3] = {
             NvEncoderCuda(cuContext0, width, height, eFormat),
             NvEncoderCuda(cuContext0, width, height, eFormat),
             NvEncoderCuda(cuContext0, width, height, eFormat),
     };
+    cuCtxPopCurrent(NULL);
 
     cudaSetDevice(1);
+    cuCtxPushCurrent(cuContext1);
     NvEncoderCuda encoders1[3] = {
             NvEncoderCuda(cuContext1, width, height, eFormat),
             NvEncoderCuda(cuContext1, width, height, eFormat),
             NvEncoderCuda(cuContext1, width, height, eFormat),
     };
+    cuCtxPopCurrent(NULL);
 
     cudaSetDevice(0);
+    cuCtxPushCurrent(cuContext0);
     for(int i = 0 ; i < COUNT/2; i++){
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
@@ -94,8 +106,10 @@ int main() {
         encoders0[i].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
         encoders0[i].CreateEncoder(&initializeParams);
     }
+    cuCtxPopCurrent(NULL);
 
     cudaSetDevice(1);
+    cuCtxPushCurrent(cuContext1);
     for(int i = 0 ; i < COUNT/2; i++){
         NV_ENC_INITIALIZE_PARAMS initializeParams = {NV_ENC_INITIALIZE_PARAMS_VER};
         NV_ENC_CONFIG encodeConfig = {NV_ENC_CONFIG_VER};
@@ -103,8 +117,9 @@ int main() {
         encoders1[i].CreateDefaultEncoderParams(&initializeParams, codecGuid, presetGuid, tuningInfo);
         encoders1[i].CreateEncoder(&initializeParams);
     }
+    cuCtxPopCurrent(NULL);
 
-    moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(3);
+    moodycamel::ReaderWriterQueue<std::tuple<int, boost::shared_ptr<cs::SensorData>>> q(COUNT);
 
 
     auto world = init_carla_world("localhost", 2000, "/Game/Carla/Maps/Town03");
@@ -157,6 +172,8 @@ int main() {
 
         auto pImage = boost::static_pointer_cast<csd::Image>(std::get<1>(tuple));
 
+        cudaSetDevice(group);
+        cuCtxPushCurrent(group == 0 ? cuContext0 : cuContext1);
         printf("get frame %d\n", seq);
         {
             nvtxRangePush("nppiBGRToYUV420_8u_AC4P3R");
@@ -201,6 +218,7 @@ int main() {
         }
         nvtxRangePop();
 
+        cuCtxPopCurrent(NULL);
         nanosec = (std::chrono::system_clock::now() - start_time).count();
     }
     cudaFree(pSrc);
@@ -219,4 +237,7 @@ int main() {
 
     vehicle->Destroy();
     std::cout << "Actors destroyed." << std::endl;
+
+    cuCtxDestroy(cuContext0);
+    cuCtxDestroy(cuContext1);
 }

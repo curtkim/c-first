@@ -1,6 +1,3 @@
-## Step
-- 
-
 
 ## HOWTO
 
@@ -24,3 +21,6 @@ https://docs.nvidia.com/cuda/cuda-driver-api/driver-vs-runtime-api.html
 ### driver API
 - more fine-grained control, especially over contexts and module loading
 - CUDA clients can use the driver API to create and set the current context, and then use the runtime API to work with it.
+
+## session개수 제한 풀기
+https://github.com/keylase/nvidia-patch

@@ -11,7 +11,7 @@ conan_basic_setup()
 
 foreach(APP
         01_cam1_thread1_cvcolor 02_cam1_thread1_npp 03_cam3_thread1_npp
-        11_cam6_thread1_npp)
+        11_cam6_thread1_npp_gpu1 12_cam6_thread1_npp_gpu2)
     add_executable(${APP} ${APP}.cpp
             NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
