@@ -24,3 +24,6 @@ https://docs.nvidia.com/cuda/cuda-driver-api/driver-vs-runtime-api.html
 
 ## session개수 제한 풀기
 https://github.com/keylase/nvidia-patch
+
+## Reference
+https://github.com/NVIDIA/NvPipe

@@ -15,9 +15,10 @@ add_executable(encode_bare encode_bare.cpp)
 add_executable(simpleEncoder simpleEncoder.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
 add_executable(simpleEncoder_test_video simpleEncoder_test_video.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
 add_executable(rxcppEncoder rxcppEncoder.cpp NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
+add_executable(demuxer_test demuxer_test.cpp)
 
-
-foreach(APP AppEncCuda AppEncGL AppDec encode_bare simpleEncoder simpleEncoder_test_video rxcppEncoder)
+foreach(APP AppEncCuda AppEncGL AppDec encode_bare simpleEncoder simpleEncoder_test_video rxcppEncoder
+        demuxer_test)
     target_compile_features(${APP} PUBLIC cxx_std_17)
     target_include_directories(${APP} PUBLIC .)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
@@ -34,3 +35,4 @@ target_link_libraries(encode_bare PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cud
 target_link_libraries(simpleEncoder PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
 target_link_libraries(simpleEncoder_test_video PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
 target_link_libraries(rxcppEncoder PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart)
+target_link_libraries(demuxer_test PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart avformat avcodec avutil )

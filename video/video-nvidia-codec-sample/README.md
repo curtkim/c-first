@@ -1,6 +1,6 @@
 ## install
 
-    sudo apt-get install libavformat-dev libavcodec-dev
+    sudo apt-get install libavformat-dev libavcodec-dev 
 
 ## sample
 
