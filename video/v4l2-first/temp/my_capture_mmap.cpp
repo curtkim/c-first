@@ -15,6 +15,12 @@
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/types_c.h>
+
+
 #include <linux/videodev2.h>
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
@@ -35,7 +41,7 @@ struct buffer          *buffers;
 static unsigned int     n_buffers;
 static int              out_buf;
 static int              force_format;
-static int              frame_count = 200;
+static int              frame_count = 10;
 static int              frame_number = 0;
 
 static void errno_exit(const char *s)
@@ -55,7 +61,7 @@ static int xioctl(int fh, int request, void *arg)
   return r;
 }
 
-static void process_image(const void *p, int size)
+static void process_image(void *p, int size)
 {
   frame_number++;
   char filename[15];
@@ -67,6 +73,13 @@ static void process_image(const void *p, int size)
 
   fflush(fp);
   fclose(fp);
+
+    sprintf(filename, "frame-%d.jpeg", frame_number);
+    // yvyu -> rgb -> jpeg
+    cv::Mat A(480, 640, CV_8UC2, p);
+    cv::Mat B;
+    cvtColor(A, B, CV_YUV2RGB_YVYU);
+    cv::imwrite(filename, B );
 }
 
 static int read_frame(void)

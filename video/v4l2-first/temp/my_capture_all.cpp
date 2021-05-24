@@ -41,7 +41,7 @@ struct buffer          *buffers;
 static unsigned int     n_buffers;
 static int              out_buf;
 static int              force_format;
-static int              frame_count = 200;
+static int              frame_count = 10;
 static int              frame_number = 0;
 
 static void errno_exit(const char *s)
@@ -66,6 +66,9 @@ static void process_image(const void *p, int size)
   frame_number++;
   char filename[15];
   sprintf(filename, "frame-%d.raw", frame_number);
+  printf("filename=%s frame=%d size=%d\n", filename, frame_number, size);
+
+  /*
   FILE *fp=fopen(filename,"wb");
 
   if (out_buf)
@@ -73,6 +76,11 @@ static void process_image(const void *p, int size)
 
   fflush(fp);
   fclose(fp);
+   */
+
+  int outfd = open(filename, O_CREAT | O_WRONLY);
+  write(outfd, p, size);
+  close(outfd);
 }
 
 static int read_frame(void)
@@ -685,8 +693,8 @@ int main(int argc, char **argv)
   open_device();
   init_device();
   start_capturing();
-  //mainloop();
-  mainloop_poll();
+  mainloop();
+  //mainloop_poll();
   stop_capturing();
   uninit_device();
   close_device();

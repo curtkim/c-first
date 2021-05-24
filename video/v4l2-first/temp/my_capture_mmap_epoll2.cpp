@@ -19,6 +19,12 @@
 
 #include <linux/videodev2.h>
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/types_c.h>
+
+
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
 #ifndef V4L2_PIX_FMT_H264
@@ -41,7 +47,7 @@ struct device_info {
 
 static int              out_buf;
 static int              force_format;
-static int              frame_count = 50;
+static int              frame_count = 10;
 static int              frame_number = 0;
 
 static void errno_exit(const char *s)
@@ -61,11 +67,12 @@ static int xioctl(int fh, int request, void *arg)
   return r;
 }
 
-static void process_image(device_info* pDeviceInfo, const void *p, int size)
+static void process_image(device_info* pDeviceInfo, void *p, int size)
 {
   frame_number++;
   char filename[30];
 
+  /*
   sprintf(filename, "%s-%d.raw", pDeviceInfo->out_name, frame_number);
   printf("%s\n", filename);
 
@@ -76,6 +83,15 @@ static void process_image(device_info* pDeviceInfo, const void *p, int size)
 
   fflush(fp);
   fclose(fp);
+    */
+
+    sprintf(filename, "frame-%d.jpeg", frame_number);
+    // yvyu -> rgb -> jpeg
+    cv::Mat A(480, 640, CV_8UC2, p);
+    cv::Mat B;
+    cvtColor(A, B, CV_YUV2RGB_YVYU);
+    cv::imwrite(filename, B );
+
 }
 
 static int read_frame(device_info* pDeviceInfo)

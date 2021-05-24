@@ -9,8 +9,13 @@
 #include <unistd.h>
 #include <sys/poll.h>
 
-uint8_t *buffer;
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/types_c.h>
+
+uint8_t *buffer;
 
 static int xioctl(int fd, int request, void *arg) {
   int r;
@@ -73,6 +78,7 @@ int print_caps(int fd) {
     printf("  %s: %c%c %s\n", fourcc, c, e, fmtdesc.description);
     fmtdesc.index++;
   }
+  printf("--------------------\n");
 
   /*
   if (!support_grbg10) {
@@ -81,26 +87,38 @@ int print_caps(int fd) {
   }
   */
 
-  struct v4l2_format fmt = {0};
-  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 752;
-  fmt.fmt.pix.height = 480;
-  fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
-  fmt.fmt.pix.field = V4L2_FIELD_NONE;
-
-  if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
-    perror("Setting Pixel Format");
-    return 1;
-  }
-
-  strncpy(fourcc, (char *)&fmt.fmt.pix.pixelformat, 4);
-  printf("Selected Camera Mode:\n"
-         "  Width: %d\n"
-         "  Height: %d\n"
-         "  PixFmt: %s\n"
-         "  Field: %d\n",
-         fmt.fmt.pix.width, fmt.fmt.pix.height, fourcc, fmt.fmt.pix.field);
   return 0;
+}
+
+int set_format(int fd) {
+    struct v4l2_format fmt = {0};
+    fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    /*
+    fmt.fmt.pix.width = 752;
+    fmt.fmt.pix.height = 480;
+    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+     */
+    fmt.fmt.pix.width = 640;
+    fmt.fmt.pix.height = 480;
+    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+
+    fmt.fmt.pix.field = V4L2_FIELD_NONE;
+
+    if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
+        perror("Setting Pixel Format");
+        return 1;
+    }
+
+    char fourcc[5] = {0};
+    strncpy(fourcc, (char *)&fmt.fmt.pix.pixelformat, 4);
+    printf("Selected Camera Mode:\n"
+           "  Width: %d\n"
+           "  Height: %d\n"
+           "  PixFmt: %s\n"
+           "  Field: %d\n",
+           fmt.fmt.pix.width, fmt.fmt.pix.height, fourcc, fmt.fmt.pix.field);
+
+    return 0;
 }
 
 
@@ -125,11 +143,24 @@ int init_mmap(int fd) {
     return 1;
   }
 
-  buffer = mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
+  buffer = (uint8_t *)mmap(NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
   printf("Length: %d\nAddress: %p\n", buf.length, buffer);
   printf("fd=%d, buf.bytesused=%d\n", fd, buf.bytesused);
 
   return 0;
+}
+
+void process_image(v4l2_buffer& buf) {
+    int outfd = open("out.img", O_CREAT | O_WRONLY);
+    printf("outfd=%d, buf.bytesused=%d\n", outfd, buf.bytesused);
+    write(outfd, buffer, buf.bytesused);
+    close(outfd);
+
+    // yvyu -> rgb -> jpeg
+    cv::Mat A(480, 640, CV_8UC2, buffer);
+    cv::Mat B;
+    cvtColor(A, B, CV_YUV2RGB_YVYU);
+    cv::imwrite("out.jpeg", B );
 }
 
 
@@ -157,7 +188,8 @@ int capture_image(int fd) {
   struct timeval tv = {0};
   tv.tv_sec = 2;
   int r = select(fd + 1, &fds, NULL, NULL, &tv);
-   */
+  */
+
   struct pollfd fds[2];
   fds[0].fd = fd;
   fds[0].events = POLLIN;
@@ -169,6 +201,7 @@ int capture_image(int fd) {
   printf("fds[0].revents= %d\n", fds[0].revents);
   printf("fds[1].revents= %d\n", fds[1].revents);
 
+
   if (-1 == r) {
     perror("Waiting for Frame");
     return 1;
@@ -179,10 +212,7 @@ int capture_image(int fd) {
     return 1;
   }
 
-  int outfd = open("out.img", O_CREAT | O_WRONLY);
-  printf("outfd=%d, buf.bytesused=%d\n", outfd, buf.bytesused);
-  write(outfd, buffer, buf.bytesused);
-  close(outfd);
+  process_image(buf);
 
   return 0;
 }
@@ -197,6 +227,9 @@ int main() {
   }
 
   if (print_caps(fd))
+    return 1;
+
+  if(set_format(fd))
     return 1;
 
   if (init_mmap(fd))
