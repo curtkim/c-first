@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
     deviceInfo.dev_name = "/dev/video0";
 
     open_device(deviceInfo);
-    init_device(deviceInfo);
+    init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
     start_capturing(deviceInfo);
 
     int epfd = epoll_create(1);

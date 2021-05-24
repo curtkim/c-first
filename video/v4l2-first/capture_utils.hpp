@@ -18,7 +18,7 @@ void errno_exit(const char *s);
 int xioctl(int fh, int request, void *arg);
 void open_device(DeviceContext& device_context);
 void init_mmap(DeviceContext& device_context);
-void init_device(DeviceContext& device_context);
+void init_device(DeviceContext& device_context, int width, int height, int pixel_format);
 void start_capturing(DeviceContext& device_context);
 void stop_capturing(DeviceContext& device_context);
 void uninit_device(DeviceContext& device_context);

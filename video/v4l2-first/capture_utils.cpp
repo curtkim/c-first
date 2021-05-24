@@ -118,13 +118,11 @@ void init_mmap(DeviceContext& device_context)
 }
 
 
-void init_device(DeviceContext& device_context)
+void init_device(DeviceContext& device_context, int width, int height, int pixel_format)
 {
     struct v4l2_capability cap;
     struct v4l2_cropcap cropcap;
     struct v4l2_crop crop;
-    struct v4l2_format fmt;
-    unsigned int min;
 
     if (-1 == xioctl(device_context.fd, VIDIOC_QUERYCAP, &cap)) {
         if (EINVAL == errno) {
@@ -175,9 +173,20 @@ void init_device(DeviceContext& device_context)
     }
 
 
+    struct v4l2_format fmt;
+    unsigned int min;
+
     CLEAR(fmt);
 
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+    fmt.fmt.pix.width       = width;
+    fmt.fmt.pix.height      = height;
+    fmt.fmt.pix.pixelformat = pixel_format;
+    fmt.fmt.pix.field       = V4L2_FIELD_ANY;
+
+    if (-1 == xioctl(device_context.fd, VIDIOC_S_FMT, &fmt))
+        errno_exit("VIDIOC_S_FMT");
+
     /*
     if (force_format) {
         fprintf(stderr, "Set H264\r\n");
@@ -193,8 +202,8 @@ void init_device(DeviceContext& device_context)
             errno_exit("VIDIOC_G_FMT");
     }
     */
-    if (-1 == xioctl(device_context.fd, VIDIOC_G_FMT, &fmt))
-        errno_exit("VIDIOC_G_FMT");
+    //if (-1 == xioctl(device_context.fd, VIDIOC_G_FMT, &fmt))
+    //    errno_exit("VIDIOC_G_FMT");
 
 
     /* Buggy driver paranoia. */
