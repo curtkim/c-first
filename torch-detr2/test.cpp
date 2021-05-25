@@ -3,14 +3,14 @@
 #include <iostream>
 #include <memory>
 
-#include "image_io.hpp"
+#include "lib/image_io.hpp"
 
 using image_io::load_image;
 using image_io::save_image;
 
 using namespace std;
 
-int main(int argc, const char* argv[]) {
+int main() {
 
   std::cout << "CUDA: " << (torch::cuda::is_available() ? "Yes" : "No") << std::endl;
   std::cout << "cuDNN: " << (torch::cuda::cudnn_is_available() ? "Yes" : "No") << std::endl;

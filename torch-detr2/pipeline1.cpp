@@ -8,9 +8,9 @@
 #include <sys/syscall.h>
 #include <nvToolsExt.h>
 
-#include "carla_common.hpp"
-#include "viz_opengl.hpp"
-#include "detr.hpp"
+#include "lib/carla_common.hpp"
+#include "lib/viz_opengl.hpp"
+#include "lib/detr.hpp"
 
 #include <carla/client/Sensor.h>
 #include <carla/sensor/data/Image.h>
@@ -121,7 +121,7 @@ int main(int argc, const char *argv[]) {
 
     bgShader.use();
     glBindVertexArray(VAO);
-    unsigned int texture = viz::bg::load_texture(pImage->GetWidth(), pImage->GetHeight(), pImage->data());
+    unsigned int texture = viz::bg::load_texture(pImage->GetWidth(), pImage->GetHeight(), GL_BGRA, pImage->data());
     glBindTexture(GL_TEXTURE_2D, texture);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glDeleteTextures(1, &texture);

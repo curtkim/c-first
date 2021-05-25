@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-#include "image_io.hpp"
+#include "lib/image_io.hpp"
 
 using image_io::load_image;
 using image_io::save_image;
@@ -27,7 +27,7 @@ int main(int argc, const char* argv[]) {
   }
 
 
-  auto image = load_image("../../39769_fill.jpg");
+  auto image = load_image("../../sample1.jpg");
   std::cout << image.sizes() << std::endl;
   auto image2 = image.
     to(torch::kFloat). // For inference

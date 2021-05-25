@@ -26,7 +26,7 @@ foreach(APP
 endforeach()
 
 # opengl
-foreach(APP 80_show_opencv_image 81_show_opencv_video)
+foreach(APP 80_show_opencv_image 81_show_opencv_video 82_jpeg2mkv)
   add_executable(${APP} ${APP}.cpp)
   target_link_libraries(${APP} ${CONAN_LIBS} nvrtc cudart X11 )
   target_compile_features(${APP} PRIVATE cxx_std_17)

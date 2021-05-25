@@ -12,7 +12,7 @@ namespace viz
     extern const char* VERTEX_SHADER_SOURCE;
     extern const char* FRAGMENT_SHADER_SOURCE;
     std::tuple<unsigned int, unsigned int, unsigned int> load_model();
-    unsigned int load_texture(unsigned int width, unsigned int height, void* data);
+    unsigned int load_texture(unsigned int width, unsigned int height, unsigned int pixel_format, void* data);
     void delete_model(unsigned int, unsigned int, unsigned int);
   }
   namespace box {

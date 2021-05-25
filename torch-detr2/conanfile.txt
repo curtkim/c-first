@@ -1,5 +1,5 @@
 [requires]
-torch/1.8.1@curt/prebuilt
+torch/1.7.1@curt/prebuilt
 stb/20200203
 carla-client/0.9.11@curt/testing
 readerwriterqueue/1.0.2@curt/testing
@@ -11,4 +11,4 @@ glm/0.9.9.7
 cmake
 
 [options]
-torch:cuda=11.1
+torch:cuda=11.0

@@ -27,10 +27,16 @@
 static int MAX_FRAME_COUNT = 100;
 static int WIDTH = 640;
 static int HEIGHT = 480;
+static int FIXEL_FORMAT = V4L2_PIX_FMT_YUYV;
+
 
 void process_image(DeviceContext &device_context, void *p, int size, int frame) {
     char filename[30];
     sprintf(filename, "frame-%d.jpeg", frame);
+
+    //cv::Mat A(HEIGHT, WIDTH, CV_8UC3, p);
+    //cv::imwrite(filename, A);
+
     // yvyu -> rgb -> jpeg
     cv::Mat A(HEIGHT, WIDTH, CV_8UC2, p);
     cv::Mat B;
@@ -93,12 +99,12 @@ void mainloop_epoll(DeviceContext &device_context, int epfd) {
 }
 
 
-int main(int argc, char **argv) {
+int main() {
     DeviceContext deviceInfo;
-    deviceInfo.dev_name = "/dev/video2";
+    deviceInfo.dev_name = "/dev/video0";
 
     open_device(deviceInfo);
-    init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
+    init_device(deviceInfo, WIDTH, HEIGHT, FIXEL_FORMAT);
     start_capturing(deviceInfo);
 
     int epfd = epoll_create(1);

@@ -4,9 +4,9 @@ import tempfile
 
 class TorchConan(ConanFile):
     name = "torch"
-    version = "1.8.1"
+    #version = "1.8.1"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"cuda": ["9.2", "10.1", "10.2", "11.1", "None"]}
+    options = {"cuda": ["9.2", "10.1", "10.2", "11.0", "11.1", "None"]}
     default_options = {"cuda": "11.1"}
 
     def build(self):
@@ -19,6 +19,9 @@ class TorchConan(ConanFile):
         elif self.options.cuda == '9.2':        
             cuda_version = "cu92"
             url_tail = "%2Bcu92"
+        elif self.options.cuda == '11.0':        
+            cuda_version = "cu110"
+            url_tail = "%2Bcu110"
         elif self.options.cuda == '11.1':        
             cuda_version = "cu111"
             url_tail = "%2Bcu111"
@@ -51,7 +54,10 @@ class TorchConan(ConanFile):
         self.cpp_info.bindirs = ['bin']
         self.cpp_info.libdirs = ['lib']
         if self.options.cuda != 'None':
-            self.cpp_info.libs.extend(['torch_cuda', 'torch_cuda_cpp', 'c10_cuda'])
+            self.cpp_info.libs.extend(['torch_cuda', 'c10_cuda'])
+            if self.version >= '1.8.0':
+                self.cpp_info.libs.extend(['torch_cuda_cpp'])
+
 
         #self.cpp_info.libs = tools.collect_libs(self)
         #self.cpp_info.includedirs = ['include', 'include/torch/csrc/api/include']

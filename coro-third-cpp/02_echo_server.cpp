@@ -52,16 +52,20 @@ int main(int argc, char *argv[]) {
   io_service service(MAX_CONN_SIZE);
 
   int sockfd = socket(AF_INET, SOCK_STREAM, 0) | panic_on_err("socket creation", true);
-  on_scope_exit closesock([=]() { shutdown(sockfd, SHUT_RDWR); });
+  on_scope_exit closesock([=]() {
+      shutdown(sockfd, SHUT_RDWR);
+  });
 
   if (sockaddr_in addr = {
       .sin_family = AF_INET,
       .sin_port = htons(server_port),
       .sin_addr = { INADDR_ANY },
       .sin_zero = {},
-    }; bind(sockfd, reinterpret_cast<sockaddr *>(&addr), sizeof (sockaddr_in))) panic("socket binding", errno);
+    }; bind(sockfd, reinterpret_cast<sockaddr *>(&addr), sizeof (sockaddr_in)))
+      panic("socket binding", errno);
 
-  if (listen(sockfd, MAX_CONN_SIZE * 2)) panic("listen", errno);
+  if (listen(sockfd, MAX_CONN_SIZE * 2))
+      panic("listen", errno);
   printf("Listening: %d\n", server_port);
 
   service.run(accept_connection(service, sockfd));

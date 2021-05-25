@@ -51,11 +51,11 @@ namespace detr {
       at::indexing::Ellipsis,
       at::indexing::Slice(at::indexing::None, -1)
     });
-    std::cout << "probas2.sizes() " << probas2.sizes() << std::endl;
+    //std::cout << "probas2.sizes() " << probas2.sizes() << std::endl;
 
     const auto [values, indices] = probas2.max(-1);
     at::Tensor keep = values.gt(0.9);
-    std::cout << "keep " << keep << std::endl;
+    //std::cout << "keep " << keep << std::endl;
 
     return boxes.index({0, keep});
     //std::cout << "keep.sizes() " << keep.sizes() << std::endl;

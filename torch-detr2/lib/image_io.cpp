@@ -123,7 +123,8 @@ void save_image(torch::Tensor tensor, const std::string& file_path, int64_t nrow
 
 // Loads a tensor from an image file
 torch::Tensor load_image(const std::string& file_path,
-                         torch::IntArrayRef shape, std::function<torch::Tensor(torch::Tensor)> transform) {
+                         torch::IntArrayRef shape,
+                         std::function<torch::Tensor(torch::Tensor)> transform) {
   if (!shape.empty() && shape.size() != 1 && shape.size() != 2) {
     throw std::invalid_argument("Shape must be empty or contain exactly one or two elements.");
   }
