@@ -18,14 +18,10 @@ foreach(APP
 endforeach()
 
 
-
-#add_library(capture OBJECT capture.cpp)
 foreach(APP
         my_capture_all
         my_capture_mmap
-        my_capture_mmap_poll
-        my_capture_mmap_epoll2
-        my_capture_mmap_epoll2_multi)
+        my_capture_mmap_poll)
     add_executable(_temp_${APP} temp/${APP}.cpp)
     target_link_libraries(_temp_${APP} PUBLIC ${CONAN_LIBS} )
 endforeach()
