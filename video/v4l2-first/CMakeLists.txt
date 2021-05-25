@@ -11,6 +11,7 @@ add_library(capture_utils capture_utils.cpp)
 
 foreach(APP
         my_capture_mmap_epoll
+        my_capture_mmap_epoll_multi
         my_capture_mmap_uring_poll)
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} capture_utils uring)
@@ -25,7 +26,7 @@ foreach(APP
         my_capture_mmap_poll
         my_capture_mmap_epoll2
         my_capture_mmap_epoll2_multi)
-    add_executable(${APP} temp/${APP}.cpp)
-    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )
+    add_executable(_temp_${APP} temp/${APP}.cpp)
+    target_link_libraries(_temp_${APP} PUBLIC ${CONAN_LIBS} )
 endforeach()
 

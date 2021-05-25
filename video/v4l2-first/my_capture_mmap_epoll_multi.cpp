@@ -28,9 +28,9 @@ static int MAX_FRAME_COUNT = 100;
 static int WIDTH = 640;
 static int HEIGHT = 480;
 
-void process_image(DeviceContext &device_context, void *p, int size, int frame) {
+void process_image(DeviceContext &device_context, void *p, int size, int frame, int idx) {
     char filename[30];
-    sprintf(filename, "frame-%d.jpeg", frame);
+    sprintf(filename, "frame-%d-%d.jpeg", idx, frame);
     // yvyu -> rgb -> jpeg
     cv::Mat A(HEIGHT, WIDTH, CV_8UC2, p);
     cv::Mat B;
@@ -38,7 +38,7 @@ void process_image(DeviceContext &device_context, void *p, int size, int frame) 
     cv::imwrite(filename, B);
 }
 
-int read_frame(DeviceContext &device_context, int frame) {
+int read_frame(DeviceContext &device_context, int idx, int frame) {
     struct v4l2_buffer buf;
     unsigned int i;
 
@@ -63,7 +63,7 @@ int read_frame(DeviceContext &device_context, int frame) {
 
     assert(buf.index < device_context.n_buffers);
 
-    process_image(device_context, device_context.buffers[buf.index].start, buf.bytesused, frame);
+    process_image(device_context, device_context.buffers[buf.index].start, buf.bytesused, frame, idx);
 
     if (-1 == xioctl(device_context.fd, VIDIOC_QBUF, &buf))
         errno_exit("VIDIOC_QBUF");
@@ -71,22 +71,26 @@ int read_frame(DeviceContext &device_context, int frame) {
     return 1;
 }
 
-void mainloop_epoll(DeviceContext &device_context, int epfd) {
-    struct epoll_event events[1];
+void mainloop_epoll(std::array<DeviceContext,2>& deviceInfos, int epfd) {
+    struct epoll_event events[2];
 
     StopWatch watch;
-    for(int i = 0; i < MAX_FRAME_COUNT; i++){
+    for(int f = 0; f < MAX_FRAME_COUNT; f++){
         for (;;) {
 
             watch.reset();
-            int nfds = epoll_wait(epfd, events, 1, 10*1000);
-            printf("%d elapsed_time = %ld\n", i, watch.get_elapsed_time());
-            //std::cout << nfds << std::endl;
+            int nfds = epoll_wait(epfd, events, 2, 10*1000);
+            printf("frame=%d nfds=%d elapsed_time = %ld \n", f, nfds, watch.get_elapsed_time());
             if (nfds <= 0)
                 continue;
 
-            if (read_frame(device_context, i))
-                break;
+            for (int i = 0; i < nfds; i++) {
+                if( events[i].data.fd == deviceInfos[0].fd)
+                    read_frame(deviceInfos[0], 0, f);
+                else if( events[i].data.fd == deviceInfos[1].fd)
+                    read_frame(deviceInfos[1], 1, f);
+            }
+            break;
             /* EAGAIN - continue select loop. */
         }
     }
@@ -94,26 +98,39 @@ void mainloop_epoll(DeviceContext &device_context, int epfd) {
 
 
 int main(int argc, char **argv) {
-    DeviceContext deviceInfo;
-    deviceInfo.dev_name = "/dev/video2";
+    std::array<DeviceContext,2> deviceInfos;
 
-    open_device(deviceInfo);
-    init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
-    start_capturing(deviceInfo);
+    deviceInfos[0].dev_name = "/dev/video0";
+    deviceInfos[1].dev_name = "/dev/video2";
+
+    for(auto& deviceInfo : deviceInfos) {
+        open_device(deviceInfo);
+        init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
+        start_capturing(deviceInfo);
+    }
 
     int epfd = epoll_create(1);
+
     struct epoll_event ev;
-    ev.data.fd = deviceInfo.fd;
+    ev.data.fd = deviceInfos[0].fd;
     ev.events = EPOLLIN;
     epoll_ctl(epfd, EPOLL_CTL_ADD, ev.data.fd, &ev);
 
-    mainloop_epoll(deviceInfo, epfd);
+    struct epoll_event ev1;
+    ev1.data.fd = deviceInfos[1].fd;
+    ev1.events = EPOLLIN;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, ev1.data.fd, &ev1);
+
+    mainloop_epoll(deviceInfos, epfd);
 
     epoll_ctl(epfd, EPOLL_CTL_DEL, ev.data.fd, &ev);
+    epoll_ctl(epfd, EPOLL_CTL_DEL, ev1.data.fd, &ev);
 
-    stop_capturing(deviceInfo);
-    uninit_device(deviceInfo);
-    close_device(deviceInfo);
+    for(auto& deviceInfo : deviceInfos) {
+        stop_capturing(deviceInfo);
+        uninit_device(deviceInfo);
+        close_device(deviceInfo);
+    }
     fprintf(stderr, "\n");
     return 0;
 }
