@@ -1,0 +1,5 @@
+[requires]
+sophus/20210517@curt/testing
+
+[generators]
+cmake
