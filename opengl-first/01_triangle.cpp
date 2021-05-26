@@ -8,6 +8,7 @@
 GLFWwindow *window;
 
 #include "common/shader.hpp"
+#include "common/stopwatch.hpp"
 
 std::string vertex_shader = R"(
 #version 330 core
@@ -57,6 +58,7 @@ int main(void) {
     return -1;
   }
   glfwMakeContextCurrent(window);
+  //glfwSwapInterval(0);
 
   if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
     printf("Failed to initialize GLAD\n");
@@ -90,8 +92,9 @@ int main(void) {
   // viewport
   glViewport(0, 0, 1024, 768);
 
+  StopWatch stopwatch;
   do {
-
+    stopwatch.reset();
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -114,11 +117,13 @@ int main(void) {
     glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
 
     glDisableVertexAttribArray(0);
+    printf("draw %ld\n", stopwatch.get_elapsed_time());
 
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
 
+    printf("swap and poll %ld\n", stopwatch.get_elapsed_time());
   } // Check if the ESC key was pressed or the window was closed
   while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0);
 
