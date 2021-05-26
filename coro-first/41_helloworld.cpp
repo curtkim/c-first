@@ -14,6 +14,7 @@ struct HelloWorldCoro {
       std::cout << "final_suspend\n";
       return {};
     }
+
     void unhandled_exception() {
       std::exit(1);
     }
@@ -26,17 +27,28 @@ struct HelloWorldCoro {
 };
 
 HelloWorldCoro print_hello_world() {
-  std::cout << "Hello ";
+  std::cout << "Hello\n";
   co_await std::suspend_always{};
-  std::cout << "World!" << std::endl;
+  std::cout << "World!\n";
 }
 
 int main() {
   HelloWorldCoro mycoro = print_hello_world();
-  std::cout << "\n\t1\n";
+  std::cout << "1\n";
   mycoro.m_handle.resume();
-  std::cout << "\n\t2\n";
-  mycoro.m_handle.resume(); // Equal to mycoro.m_handle.resume();
-  std::cout << "\n\t3\n";
+  std::cout << "2\n";
+  mycoro.m_handle(); // Equal to mycoro.m_handle.resume();
+  std::cout << "3\n";
+
+  // initial_suspend
+  // 1
+  // Hello
+  // 2
+  // World
+  // final_suspend
+  // 3
+
+  // final_suspend의 suspend_always는 누가 resume하는 것인가?
+
   return EXIT_SUCCESS;
 }

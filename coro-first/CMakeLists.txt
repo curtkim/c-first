@@ -8,12 +8,15 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 foreach(APP
-        00_helloworld
         01_generator 01_nested
         02_my_first_coroutine 02_my_first_coroutine_return 02_my_first_coroutine_yield
         04_state_machine 05_task
         06_future
         11_russian-roulette
+
+        41_helloworld
+        42_helloworld_return
+        43_helloworld_yield
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
