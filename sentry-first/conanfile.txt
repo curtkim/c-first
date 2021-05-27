@@ -1,0 +1,5 @@
+[requires]
+sentry-native/0.4.9
+
+[generators]
+cmake
