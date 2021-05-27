@@ -76,7 +76,7 @@ static void queue_rw_pair(struct io_uring *ring, off_t size, off_t offset) {
 
   sqe = io_uring_get_sqe(ring);
   io_uring_prep_readv(sqe, infd, &data->iov, 1, offset);
-  sqe->flags |= IOSQE_IO_LINK;
+  sqe->flags |= IOSQE_IO_LINK;  // links next sqe, https://lwn.net/Articles/788929/
   io_uring_sqe_set_data(sqe, data);
 
   sqe = io_uring_get_sqe(ring);
@@ -89,7 +89,7 @@ static int handle_cqe(struct io_uring *ring, struct io_uring_cqe *cqe) {
   int ret = 0;
 
   data->index++;
-  printf("handle_cqe offset=%d index=%d inflight=%d\n", data->offset, data->index, inflight);
+  printf("handle_cqe offset=%ld index=%d inflight=%d\n", data->offset, data->index, inflight);
 
   if (cqe->res < 0) {
     if (cqe->res == -ECANCELED) {
@@ -125,7 +125,7 @@ static int copy_file(struct io_uring *ring, off_t insize) {
       if (this_size > insize)
         this_size = insize;
       queue_rw_pair(ring, this_size, offset);
-      printf("queue_rw_pair offset=%d\n", offset);
+      printf("queue_rw_pair offset=%ld\n", offset);
       offset += this_size;
       insize -= this_size;
       inflight += 2;  // why 2 ?
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     return 1;
   if (get_file_size(infd, &insize))
     return 1;
-  printf("insize=%d\n", insize);
+  printf("insize=%ld\n", insize);
 
   ret = copy_file(&ring, insize);
 

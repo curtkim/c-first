@@ -1,6 +1,9 @@
 // This causes the kernel to map these buffers in,
 // avoiding future copies to and from user space
 // kernel이 userspace 사이에 buffer를 copy하지 않아서 효율적이다.
+//
+// fixed buffer를 언제 쓰는지는 잘 모르겠다.
+// https://unixism.net/loti/tutorial/fixed_buffers.html
 
 #include <stdio.h>
 #include <string.h>

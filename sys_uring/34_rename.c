@@ -1,3 +1,5 @@
+// 현재 kernel버전에서 지원되지 않는것 같다.
+// Rename not supported, skipping
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>

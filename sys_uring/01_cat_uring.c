@@ -69,10 +69,16 @@ int get_completion_and_print(struct io_uring *ring) {
   struct file_info *fi = io_uring_cqe_get_data(cqe);
   int blocks = (int) fi->file_sz / BLOCK_SZ;
   if (fi->file_sz % BLOCK_SZ) blocks++;
-  for (int i = 0; i < blocks; i ++)
-    output_to_console(fi->iovecs[i].iov_base, fi->iovecs[i].iov_len);
+  for (int i = 0; i < blocks; i ++) {
+      output_to_console(fi->iovecs[i].iov_base, fi->iovecs[i].iov_len);
+      printf("free iovecs[%d].iov_base\n", i);
+      free(fi->iovecs[i].iov_base);
+  }
 
   io_uring_cqe_seen(ring, cqe);
+
+  printf("free file info\n");
+  free(fi);
   return 0;
 }
 
@@ -91,7 +97,9 @@ int submit_read_request(char *file_path, struct io_uring *ring) {
   int current_block = 0;
   int blocks = (int) file_sz / BLOCK_SZ;
   if (file_sz % BLOCK_SZ) blocks++;
-  struct file_info *fi = malloc(sizeof(*fi) + (sizeof(struct iovec) * blocks));
+  struct file_info *fi = malloc(
+          sizeof(*fi) +
+          (sizeof(struct iovec) * blocks));
 
   /*
   char *buff = malloc(file_sz);

@@ -56,7 +56,7 @@ int link_operations(struct io_uring *ring) {
     if (cqe->res < 0) {
       fprintf(stderr, "Error in async operation: %s\n", strerror(-cqe->res));
     }
-    printf("Result of the operation: %d\n", cqe->res);
+    printf("Result of the operation: %d\n", cqe->res);  // cqe->res에는 byte수가 기록되는 것 같다.
     io_uring_cqe_seen(ring, cqe);
   }
   printf("Buffer contents: %s\n", buff);

@@ -59,9 +59,11 @@ int main(int argc, char *argv[]) {
       break;
     io_uring_prep_readv(sqe, fd, &iovecs[i], 1, offset);
     offset += iovecs[i].iov_len;
+    // io_uring_sqe_set_data(sqe, ..); 호출하지 않는다??
     i++;
   } while (1);
 
+  // return number of SQEs submitted.
   ret = io_uring_submit(&ring);
   if (ret < 0) {
     fprintf(stderr, "io_uring_submit: %s\n", strerror(-ret));
