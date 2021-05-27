@@ -36,10 +36,21 @@ int main() {
 
     sentry_init(options);
 
+    sentry_value_t user = sentry_value_new_object();
+    sentry_value_set_by_key(user, "id", sentry_value_new_int32(1234));
+    sentry_value_set_by_key(user, "username", sentry_value_new_string("car1"));
+    sentry_set_user(user);
+
+//    sentry_capture_event(sentry_value_new_message_event(
+//            /*   level */ SENTRY_LEVEL_INFO,
+//            /*  logger */ "custom",
+//            /* message */ "It works! 2"
+//    ));
+
     sentry_capture_event(sentry_value_new_message_event(
-            /*   level */ SENTRY_LEVEL_INFO,
-            /*  logger */ "custom",
-            /* message */ "It works! 2"
+            /*   level */ SENTRY_LEVEL_WARNING,
+            /*  logger */ "topic monitoring",
+            /* message */ "센서 데이터가 3초 이상 들어오지 않았습니다"
     ));
 
     sentry_close();
