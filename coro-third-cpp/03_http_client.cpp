@@ -23,11 +23,15 @@ task<> start_work(io_service& service, const char* hostname) {
     fmt::print(stderr, "getaddrinfo({}): {}\n", hostname, gai_strerror(ret));
     throw std::runtime_error("getaddrinfo");
   }
-  on_scope_exit freeaddr([=]() { freeaddrinfo(addrs); });
+  on_scope_exit freeaddr([=]() {
+      freeaddrinfo(addrs);
+  });
 
   for (struct addrinfo *addr = addrs; addr; addr = addr->ai_next) {
     int clientfd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol) | panic_on_err("socket creation", true);
-    on_scope_exit closesock([&]() { service.close(clientfd); });
+    on_scope_exit closesock([&]() {
+        service.close(clientfd);
+    });
 
     if (co_await service.connect(clientfd, addr->ai_addr, addr->ai_addrlen) < 0) continue;
 

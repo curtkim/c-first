@@ -66,7 +66,9 @@ int main(int argc, char *argv[]) {
   off_t insize = get_file_size(infd);
   io_service service;
   service.register_files({ infd, outfd });
-  on_scope_exit unreg_file([&]() { service.unregister_files(); });
+  on_scope_exit unreg_file([&]() {
+      service.unregister_files();
+  });
 
   service.run(copy_file(service, insize));
 }
