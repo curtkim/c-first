@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, tools
 
 class IMGUIConan(ConanFile):
     name = "imgui"
-    version = "1.81-docking"
+    version = "1.83-docking"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/ocornut/imgui"
     description = "Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies"
@@ -38,7 +38,7 @@ class IMGUIConan(ConanFile):
         git = tools.Git(folder=self._source_subfolder)
 
         git.clone("https://github.com/ocornut/imgui.git", "docking")
-        git.run("reset --hard " + "cfe83c4b4410050094829579dc496bf6eab88993")
+        git.run("reset --hard " + "1ad1429c6df657f9694b619d53fa0e65e482f32b")
 
     def _configure_cmake(self):
         if self._cmake:
