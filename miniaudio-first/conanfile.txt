@@ -1,0 +1,5 @@
+[requires]
+miniaudio/0.10.35
+
+[generators]
+cmake
