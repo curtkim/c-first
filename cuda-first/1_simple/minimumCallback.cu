@@ -13,6 +13,7 @@ __global__ void cudakernel(float *buf)
         buf[i] = buf[i] * buf[i] - 0.25f;
 }
 
+// CUDART_CB는 필수는 아닌 것 같다.
 void CUDART_CB myStreamCallback(cudaStream_t stream, cudaError_t status, void *data)
 {
     // Check status of GPU after stream operations are done
@@ -24,7 +25,6 @@ void CUDART_CB myStreamCallback(cudaStream_t stream, cudaError_t status, void *d
 int main()
 {
     float data[N];
-    int count = 0;
     float *d_data;
 
     printf("main thread(%u)\n", std::this_thread::get_id());
