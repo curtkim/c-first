@@ -233,13 +233,13 @@ namespace simcpp20 {
     simulation &sim;
 
     /**
-     * Add a coroutine handle to the event.
+     * Add a 20_coroutine handle to the event.
      *
-     * The coroutine will be resumed when the event is processed. If the event is
-     * already processed, the handle is not stored, as the coroutine will never
+     * The 20_coroutine will be resumed when the event is processed. If the event is
+     * already processed, the handle is not stored, as the 20_coroutine will never
      * be resumed.
      *
-     * @param handle Handle of the coroutine to resume when the event is
+     * @param handle Handle of the 20_coroutine to resume when the event is
      * processed.
      */
     void add_handle(std::coroutine_handle<> handle);
@@ -259,7 +259,7 @@ namespace simcpp20 {
     friend class await_event;
   };
 
-/// Awaitable to wait for an event inside a coroutine.
+/// Awaitable to wait for an event inside a 20_coroutine.
   class await_event {
   public:
     /**
@@ -270,20 +270,20 @@ namespace simcpp20 {
     await_event(event_ptr ev);
 
     /**
-     * @return Whether the event is already processed and the coroutine must
+     * @return Whether the event is already processed and the 20_coroutine must
      * not be paused.
      */
     bool await_ready();
 
     /**
-     * Resume the waiting coroutine when the event is processed.
+     * Resume the waiting 20_coroutine when the event is processed.
      *
-     * @param handle Handle of the coroutine. This handle is added to the awaited
+     * @param handle Handle of the 20_coroutine. This handle is added to the awaited
      * event.
      */
     void await_suspend(std::coroutine_handle<> handle);
 
-    /// Called when the coroutine is resumed.
+    /// Called when the 20_coroutine is resumed.
     void await_resume();
 
   private:

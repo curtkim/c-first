@@ -7,8 +7,8 @@
 #include <cstdlib>
 #include <thread>
 
-#include <coroutine/net.h>
-#include <coroutine/return.h>
+#include <20_coroutine/net.h>
+#include <20_coroutine/return.h>
 
 #include <socket.hpp>
 #if defined(__APPLE__)
@@ -60,7 +60,7 @@ uint32_t tcp_accept(int64_t ln, on_accept_t on_accept, size_t& count) {
     socket_set_option_nodelay(cs);
     socket_set_option_recv_timout(cs, 1000);
     socket_set_option_send_timout(cs, 1000);
-    // attach(spawn) a service coroutine
+    // attach(spawn) a service 20_coroutine
     on_accept(static_cast<uint64_t>(cs));
   }
   return socket_recent();
@@ -77,7 +77,7 @@ auto tcp_echo_service(uint64_t sd) -> no_return_t {
   io_work_t work{};
   int64_t rsz = 0, ssz = 0;       // received/sent data size
   io_buffer_t buf{};              // memory view to the `storage`
-  io_buffer_reserved_t storage{}; // each coroutine frame contains buffer
+  io_buffer_reserved_t storage{}; // each 20_coroutine frame contains buffer
 
   try { /// @throw   std::system_error
     RecvData:
@@ -117,7 +117,7 @@ auto tcp_recv_stream(uint64_t sd, io_work_t& work, //
     fprintf(stderr, "%s\n", "tcp_recv_stream");
   });
 
-  io_buffer_reserved_t storage{}; // each coroutine frame contains buffer
+  io_buffer_reserved_t storage{}; // each 20_coroutine frame contains buffer
 
   rsz = co_await recv_stream(sd, storage, 0, work);
   if (auto ec = work.error()) {
@@ -140,7 +140,7 @@ auto tcp_send_stream(uint64_t sd, io_work_t& work, //
     fprintf(stderr, "%s\n", "tcp_send_stream");
   });
 
-  io_buffer_reserved_t storage{}; // each coroutine frame contains buffer
+  io_buffer_reserved_t storage{}; // each 20_coroutine frame contains buffer
 
   ssz = co_await send_stream(sd, storage, 0, work);
   if (auto ec = work.error()) {

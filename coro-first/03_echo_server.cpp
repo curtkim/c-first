@@ -29,7 +29,7 @@ awaitable<void> echo(tcp::socket socket)
       // The asynchronous operations to echo a single chunk of data have been
       // refactored into a separate function. When this function is called, the
       // operations are still performed in the context of the current
-      // coroutine, and the behaviour is functionally equivalent.
+      // 20_coroutine, and the behaviour is functionally equivalent.
       co_await echo_once(socket);
     }
   }

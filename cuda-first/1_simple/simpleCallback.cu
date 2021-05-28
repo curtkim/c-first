@@ -1,20 +1,15 @@
 /*
- * Copyright 1993-2015 NVIDIA Corporation.  All rights reserved.
+ * This sample implements multi-threaded heterogeneous computing workloads
+ * with the new CPU callbacks for CUDA streams and events introduced with CUDA 5.0.
+ * Together with the thread safety of the CUDA API implementing heterogeneous workloads
+ * that float between CPU threads and
+ * GPUs has become simple and efficient.
  *
- * Please refer to the NVIDIA end user license agreement (EULA) associated
- * with this source code for terms and conditions that govern your use of
- * this software. Any use, reproduction, disclosure, or distribution of
- * this software and related documentation outside the terms of the EULA
- * is strictly prohibited.
+ * The workloads in the sample follow the form
+ * CPU preprocess -> GPU process -> CPU postprocess.
  *
- */
-
-/*
- * This sample implements multi-threaded heterogeneous computing workloads with the new CPU callbacks for CUDA streams and events introduced with CUDA 5.0.
- * Together with the thread safety of the CUDA API implementing heterogeneous workloads that float between CPU threads and GPUs has become simple and efficient.
- *
- * The workloads in the sample follow the form CPU preprocess -> GPU process -> CPU postprocess.
- * Each CPU processing step is handled by its own dedicated thread. GPU workloads are sent to all available GPUs in the system.
+ * Each CPU processing step is handled by its own dedicated thread.
+ * GPU workloads are sent to all available GPUs in the system.
  *
  */
 
@@ -30,12 +25,14 @@
 #include <thread>
 #include <iostream>
 
+
 const int N_workloads  = 8;
 const int N_elements_per_workload = 100000;
 
 CUTBarrier thread_barrier;
 
 void CUDART_CB myStreamCallback(cudaStream_t event, cudaError_t status, void *data);
+
 
 struct heterogeneous_workload
 {
@@ -123,7 +120,8 @@ CUT_THREADPROC postprocess(void *void_arg)
 
 
 void CUDART_CB myStreamCallback(cudaStream_t stream, cudaError_t status, void *data)
-{
+{return
+
   // Check status of GPU after stream operations are done
   checkCudaErrors(status);
 

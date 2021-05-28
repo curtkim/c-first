@@ -38,7 +38,7 @@ generator<double> fibonacci(const double ceiling) {
 #pragma clang diagnostic pop
 
 int main() {
-  std::cout << "Example program using C++20 coroutine to implement a Fibonacci Sequence generator" << '\n';
+  std::cout << "Example program using C++20 20_coroutine to implement a Fibonacci Sequence generator" << '\n';
   auto iter = fibonacci(demo_ceiling);
   while(iter.next()) {
     const auto value = iter.getValue();

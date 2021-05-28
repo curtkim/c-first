@@ -18,31 +18,16 @@ public:
     task get_return_object() noexcept {
       return task{coroutine_handle<promise_type>::from_promise(*this)};
     }
-
-    suspend_always initial_suspend() noexcept {
-      return {};
-    }
-
+    suspend_always initial_suspend() noexcept {return {};}
     void return_void() noexcept {}
-
-    void unhandled_exception() noexcept {
-      std::terminate();
-    }
+    void unhandled_exception() noexcept {std::terminate();}
 
     struct final_awaiter {
-      bool await_ready() noexcept {
-        return false;
-      }
-      void await_suspend(coroutine_handle<promise_type> h) noexcept {
-        h.promise().continuation.resume();
-      }
+      bool await_ready() noexcept {return false;}
+      void await_suspend(coroutine_handle<promise_type> h) noexcept {h.promise().continuation.resume();}
       void await_resume() noexcept {}
     };
-
-    final_awaiter final_suspend() noexcept {
-      return {};
-    }
-
+    final_awaiter final_suspend() noexcept {return {};}
     coroutine_handle<> continuation;
   };
 
@@ -101,11 +86,8 @@ struct sync_wait_task {
     }
 
     suspend_never initial_suspend() noexcept { return{}; }
-
     suspend_always final_suspend() noexcept { return{}; }
-
     void return_void() noexcept {}
-
     void unhandled_exception() noexcept { std::terminate(); }
   };
 
@@ -143,13 +125,11 @@ struct manual_executor {
     {}
 
     bool await_ready() noexcept { return false; }
-
     void await_suspend(coroutine_handle<> continuation) noexcept {
       continuation_ = continuation;
       next_ = executor_.head_;
       executor_.head_ = this;
     }
-
     void await_resume() noexcept {}
   };
 
