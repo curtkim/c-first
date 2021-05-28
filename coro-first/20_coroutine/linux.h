@@ -115,7 +115,7 @@ namespace coro {
  * @ingroup Linux
  * 
  * If the object is signaled(`set`), 
- * the bound `epoll_owner` will yield suspended coroutine through `epoll_event`'s user data.
+ * the bound `epoll_owner` will yield suspended 20_coroutine through `epoll_event`'s user data.
  * 
  * Its object can be `co_await`ed multiple times
  */

@@ -4,7 +4,7 @@
 #include <type_traits>
 
 #if __has_include(<coroutine/frame.h>) && !defined(USE_EXPERIMENTAL_COROUTINE)
-#include <coroutine/frame.h>
+#include <20_coroutine/frame.h>
 
 namespace coro {
 using std::coroutine_handle;
@@ -12,7 +12,7 @@ using std::suspend_always;
 using std::suspend_never;
 
 #elif __has_include(<experimental/coroutine>)
-#include <experimental/coroutine>
+#include <experimental/20_coroutine>
 
 namespace coro {
 using std::experimental::coroutine_handle;
@@ -29,12 +29,12 @@ using std::suspend_never;
 //using std::coroutine_traits;
 
 #else
-#error "requires header <experimental/coroutine> or <coroutine/frame.h>"
-#endif // <experimental/coroutine>
+#error "requires header <experimental/20_coroutine> or <20_coroutine/frame.h>"
+#endif // <experimental/20_coroutine>
 
 /**
  * @defgroup Return
- * Types for easier coroutine promise/return type definition.
+ * Types for easier 20_coroutine promise/return type definition.
  */
 
 /**
@@ -51,7 +51,7 @@ public:
     return {};
   }
   /**
-   * @brief destroy coroutine frame after return
+   * @brief destroy 20_coroutine frame after return
    * @return suspend_never
    */
   suspend_never final_suspend() noexcept {
@@ -95,7 +95,7 @@ public:
     return {};
   }
   /**
-   * @brief destroy coroutine frame after return
+   * @brief destroy 20_coroutine frame after return
    * @return suspend_never
    */
   suspend_never final_suspend() noexcept {
@@ -140,7 +140,7 @@ public:
 };
 
 /**
- * @brief   `void` retrun for coroutine function
+ * @brief   `void` retrun for 20_coroutine function
  * @note    The library supports `coroutine_traits` specialization for `nullptr_t`.
  *          This type is for GCC, which doesn't allow non-struct return.
  * 
@@ -168,8 +168,8 @@ struct null_frame_t final {
 };
 
 /**
- * @brief   A type to acquire `coroutine_handle<void>` from anonymous coroutine's return. 
- *          Requires manual `destroy` of the coroutine handle.
+ * @brief   A type to acquire `coroutine_handle<void>` from anonymous 20_coroutine's return.
+ *          Requires manual `destroy` of the 20_coroutine handle.
  * 
  * @ingroup Return
  * @see coroutine_handle<void>
@@ -253,9 +253,9 @@ concept promise_requirement_basic = requires(P p) {
 namespace std {
 
 /**
- * @brief Allow `void` return of the coroutine
+ * @brief Allow `void` return of the 20_coroutine
  * 
- * @tparam P input parameter types of the coroutine's signature
+ * @tparam P input parameter types of the 20_coroutine's signature
  * @ingroup Return
  */
     template <typename... P>

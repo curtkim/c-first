@@ -2,7 +2,7 @@
 // Example source code for blog post:
 // "C++ Coroutines: Understanding Symmetric-Transfer"
 //
-// Implementation of a naive 'task' coroutine type.
+// Implementation of a naive 'task' 20_coroutine type.
 // https://lewissbaker.github.io/2020/05/11/understanding_symmetric_transfer
 
 #include <coroutine>
@@ -63,10 +63,10 @@ public:
 
     void await_suspend(coroutine_handle<> continuation) noexcept {
       // Store the continuation in the task's promise so that the final_suspend()
-      // knows to resume this coroutine when the task completes.
+      // knows to resume this 20_coroutine when the task completes.
       coro_.promise().continuation = continuation;
 
-      // Then we resume the task's coroutine, which is currently suspended
+      // Then we resume the task's 20_coroutine, which is currently suspended
       // at the initial-suspend-point (ie. at the open curly brace).
       coro_.resume();
     }

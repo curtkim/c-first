@@ -66,7 +66,7 @@ namespace coro {
 /**
  * @brief A struct to describe "1 I/O request" to system API.
  * @ingroup Network
- * When I/O request is submitted, an I/O task becomes 1 coroutine handle
+ * When I/O request is submitted, an I/O task becomes 1 20_coroutine handle
  */
   class io_work_t : public io_control_block {
   public:

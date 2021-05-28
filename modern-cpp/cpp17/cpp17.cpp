@@ -102,6 +102,11 @@ template<typename ...Args> auto sum2(Args ...args)
     return (args + ...);
 }
 
+template<int a, int b>
+int add() {
+    return a+b;
+}
+
 
 int main() {
 
@@ -118,6 +123,8 @@ int main() {
 
     double sumDouble = sum2(1.0, 2.0, 3.0, 4.0, 5.0);
     cout << sumDouble << "\n";
+
+    cout << add<1,2>() << "\n";
 
     return 0;
 }
