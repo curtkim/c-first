@@ -6,6 +6,7 @@ conan_basic_setup()
 
 foreach(APP
         simple
+        simple_playback_sine
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)

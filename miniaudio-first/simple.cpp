@@ -2,6 +2,7 @@
 #include <miniaudio.h>
 
 #include <stdio.h>
+#include <thread>
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
@@ -11,7 +12,7 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
     }
 
     ma_decoder_read_pcm_frames(pDecoder, pOutput, frameCount);
-    printf("%d\n", frameCount);
+    printf("%ud %d\n", std::this_thread::get_id(), frameCount);
     (void)pInput;
 }
 
@@ -54,7 +55,8 @@ int main(int argc, char** argv)
         return -4;
     }
 
-    printf("Press Enter to quit...");
+    printf("%ud\n", std::this_thread::get_id());
+    //printf("Press Enter to quit...\n");
     getchar();
 
     ma_device_uninit(&device);
