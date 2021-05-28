@@ -25,6 +25,7 @@ include_directories(common)
 
 add_executable(streamOrderedAllocation streamOrderedAllocation.cu)
 add_executable(simpleCallback 1_simple/simpleCallback.cu 1_simple/multithreading.cpp)
+add_executable(minimumCallback 1_simple/minimumCallback.cu)
 
 foreach(APP asyncAPI simpleCudaGraph simpleStream simpleMultiGPU)
     add_executable(${APP} 1_simple/${APP}.cu)
@@ -121,6 +122,7 @@ set_target_properties(first
         matrix_multiplication_by_rand
         streamOrderedAllocation
         simpleCallback
+        minimumCallback
         asyncAPI simpleCudaGraph simpleStream simpleMultiGPU
         simpleGL
         postProcessGL

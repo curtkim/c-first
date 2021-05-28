@@ -120,8 +120,7 @@ CUT_THREADPROC postprocess(void *void_arg)
 
 
 void CUDART_CB myStreamCallback(cudaStream_t stream, cudaError_t status, void *data)
-{return
-
+{
   // Check status of GPU after stream operations are done
   checkCudaErrors(status);
 
