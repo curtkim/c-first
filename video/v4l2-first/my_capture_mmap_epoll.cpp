@@ -14,7 +14,12 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv2/imgproc/types_c.h>
 
+#include <npp.h>
+
 #include "./stopwatch.hpp"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
@@ -44,6 +49,33 @@ void process_image(DeviceContext &device_context, void *p, int size, int frame) 
     cv::imwrite(filename, B);
 }
 
+void process_image_nppi(DeviceContext &device_context, void *p, int size, int frame) {
+    char filename[30];
+    sprintf(filename, "frame-%d.jpeg", frame);
+
+    Npp8u *pSrc, *pDst;
+    cudaMalloc(&pSrc, HEIGHT*WIDTH*2);
+    cudaMalloc(&pDst, HEIGHT*WIDTH*3);
+
+    cudaMemcpy(pSrc, p, HEIGHT*WIDTH * 2, cudaMemcpyHostToDevice);
+    NppiSize oSizeROI{WIDTH, HEIGHT};
+    NppStatus res = nppiYUV422ToRGB_8u_C2C3R(pSrc, WIDTH * 2, pDst, WIDTH*3, oSizeROI);
+    if (res != 0) {
+        printf("oops %d\n", (int) res);
+        std::exit(1);
+    }
+
+    void* pHostDst = malloc(HEIGHT*WIDTH * 3);
+    cudaMemcpy(pHostDst, pDst, HEIGHT*WIDTH * 3, cudaMemcpyDeviceToHost);
+
+    stbi_write_jpg(filename, WIDTH, HEIGHT, 3, pHostDst, 100);
+
+    free(pHostDst);
+    cudaFree(pSrc);
+    cudaFree(pDst);
+}
+
+
 int read_frame(DeviceContext &device_context, int frame) {
     struct v4l2_buffer buf;
     unsigned int i;
@@ -69,7 +101,7 @@ int read_frame(DeviceContext &device_context, int frame) {
 
     assert(buf.index < device_context.n_buffers);
 
-    process_image(device_context, device_context.buffers[buf.index].start, buf.bytesused, frame);
+    process_image_nppi(device_context, device_context.buffers[buf.index].start, buf.bytesused, frame);
 
     if (-1 == xioctl(device_context.fd, VIDIOC_QBUF, &buf))
         errno_exit("VIDIOC_QBUF");
