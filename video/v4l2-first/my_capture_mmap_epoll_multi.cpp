@@ -27,6 +27,8 @@
 static int MAX_FRAME_COUNT = 100;
 static int WIDTH = 640;
 static int HEIGHT = 480;
+static int PIXEL_FORMAT = V4L2_PIX_FMT_YUYV;
+
 
 void process_image(DeviceContext &device_context, void *p, int size, int frame, int idx) {
     char filename[30];
@@ -105,7 +107,7 @@ int main(int argc, char **argv) {
 
     for(auto& deviceInfo : deviceInfos) {
         open_device(deviceInfo);
-        init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
+        init_device(deviceInfo, WIDTH, HEIGHT, PIXEL_FORMAT);
         start_capturing(deviceInfo);
     }
 

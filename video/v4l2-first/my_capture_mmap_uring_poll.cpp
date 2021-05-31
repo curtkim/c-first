@@ -29,6 +29,8 @@
 static int MAX_FRAME_COUNT = 10;
 static int WIDTH = 640;
 static int HEIGHT = 480;
+static int PIXEL_FORMAT = V4L2_PIX_FMT_YUYV;
+
 
 void process_image(DeviceContext &device_context, void *p, int size, int frame) {
     char filename[30];
@@ -106,7 +108,7 @@ int main(int argc, char **argv) {
     deviceInfo.dev_name = "/dev/video0";
 
     open_device(deviceInfo);
-    init_device(deviceInfo, WIDTH, HEIGHT, V4L2_PIX_FMT_YUYV);
+    init_device(deviceInfo, WIDTH, HEIGHT, PIXEL_FORMAT);
     start_capturing(deviceInfo);
 
     struct io_uring ring;
