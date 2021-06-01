@@ -30,7 +30,6 @@ foreach(APP
 		00_aten
 		00_aten_slice
 		01_aten_named
-		05_tensor_create_from_gpu_memory
 		06_test_image_io
 		)
 	add_executable(${APP} ${APP}.cpp)
@@ -51,6 +50,7 @@ set_target_properties(02_torch_first PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 # CUDA
 foreach(APP
 		04_cuda_detect
+		05_tensor_create_from_gpu_memory
 		21_torchscript
 		91_candy
 		92_heat_equation
