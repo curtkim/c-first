@@ -10,11 +10,15 @@ conan_basic_setup()
 add_library(capture_utils utils/capture_utils.cpp)
 add_library(opengl_utils utils/opengl_utils.cpp)
 
+add_library(detr detr.cpp)
+target_link_libraries(detr PUBLIC ${CONAN_LIBS})
+
 
 # 2 nvidia env/dec
 foreach(APP
         01_v4l2_opengl
-        02_v4l2_nvenc_opengl)
+        02_v4l2_nvenc_opengl
+        03_v4l2_nvenc_predict_opengl)
     add_executable(${APP} ${APP}.cpp
             NvEncoder/NvEncoder.cpp NvEncoder/NvEncoderCuda.cpp)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)

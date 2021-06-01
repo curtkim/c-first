@@ -20,6 +20,8 @@
 #include "utils/cuda_utils.hpp"
 #include "utils/nvtx_utils.hpp"
 
+#include "detr.hpp"
+
 #include <cuda_gl_interop.h>
 
 
@@ -28,6 +30,7 @@
 
 const int WIDTH = 640;
 const int HEIGHT = 480;
+
 const int FIXEL_FORMAT = V4L2_PIX_FMT_YUYV;
 
 
@@ -45,6 +48,10 @@ int main() {
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
     printf("sizeof(v4l2_buffer)=%d\n", sizeof(v4l2_buffer));    // 881
+
+    // 0번 gpu는 carla가 쓰고있다.
+    auto torch_device = torch::Device(torch::kCUDA, 1);
+    torch::jit::script::Module detr_model = detr::load_model("../../wrapped_detr_resnet50.pt", torch_device);
 
 
     // init encoder
@@ -191,6 +198,26 @@ int main() {
                 out.write(reinterpret_cast<char *>(packet.data()), packet.size());
             }
         });
+
+        {
+            // pDst로 부터 copy한다.
+            // scale하고 crop해서 1024, 800에 맞춘다.
+
+//            at::Allocator *allocator = at::cuda::getCUDADeviceAllocator();
+//
+//            torch::DataPtr d_data = allocator->allocate(N * sizeof(float));
+//            cudaMemcpy(d_data.get(), data, N * sizeof(float), cudaMemcpyHostToDevice);
+//
+//            auto options =
+//                    torch::TensorOptions()
+//                            .dtype(torch::kFloat32)
+//                            .device(torch::kCUDA);
+//
+//            torch::Tensor cudaTest = torch::from_blob(d_data.get(), {N}, options);
+
+        }
+
+        auto bounding_boxes = detr::detect(detr_model, img);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

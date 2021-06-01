@@ -16,7 +16,7 @@
 #include "utils/capture_utils.hpp"
 #include "utils/opengl_utils.hpp"
 #include "utils/stopwatch.hpp"
-
+#include "utils/nvtx_utils.hpp"
 
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
@@ -24,13 +24,6 @@
 static int WIDTH = 640;
 static int HEIGHT = 480;
 static int FIXEL_FORMAT = V4L2_PIX_FMT_YUYV;
-
-template<typename Callable>
-void nvtxRange(char* range_name, Callable body) {
-    nvtxRangePush(range_name);
-    body();
-    nvtxRangePop();
-}
 
 
 int main() {
@@ -40,7 +33,7 @@ int main() {
 
     nvtxNameOsThread(syscall(SYS_gettid), "Main Thread");
     std::cout << "main thread: " << std::this_thread::get_id() << std::endl;
-    printf("sizeof(v4l2_buffer)=%d\n", sizeof(v4l2_buffer));    // 881
+    printf("sizeof(v4l2_buffer)=%lu\n", sizeof(v4l2_buffer));    // 881
 
     // init v4l2
     DeviceContext deviceInfo;
