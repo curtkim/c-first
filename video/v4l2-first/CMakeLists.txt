@@ -7,12 +7,12 @@ set(VIDEO_SDK_VERSION 11.0.10)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-
-add_executable(01_vidtest 01_vidtest.cpp)
-target_link_libraries(01_vidtest PUBLIC ${CONAN_LIBS})
+foreach(APP 01_demo 02_demo)
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+endforeach()
 
 add_library(capture_utils capture_utils.cpp)
-
 
 foreach(APP
         my_capture_mmap_epoll

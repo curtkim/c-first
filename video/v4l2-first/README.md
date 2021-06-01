@@ -18,9 +18,12 @@
     xioctl(fd, VIDIOC_STREAMOFF, &type)
 7. close_device
 
+
 ## Reference
 - (IO MULTIPLEXING – SELECT VS POLL VS EPOLL) https://devarea.com/linux-io-multiplexing-select-vs-poll-vs-epoll/#.X82n2lMzZhE
 - (V4L Reference) https://www.kernel.org/doc/html/v4.14/media/uapi/v4l/user-func.html
+- https://github.com/narfster/v4l2cxx
+
 
 ## cli
 
