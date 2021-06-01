@@ -11,7 +11,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 # CUDA
-foreach(APP export opengl_window opengl_window_test)
+foreach(APP export export2 opengl_window opengl_window_test)
 	add_executable(${APP} ${APP}.cpp)
 	target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
 	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
@@ -22,5 +22,6 @@ foreach(APP export opengl_window opengl_window_test)
 endforeach()
 
 target_link_libraries(export PUBLIC EGL)
+target_link_libraries(export2 PUBLIC EGL)
 target_link_libraries(opengl_window PUBLIC X11)
 target_link_libraries(opengl_window_test PUBLIC X11)
