@@ -15,25 +15,35 @@ int main() {
     auto origin_image = image_io::load_image("resources/parrots.png"); // [3, 384, 512]
     std::cout << "origin_image.sizes() = " << origin_image.sizes() << std::endl; //
 
-    auto option = F::InterpolateFuncOptions()
-            .scale_factor(std::vector<double>({1.5, 1.5}))
-            .mode(torch::kNearest)
-            .recompute_scale_factor(true);
+    {
+        auto scale_option = F::InterpolateFuncOptions()
+                .scale_factor(std::vector<double>({1.5, 1.5}))
+                .mode(torch::kNearest)
+                .recompute_scale_factor(true);
 
-    // mini-batch x channels x [optional depth] x [optional height] x width
-    // (https://pytorch.org/docs/stable/nn.functional.html)
-    // dimensions 4를 만들어 주기 위해 unsqueeze를 호출한다.
-    auto resized_image = F::interpolate(origin_image.unsqueeze(0), option);
+        // mini-batch x channels x [optional depth] x [optional height] x width
+        // (https://pytorch.org/docs/stable/nn.functional.html)
+        // dimensions 4를 만들어 주기 위해 unsqueeze를 호출한다.
+        auto resized_image = F::interpolate(origin_image.unsqueeze(0), scale_option);
+        std::cout << "resized_image.sizes() = " << resized_image.sizes() << std::endl; //
+        image_io::save_image(resized_image, "parrots_resized.png");
+    }
 
+    {
+        auto size_option = F::InterpolateFuncOptions()
+                .size(std::vector<int64_t>({576, 512})) // height, width
+                .mode(torch::kNearest)
+                .recompute_scale_factor(true);
+        auto resized_image2 = F::interpolate(origin_image.unsqueeze(0), size_option);
+        std::cout << "resized_image2.sizes() = " << resized_image2.sizes() << std::endl; //
+        image_io::save_image(resized_image2, "parrots_resized2.png");
+    }
     //auto resized_image = F::interpolate(origin_image, F::InterpolateFuncOptions().size(std::vector<int64_t>({3, 576, 768})).mode(torch::kNearest));
-    std::cout << "resized_image.sizes() = " << resized_image.sizes() << std::endl; //
-    image_io::save_image(resized_image, "parrots_resized.png");
     //auto torch.nn.functional.interpolate(origin_image);
 
 
     auto image = image_io::load_image("resources/parrots.png", {(int)(384*1.5), (int)(512*1.5)});
     std::cout << "image.sizes() = " << image.sizes() << std::endl; // [3, 576, 768]
-
     image_io::save_image(image, "parrots_1.5x.png");
 
     //3*500*768 crop
