@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(torch-first LANGUAGES CUDA CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CUDA_DYNAMIC_LIBRARY cuda nvrtc nvToolsExt cudart cufft curand cudnn cublas)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
@@ -25,17 +25,16 @@ file(COPY resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 add_library(image_io OBJECT utils/image_io.cpp)
 
+# cpu only?
 foreach(APP
 		00_aten
+		00_aten_slice
 		01_aten_named
 		05_tensor_create_from_gpu_memory
 		)
 	add_executable(${APP} ${APP}.cpp)
-	target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
-	target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
-	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${CUDA_DYNAMIC_LIBRARY})
+	target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
 	target_compile_features(${APP} PUBLIC cxx_std_17)
-	set_target_properties(${APP} PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 endforeach()
 
 
@@ -51,6 +50,7 @@ set_target_properties(02_torch_first PROPERTIES LINK_WHAT_YOU_USE "TRUE")
 # CUDA
 foreach(APP
 		04_cuda_detect
+		06_test_image_io
 		21_torchscript
 		91_candy
 		92_heat_equation

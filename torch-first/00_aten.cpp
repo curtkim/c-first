@@ -5,6 +5,7 @@ using namespace std;
 using namespace at;
 
 void create() {
+
   // eye
   auto eye = at::eye(2, kInt);
 
@@ -80,60 +81,6 @@ void to_blob() {
   assert(a.size(1) == 3);
 }
 
-void index_slicing() {
-  int data[] = { 1, 2, 3, 4, 5, 6};
-  at::Tensor a = at::from_blob(data, {2, 3}, kInt);
-
-  assert(a.index({0,1}).reshape({1}).equal(tensor(2, kInt)));
-
-  // tensor[1::2]
-  cout << a.index({at::indexing::Slice(1, at::indexing::None, 2)}) << endl;
-}
-
-// https://pytorch.org/cppdocs/notes/tensor_indexing.html
-void index_slicing0() {
-  int data[] = { 1, 2, 3};
-  at::Tensor a = at::from_blob(data, {3}, kInt);
-  // a[0:2]
-  assert(
-    a.index({at::indexing::Slice(0, 2)}).equal(
-      tensor({1,2}, kInt)
-    )
-  );
-
-  int data2[] = { 1, 2, 3,
-                  4, 5, 6};
-  at::Tensor b = at::from_blob(data2, {2, 3}, kInt);
-  // b[0:2,1]
-  assert(
-    b.index({at::indexing::Slice(0, 2), 1}).equal(
-      tensor({2,5}, kInt)
-    )
-  );
-
-  // b[:1]
-  assert(
-    b.index({at::indexing::Slice(at::indexing::None, 1)}).equal(
-      tensor({1,2,3}, kInt).reshape({1,3})
-    )
-  );
-
-  auto c = at::arange(12, kInt).reshape({2,2,3});
-  // c[1,...]
-  assert(
-    c.index({1, at::indexing::Ellipsis}).equal(
-      tensor({6,7,8,
-              9,10,11}, kInt).reshape({2,3})
-    )
-  );
-
-  assert(
-    c.index({0, at::indexing::Ellipsis, at::indexing::Slice(at::indexing::None, -1)}).equal(
-      tensor({0,1,
-              3,4}, kInt).reshape({2,2})
-    )
-  );
-}
 
 void max() {
   int data2[] = { 1, 2, 3,
@@ -165,8 +112,6 @@ int main() {
   op();
   accessors();
   from_blob();
-  index_slicing();
-  index_slicing0();
   max();
   to_blob();
   accessor();
