@@ -97,7 +97,7 @@ foreach(APP practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_mem
     target_link_libraries(${APP} PRIVATE cuda cudart nppisu)
 endforeach()
 
-foreach(APP npp_min_max)
+foreach(APP npp_min_max )
     add_executable(${APP} npp/${APP}.cpp)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
@@ -105,13 +105,23 @@ foreach(APP npp_min_max)
     target_link_libraries(${APP} PRIVATE cuda cudart npps nppist)
 endforeach()
 
-foreach(APP npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R)
+foreach(APP npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R )
     add_executable(${APP} npp/${APP}.cu)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
     target_link_libraries(${APP} PRIVATE cuda cudart nppicc)
 endforeach()
+
+foreach(APP npp_image_resize )
+    add_executable(${APP} npp/${APP}.cu)
+    target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
+    target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS})
+    target_link_libraries(${APP} PRIVATE cuda cudart
+            nppig)
+endforeach()
+
 
 
 
@@ -135,7 +145,7 @@ set_target_properties(first
         practice_01_cuda_malloc practice_02_nppi_malloc practice_03_cuda_memcpy2d practice_04_cudaMemcpy2D_crop
 
         npp_image_simple npp_image_rgb2yuv444 nppiBGRToYUV420_8u_AC4P3R
-
+        npp_image_resize
         threadMigration
 
         PROPERTIES CUDA_ARCHITECTURES 61)
