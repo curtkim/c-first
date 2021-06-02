@@ -1,3 +1,4 @@
+// https://forums.developer.nvidia.com/t/nppiresize-8u-c3r-function-of-cuda-10-1-outputs-a-wrong-result/80428
 #include <nppi.h>
 #include <stdio.h>
 #include <string>
@@ -24,41 +25,31 @@ int main() {
     }
     printf("%d %d %d", w, h, p); // 1066 800
 
-    unsigned char * hostDst = (unsigned char *)malloc(h/2*w/2*p);
-
     Npp8u *pSrc, *pDst;
+    //int nSrcPitchCUDA;
+    //int nDstPitchCUDA;
+    //pSrc = nppiMalloc_8u_C3(w, h, &nSrcPitchCUDA);
+    //pDst = nppiMalloc_8u_C3(w/2, h/2, &nDstPitchCUDA);
+    //printf("nSrcPitchCUDA=%d nSrcPitchCUDA=%d\n");
     cudaMalloc(&pSrc, h*w*p);
     cudaMalloc(&pDst, h/2*w/2*p);
 
-    NppiSize srcROI;
-    srcROI.width=w;
-    srcROI.height=h;
+    NppiSize srcSize = {w, h};
+    NppiRect srcROI = {0, 0, w, h};
 
-    NppiRect srcRect;
-    srcRect.x = 0;
-    srcRect.y = 0;
-    srcRect.width = w;
-    srcRect.height = h;
-
-    NppiSize dstROI;
-    srcROI.width=w/2;
-    srcROI.height=h/2;
-
-    NppiRect dstRect;
-    dstRect.x = 0;
-    dstRect.y = 0;
-    dstRect.width = w/2;
-    dstRect.height = h/2;
+    NppiSize dstSize = {w / 2, h / 2};
+    NppiRect dstROI = {0, 0, w / 2, h / 2};
 
 
     // 2. host -> device src
+    //cudaMemcpy2D(pSrc, nSrcPitchCUDA, hostSrc, w*p, w*p, h, cudaMemcpyHostToDevice);
     cudaMemcpy(pSrc, hostSrc, h * w * p, cudaMemcpyHostToDevice);
 
     // 3. resize
-    nppiResize_8u_C3R(pSrc, w*p, srcROI, srcRect,
-                      pDst, w / 2 * p, srcROI, srcRect, NPPI_INTER_LINEAR);
+    nppiResize_8u_C3R(pSrc, w*p, srcSize, srcROI,
+                      pDst, w / 2 * p, dstSize, dstROI, NPPI_INTER_LINEAR);
 
+    unsigned char * hostDst = (unsigned char *)malloc(h/2*w/2*p);
     cudaMemcpy(hostDst, pDst, h/2*w/2*p, cudaMemcpyDeviceToHost);
     stbi_write_jpg("39769_fill_half.jpg", w/2, h/2, 3, hostDst, 100);
-
 }
