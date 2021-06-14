@@ -23,6 +23,7 @@
 #include "detr.hpp"
 
 #include <cuda_gl_interop.h>
+#include <nppi.h>
 
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
@@ -50,7 +51,7 @@ int main() {
     printf("sizeof(v4l2_buffer)=%d\n", sizeof(v4l2_buffer));    // 881
 
     // 0번 gpu는 carla가 쓰고있다.
-    auto torch_device = torch::Device(torch::kCUDA, 1);
+    auto torch_device = torch::Device(torch::kCUDA, 0);
     torch::jit::script::Module detr_model = detr::load_model("../../wrapped_detr_resnet50.pt", torch_device);
 
 
@@ -199,25 +200,27 @@ int main() {
             }
         });
 
+        auto options =
+                torch::TensorOptions()
+                        .dtype(torch::kInt8)
+                        .device(torch::kCUDA);
+        torch::Tensor img = torch::zeros({detr::HEIGHT, detr::WIDTH, 3}, options);
+
         {
-            // pDst로 부터 copy한다.
-            // scale하고 crop해서 1024, 800에 맞춘다.
+            NppiSize srcSize = {WIDTH, HEIGHT};
+            NppiRect srcROI = {0, 0, WIDTH, HEIGHT};
 
-//            at::Allocator *allocator = at::cuda::getCUDADeviceAllocator();
-//
-//            torch::DataPtr d_data = allocator->allocate(N * sizeof(float));
-//            cudaMemcpy(d_data.get(), data, N * sizeof(float), cudaMemcpyHostToDevice);
-//
-//            auto options =
-//                    torch::TensorOptions()
-//                            .dtype(torch::kFloat32)
-//                            .device(torch::kCUDA);
-//
-//            torch::Tensor cudaTest = torch::from_blob(d_data.get(), {N}, options);
+            NppiSize dstSize = {detr::WIDTH, detr::HEIGHT};
+            NppiRect dstROI = {0, 0, detr::WIDTH, detr::HEIGHT};
 
+            nppiResize_8u_C3R(pDst, WIDTH*3, srcSize, srcROI, (Npp8u*)img.data_ptr(), detr::WIDTH*3, dstSize, dstROI, NPPI_INTER_LINEAR);
         }
 
-        auto bounding_boxes = detr::detect(detr_model, img);
+        std::cout << img.sizes() << " " << img.dtype() << "\n";
+        auto img2 = img.clone().permute({2, 0, 1}).to(torch::kFloat32).div_(255);
+        std::cout << img2.sizes() << " " << img2.dtype() << "\n";
+
+        auto bounding_boxes = detr::detect(detr_model, img2);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

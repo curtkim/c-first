@@ -55,7 +55,7 @@ int main() {
     CUcontext cuContext = NULL;
     ck(cuCtxCreate(&cuContext, 0, cuDevice));
 
-    std::ofstream out("02_v4l2_nvenc_opengl.h264", std::ios::out | std::ios::binary);
+    std::ofstream out("03_v4l2_nvenc_opengl.h264", std::ios::out | std::ios::binary);
 
     NvEncoderCuda enc(cuContext, WIDTH, HEIGHT, eFormat);
     {

@@ -9,7 +9,7 @@ struct buffer {
 };
 
 struct DeviceContext {
-    char            *dev_name;
+    const char      *dev_name;
     int              fd = -1;
     unsigned int     n_buffers;
     buffer          *buffers;
