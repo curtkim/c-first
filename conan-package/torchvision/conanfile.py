@@ -6,7 +6,7 @@ from conans import ConanFile, tools, CMake
 class Torchvision(ConanFile):
 
     ## for test
-    version = "0.7.0"
+    version = "0.9.1"
 
     name = "torchvision"
     url = ""
@@ -22,12 +22,12 @@ class Torchvision(ConanFile):
     }
     default_options = {
         "fPIC": True,
-        "with_cuda": False,
+        "with_cuda": True,
     }
     generators = "cmake"
 
     requires = (
-        "torch/1.6.0@curt/prebuilt",
+        "torch/1.8.1@curt/prebuilt",
     )
 
     _cmake = None
@@ -65,11 +65,12 @@ conan_basic_setup()''')
         cmake = self._configure_cmake()
         cmake.build()
 
+
     def _configure_cmake(self):
         if self._cmake:
             return self._cmake
         self._cmake = CMake(self)
-        #self._cmake.definitions["BUILD_TESTING"] = False
+        self._cmake.definitions["WITH_CUDA"] = "ON"
         self._cmake.configure(source_folder=self._source_subfolder)
         return self._cmake
 

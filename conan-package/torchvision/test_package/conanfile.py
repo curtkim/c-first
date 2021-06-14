@@ -6,6 +6,7 @@ from conans import ConanFile, CMake, tools
 class TorchVisionTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake"
+    default_options = {"torch:cuda": "11.1", "torchvision:with_cuda": True}
 
     def build(self):
         cmake = CMake(self)
