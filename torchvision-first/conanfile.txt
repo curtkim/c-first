@@ -1,0 +1,10 @@
+[requires]
+torch/1.8.1@curt/prebuilt
+torchvision/0.9.1@curt/testing
+
+[generators]
+cmake
+
+[options]
+torch:cuda=11.1
+torchvision:with_cuda=True
