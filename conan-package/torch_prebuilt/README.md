@@ -1,7 +1,9 @@
 ## HOWTO
 
-    conan create . 1.7.1@curt/prebuilt -o torch:cuda=11.0
+    conan create . 1.9.0@curt/prebuilt -o torch:cuda=11.1
     conan create . 1.8.1@curt/prebuilt
+    conan create . 1.7.1@curt/prebuilt -o torch:cuda=11.0
+    
 
 
 

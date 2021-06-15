@@ -6,7 +6,7 @@ from conans import ConanFile, tools, CMake
 class Torchvision(ConanFile):
 
     ## for test
-    version = "0.9.1"
+    version = "0.10.0"
 
     name = "torchvision"
     url = ""
@@ -27,7 +27,7 @@ class Torchvision(ConanFile):
     generators = "cmake"
 
     requires = (
-        "torch/1.8.1@curt/prebuilt",
+        "torch/1.9.0@curt/prebuilt",
     )
 
     _cmake = None

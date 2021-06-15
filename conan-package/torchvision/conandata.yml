@@ -7,3 +7,6 @@ sources:
     url: https://github.com/pytorch/vision/archive/v0.7.0.tar.gz
   "0.9.1":
     url: https://github.com/pytorch/vision/archive/v0.9.1.tar.gz    
+  "0.10.0":
+    url: https://github.com/pytorch/vision/archive/refs/tags/v0.10.0.tar.gz
+         
