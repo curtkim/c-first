@@ -5,7 +5,7 @@
 #define N (1024*1024)
 #define M (1000000)
 
-__global__ void cudakernel(float *buf)
+__global__ void myKernel(float *buf)
 {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     buf[i] = 1.0f * i / N;
@@ -14,7 +14,8 @@ __global__ void cudakernel(float *buf)
 }
 
 // CUDART_CB는 필수는 아닌 것 같다.
-void CUDART_CB myStreamCallback(cudaStream_t stream, cudaError_t status, void *data)
+// stream이 이 시점에는 Destroy 되었는데.. 괜찮은가?
+void CUDART_CB myCallback(cudaStream_t stream, cudaError_t status, void *data)
 {
     // Check status of GPU after stream operations are done
     checkCudaErrors(status);
@@ -33,14 +34,15 @@ int main()
     checkCudaErrors(cudaStreamCreate(&stream));
 
     cudaMallocAsync(&d_data, N * sizeof(float), stream);
-    cudakernel<<<N/256, 256, 0, stream>>>(d_data);
+    myKernel<<<N / 256, 256, 0, stream>>>(d_data);
     cudaMemcpyAsync(data, d_data, N * sizeof(float), cudaMemcpyDeviceToHost, stream);
     cudaFreeAsync(d_data, stream);
-    checkCudaErrors(cudaStreamAddCallback(stream, myStreamCallback, data, 0));
+    checkCudaErrors(cudaStreamAddCallback(stream, myCallback, data, 0));
 
     printf("before destroy stream\n");
     cudaStreamDestroy(stream);
     printf("after destroy stream\n");
 
-    getchar();
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    //getchar();
 }
