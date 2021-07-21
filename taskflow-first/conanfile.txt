@@ -1,0 +1,7 @@
+[requires]
+taskflow/3.1.0
+
+[generators]
+cmake
+
+[options]
