@@ -1,7 +1,12 @@
 syntax = "proto3";
 
+message User {
+  string name = 1;
+}
+
 message SearchRequest {
   string query = 1;
   int32 page_number = 2;
   int32 result_per_page = 3;
+  User user = 4;
 }

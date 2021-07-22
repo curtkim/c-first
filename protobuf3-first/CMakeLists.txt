@@ -11,7 +11,8 @@ conan_basic_setup()
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS sample.proto)
 
 foreach(APP
-        01_write)
+        01_write
+        02_read)
     add_executable(${APP} ${APP}.cpp ${PROTO_SRCS} ${PROTO_HDRS})
     target_include_directories(${APP} PRIVATE ${CMAKE_BINARY_DIR})
     target_link_libraries(${APP} PRIVATE ${CONAN_LIBS})
