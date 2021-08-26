@@ -4,13 +4,6 @@ project(asio)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-# TODO
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-#add_executable(range_based_for range_based_for.cpp)
-#target_compile_features(range_based_for PUBLIC cxx_std_20)
-#target_compile_options(range_based_for PRIVATE -fcoroutines-ts)
-#target_compile_definitions(range_based_for PRIVATE ASIO_HAS_CO_AWAIT)
-#target_link_libraries(range_based_for ${CONAN_LIBS})
 
 foreach(APP
     01_timer_interval
@@ -30,10 +23,27 @@ foreach(APP
     91_server
     )
   add_executable(${APP} ${APP}.cpp)
-  target_link_libraries(${APP} ${CONAN_LIBS} stdc++fs)
+  target_link_libraries(${APP} ${CONAN_LIBS} pthread stdc++fs)
   #target_compile_definitions(${APP} PUBLIC BOOST_ASIO_DISABLE_EPOLL)
   target_compile_features(${APP} PUBLIC cxx_std_17)
+  #target_compile_options(${APP} PRIVATE -fcoroutines-ts)
+  #target_compile_definitions(${APP} PRIVATE ASIO_HAS_CO_AWAIT)
 endforeach()
+
+# gcc10으로 테스트에서 for co_await에서 에러발생
+foreach(APP
+  43_echo_server_co_spawn
+  90_range_based_for
+        )
+  add_executable(${APP} ${APP}.cpp)
+  target_link_libraries(${APP} ${CONAN_LIBS})
+  target_compile_options(${APP} PRIVATE -fcoroutines)
+  #target_compile_options(${APP} PRIVATE -fcoroutines-ts)
+  target_compile_features(${APP} PUBLIC cxx_std_20)
+  target_compile_definitions(${APP} PUBLIC ASIO_HAS_STD_COROUTINE)
+  target_compile_definitions(${APP} PUBLIC ASIO_HAS_CO_AWAIT)
+endforeach()
+
 
 ## fixed_size_header
 add_executable(fixed_size_header_client fixed_size_header/client.cpp)
@@ -48,8 +58,7 @@ target_link_libraries(http_client ${CONAN_LIBS})
 target_compile_features(http_client PRIVATE cxx_std_17)
 
 ## protobuf
-
 #  ~/.conan/data/protoc_installer/3.9.1/bincrafters/stable/package/c0c1ef10e3d0ded44179e28b669d6aed0277ca6a/bin/protoc --cpp_out=. stringdb.proto
-add_executable(protobuf_server protobuf/server_main.cpp protobuf/db_server.cpp protobuf/stringdb.pb.cc)
-target_link_libraries(protobuf_server ${CONAN_LIBS})
-target_compile_features(protobuf_server PRIVATE cxx_std_17)
+#add_executable(protobuf_server protobuf/server_main.cpp protobuf/db_server.cpp protobuf/stringdb.pb.cc)
+#target_link_libraries(protobuf_server ${CONAN_LIBS})
+#target_compile_features(protobuf_server PRIVATE cxx_std_17)
