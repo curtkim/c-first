@@ -36,7 +36,7 @@ foreach(APP
 			)
 	target_compile_definitions(${APP} PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
 	target_compile_definitions(${APP} PUBLIC STB_IMAGE_IMPLEMENTATION)
-	target_compile_definitions(${APP} PUBLIC IMGUI_HAS_DOCK)
+	#target_compile_definitions(${APP} PUBLIC IMGUI_HAS_DOCK)
 	target_link_libraries(${APP} ${CONAN_LIBS} ${OPENGL_LIBRARY} X11)
 	target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
