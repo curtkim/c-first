@@ -24,6 +24,7 @@ foreach(APP
 		31_imgui_window
 		41_docking
 		43_docking_init
+		51_chat
 		99_test
 		)
 

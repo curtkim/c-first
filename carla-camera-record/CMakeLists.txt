@@ -18,9 +18,12 @@ foreach(APP
     target_include_directories(${APP} PUBLIC .)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_include_directories(${APP} PRIVATE /opt/nvidia/Video_Codec_SDK_${VIDEO_SDK_VERSION}/Interface)
+
+    target_precompile_headers(${APP} PRIVATE precompile.hpp)
+
     target_link_directories(${APP} PUBLIC /opt/nvidia/Video_Codec_SDK_${VIDEO_SDK_VERSION}/Lib/linux/stubs/x86_64)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64)
-    target_precompile_headers(${APP} PRIVATE precompile.hpp)
+    
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} nvcuvid nvidia-encode cuda cudart nppicc nvToolsExt)
 endforeach()
 

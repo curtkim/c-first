@@ -2,9 +2,10 @@
 glfw/3.3.2@curt/testing
 glad/0.1.33
 stb/20200203
-imgui/1.79-docking@curt/testing
+imgui/1.83-docking@curt/testing
 eigen/3.3.7
 libigl/2.2.0@demo/testing
+asio/1.19.2
 
 [generators]
 cmake

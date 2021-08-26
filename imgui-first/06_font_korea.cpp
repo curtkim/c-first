@@ -74,7 +74,7 @@ int main(int, char **) {
   // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
   //io.Fonts->AddFontDefault();
 
-  ImFont* font = io.Fonts->AddFontFromFileTTF("../../etc/NanumGothic.ttf", 16.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+  ImFont* font = io.Fonts->AddFontFromFileTTF("../../etc/NanumGothic.ttf", 24.0f, NULL, io.Fonts->GetGlyphRangesKorean());
   IM_ASSERT(font != NULL);
   /*
   io.Fonts->AddFontFromFileTTF("../../fonts/Roboto-Medium.ttf", 16.0f);

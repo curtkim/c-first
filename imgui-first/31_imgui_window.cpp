@@ -112,6 +112,7 @@ int main(int, char **) {
     if (state.show_demo_window)
       ImGui::ShowDemoWindow(&state.show_demo_window);
 
+    // 오른쪽에 align시키다. height를 창 크기로 한다.
     ImGui::SetNextWindowPos(ImVec2(WIDTH - 300, 0), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(300, HEIGHT), ImGuiCond_Always);
 

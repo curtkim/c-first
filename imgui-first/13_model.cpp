@@ -189,11 +189,13 @@ int main(int, char **) {
       glBindVertexArray(0);
     }
 
+    /*
     {
       // render your GUI
       ImGui::Begin("Triangle Position/Color");
       ImGui::End();
     }
+    */
 
     // Render dear imgui into screen
     ImGui::Render();
