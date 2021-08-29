@@ -112,17 +112,16 @@ void init_input(float*a, size_t size)
 void cudaGraphsManual(float* inputVec_h, float *inputVec_d, double *outputVec_d, double *result_d, size_t inputSize, size_t numOfBlocks)
 {
   cudaStream_t streamForGraph;
+  checkCudaErrors(cudaStreamCreateWithFlags(&streamForGraph, cudaStreamNonBlocking));
+
+
   cudaGraph_t graph;
   std::vector<cudaGraphNode_t> nodeDependencies;
   cudaGraphNode_t memcpyNode, kernelNode, memsetNode;
   double result_h = 0.0;
 
-  checkCudaErrors(cudaStreamCreateWithFlags(&streamForGraph, cudaStreamNonBlocking));
 
-  cudaKernelNodeParams kernelNodeParams = {0};
   cudaMemcpy3DParms memcpyParams = {0};
-  cudaMemsetParams memsetParams = {0};
-
   memcpyParams.srcArray = NULL;
   memcpyParams.srcPos   = make_cudaPos(0,0,0);
   memcpyParams.srcPtr   = make_cudaPitchedPtr(inputVec_h, sizeof(float)*inputSize, inputSize, 1);
@@ -132,6 +131,7 @@ void cudaGraphsManual(float* inputVec_h, float *inputVec_d, double *outputVec_d,
   memcpyParams.extent   = make_cudaExtent(sizeof(float)*inputSize, 1, 1);
   memcpyParams.kind     = cudaMemcpyHostToDevice;
 
+  cudaMemsetParams memsetParams = {0};
   memsetParams.dst            = (void*)outputVec_d;
   memsetParams.value          = 0;
   memsetParams.pitch          = 0;
@@ -148,6 +148,7 @@ void cudaGraphsManual(float* inputVec_h, float *inputVec_d, double *outputVec_d,
 
   void *kernelArgs[4] = {(void*)&inputVec_d, (void*)&outputVec_d, &inputSize, &numOfBlocks};
 
+  cudaKernelNodeParams kernelNodeParams = {0};
   kernelNodeParams.func = (void*)reduce;
   kernelNodeParams.gridDim  = dim3(numOfBlocks, 1, 1);
   kernelNodeParams.blockDim = dim3(THREADS_PER_BLOCK, 1, 1);
@@ -317,6 +318,7 @@ void cudaGraphsUsingStreamCapture(float* inputVec_h, float *inputVec_d, double *
   checkCudaErrors(cudaStreamDestroy(streamForGraph));
 }
 
+
 int main(int argc, char **argv)
 {
   size_t size = 1<<24;    // number of elements to reduce
@@ -339,7 +341,7 @@ int main(int argc, char **argv)
 
   init_input(inputVec_h, size);
 
-  cudaGraphsManual(inputVec_h, inputVec_d, outputVec_d, result_d, size, maxBlocks);
+  cudaGraphsManual            (inputVec_h, inputVec_d, outputVec_d, result_d, size, maxBlocks);
   cudaGraphsUsingStreamCapture(inputVec_h, inputVec_d, outputVec_d, result_d, size, maxBlocks);
 
   checkCudaErrors(cudaFree(inputVec_d));

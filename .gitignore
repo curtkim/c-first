@@ -5,3 +5,5 @@
 **/release
 .python-version
 **/.vscode
+**/.cache
+**/compile_commands.json
