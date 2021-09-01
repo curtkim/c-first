@@ -1,0 +1,23 @@
+[requires]
+imgui/1.84.2
+glfw/3.3.4
+glad/0.1.34
+asio/1.19.2
+
+[generators]
+cmake
+
+[imports]
+./res/bindings, imgui_impl_glfw.h -> ../bindings
+./res/bindings, imgui_impl_glfw.cpp -> ../bindings
+./res/bindings, imgui_impl_opengl3.h -> ../bindings
+./res/bindings, imgui_impl_opengl3.cpp -> ../bindings
+./res/bindings, imgui_impl_opengl3_loader.h -> ../bindings
+
+
+#./res/fonts, DroidSans.ttf -> ../fonts
+#./res/fonts, ProggyTiny.ttf -> ../fonts
+#./res/fonts, ProggyClean.ttf -> ../fonts
+#./res/fonts, Karla-Regular.ttf -> ../fonts
+#./res/fonts, Roboto-Medium.ttf -> ../fonts
+#./res/fonts, Cousine-Regular.ttf -> ../fonts
