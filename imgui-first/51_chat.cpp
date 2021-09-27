@@ -95,8 +95,10 @@ int main(int, char **) {
                      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
                      ImGuiWindowFlags_NoTitleBar);
         {
-            static char str0[128] = "한글이 지원되나?";
-            ImGui::InputText("", str0, IM_ARRAYSIZE(str0));
+            static char str0[128] = "abc";
+            if( ImGui::InputText("##message", str0, IM_ARRAYSIZE(str0), ImGuiInputTextFlags_EnterReturnsTrue)){
+                str0[0] = '\0';
+            }
         }
         ImGui::End();
 

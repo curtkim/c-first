@@ -28,7 +28,7 @@ class AutodiffConan(ConanFile):
         return "source_subfolder"
 
     requires = (
-        "eigen/3.3.7",
+        "eigen/3.4.0",
     )
     _cmake = None
 
