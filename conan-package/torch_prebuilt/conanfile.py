@@ -6,7 +6,7 @@ class TorchConan(ConanFile):
     name = "torch"
     #version = "1.8.1"
     settings = "os", "compiler", "build_type", "arch"
-    options = {"cuda": ["9.2", "10.1", "10.2", "11.0", "11.1", "None"]}
+    options = {"cuda": ["9.2", "10.1", "10.2", "11.0", "11.1", "11.3", "None"]}
     default_options = {"cuda": "11.1"}
 
     def build(self):
@@ -16,6 +16,9 @@ class TorchConan(ConanFile):
         if self.options.cuda == "10.1":
             cuda_version = "cu101"
             url_tail = "%2Bcu101"
+        elif self.options.cuda == '10.2':        
+            cuda_version = "cu102"
+            url_tail = "%2Bcu102"
         elif self.options.cuda == '9.2':        
             cuda_version = "cu92"
             url_tail = "%2Bcu92"
@@ -28,6 +31,9 @@ class TorchConan(ConanFile):
         elif self.options.cuda == 'None':
             cuda_version = "cpu"
             url_tail = "%2Bcpu"
+        elif self.options.cuda == '11.3':        
+            cuda_version = "cu113"
+            url_tail = "%2Bcu113"
 
         name = f"libtorch-cxx11-abi-shared-with-deps-{self.version}{url_tail}.zip"
         targetfile = os.path.join(tempfile.gettempdir(), name)
