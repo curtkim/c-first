@@ -11,6 +11,7 @@ message("${CONAN_LIBS}")
 
 foreach(APP
         01_quick_start 02_angle_between_plane 03_line_from_plan_intersection 04_join
+        05_blend_motors
         )
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )

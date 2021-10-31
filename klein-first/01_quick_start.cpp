@@ -13,11 +13,13 @@ int main() {
     // Normalization is done automatically
     rotor r{M_PI * 0.5f, 0.f, 0.f, 1.f};
     print("rotor", r(p1));
+    print(r.as_mat3x4());
 
     // Create a translator that represents a translation of 1 unit
     // in the yz-direction. Normalization is done automatically.
     translator t{1.f, 0.f, 1.f, 1.f};
     print("translator", t(p1));
+
 
     // Create a motor that combines the action of the rotation and
     // translation above.

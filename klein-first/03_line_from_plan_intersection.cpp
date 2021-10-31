@@ -1,6 +1,9 @@
 #include <klein/klein.hpp>
 #include "common.hpp"
 
+// ^ : exterior product
+// plane ^ plane
+// line ^ point
 int main() {
 
     using namespace kln;
@@ -12,7 +15,7 @@ int main() {
     // plane 2: 1 + z = 0;
     kln::plane p2{0.f, 0.f, 1.f, 1.f};
 
-    // line intersection of planes 1 and 2
+    // line intersection of planes 1 and 2 (exterior product)
     kln::line intersection = p1 ^ p2;
 
 
