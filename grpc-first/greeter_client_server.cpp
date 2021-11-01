@@ -79,6 +79,7 @@ int main(int argc, char** argv) {
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on 127.0.0.1:" << selected_port << std::endl;
 
+
   // Instantiate the client. It requires a channel, out of which the actual RPCs
   // are created. This channel models a connection to an endpoint (in this case,
   // localhost at the selected port). We indicate that the channel isn't

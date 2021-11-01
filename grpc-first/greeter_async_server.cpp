@@ -6,6 +6,8 @@
 #include <grpc/support/log.h>
 #include <grpcpp/grpcpp.h>
 
+#include <iostream>
+
 #ifdef BAZEL_BUILD
 #include "examples/protos/helloworld.grpc.pb.h"
 #else
@@ -74,8 +76,8 @@ private:
         // the tag uniquely identifying the request (so that different CallData
         // instances can serve different requests concurrently), in this case
         // the memory address of this CallData instance.
-        service_->RequestSayHello(&ctx_, &request_, &responder_, cq_, cq_,
-                                  this);
+        service_->RequestSayHello(&ctx_, &request_, &responder_, cq_, cq_, this);
+
       } else if (status_ == PROCESS) {
         // Spawn a new CallData instance to serve new clients while we process
         // the one for this CallData. The instance will deallocate itself as
@@ -98,6 +100,10 @@ private:
       }
     }
 
+    // Let's implement a tiny state machine with the following states.
+    enum CallStatus { CREATE, PROCESS, FINISH };
+    CallStatus status_;  // The current serving state.
+
   private:
     // The means of communication with the gRPC runtime for an asynchronous
     // server.
@@ -117,9 +123,6 @@ private:
     // The means to get back to the client.
     ServerAsyncResponseWriter<HelloReply> responder_;
 
-    // Let's implement a tiny state machine with the following states.
-    enum CallStatus { CREATE, PROCESS, FINISH };
-    CallStatus status_;  // The current serving state.
   };
 
   // This can be run in multiple threads if needed.
@@ -136,7 +139,9 @@ private:
       // tells us whether there is any kind of event or cq_ is shutting down.
       GPR_ASSERT(cq_->Next(&tag, &ok));
       GPR_ASSERT(ok);
-      static_cast<CallData*>(tag)->Proceed();
+      CallData* call_data_ptr = static_cast<CallData*>(tag);
+      std::cout << call_data_ptr->status_ << "\n";
+      call_data_ptr->Proceed();
     }
   }
 
