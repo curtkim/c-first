@@ -55,6 +55,8 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 foreach(APP
         greeter_client_server
+        greeter_async_client
+        greeter_async_server
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
