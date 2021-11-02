@@ -11,6 +11,8 @@
     
 ## reference
 - https://copynull.tistory.com/411?category=892106
+- https://zepeh.tistory.com/576?category=773210
+
 
 ## mallochook관련 의문
 - new operator override가 없으면 mallochook이 동작하지 않는다.

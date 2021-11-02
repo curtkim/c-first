@@ -5,7 +5,7 @@
 
 using namespace MyGame::Sample;
 
-void build(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
+void build(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed, const char* type_id) {
   // First, lets serialize some weapons for the Monster: A 'sword' and an 'axe'.
   flatbuffers::Offset<flatbuffers::String> weapon_one_name = builder.CreateString("Sword");
   short weapon_one_damage = 3;
@@ -35,15 +35,12 @@ void build(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
   auto orc = CreateMonster(builder, &position, 150, 80, name, inventory,
                            Color_Red, weapons, Equipment_Weapon, axe.Union());
   if( sizePrefixed)
-    builder.FinishSizePrefixed(orc);
+    builder.FinishSizePrefixed(orc, type_id);
   else
-    builder.Finish(orc);  // Serialize the root of the object.
+    builder.Finish(orc, type_id);  // Serialize the root of the object.
 }
 
-void read(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
-  // Get access to the root:
-  const Monster* monster = sizePrefixed ? GetSizePrefixedMonster(builder.GetBufferPointer()): GetMonster(builder.GetBufferPointer());
-
+void read(const Monster* monster) {
   // Get and test some scalar types from the FlatBuffer.
   assert(monster->hp() == 80);
   assert(monster->mana() == 150);  // default
@@ -83,12 +80,13 @@ void read(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
 int main(int /*argc*/, const char * /*argv*/[]) {
   assert(FLATBUFFERS_LITTLEENDIAN);
 
+  const char* type_id = "mons";
   size_t INIT_SIZE = 160;
   // Build up a serialized buffer algorithmically:
   flatbuffers::FlatBufferBuilder builder(INIT_SIZE);
 
   {
-    build(builder, false);
+    build(builder, false, type_id);
     std::cout << "size=" << builder.GetSize() << std::endl;
     // We now have a FlatBuffer we can store on disk or send over a network.
 
@@ -100,14 +98,21 @@ int main(int /*argc*/, const char * /*argv*/[]) {
     assert(!VerifySizePrefixedMonsterBuffer(verifier));
     std::cout << "verifier.GetComputedSize() " << verifier.GetComputedSize() << std::endl;
 
+    auto data = builder.GetBufferPointer();
+    const char* identifier = flatbuffers::GetBufferIdentifier(data, false);
+    std::cout << "Identifier: " << identifier << "\n";
+    std::cout << "BufferHasIdentifier: " << flatbuffers::BufferHasIdentifier(data, type_id, false) << "\n";
+
     // Instead, we're going to access it right away (as if we just received it).
-    read(builder, false);
+    const Monster* monster = GetMonster(data);
+    read(monster);
     builder.Clear();
   }
 
   //////////////////////////////////////////////
   {
-    build(builder, true);
+    const bool sizePrefixed = true;
+    build(builder, sizePrefixed, type_id);
     std::cout << "size=" << builder.GetSize() << std::endl;
     // We now have a FlatBuffer we can store on disk or send over a network.
 
@@ -119,7 +124,13 @@ int main(int /*argc*/, const char * /*argv*/[]) {
     assert(VerifySizePrefixedMonsterBuffer(verifier));
     std::cout << "verifier.GetComputedSize() " << verifier.GetComputedSize() << std::endl;
 
+    auto data = builder.GetBufferPointer();
+    const char* identifier = flatbuffers::GetBufferIdentifier(data, sizePrefixed);
+    std::cout << "Identifier: " << identifier << "\n";
+    std::cout << "BufferHasIdentifier: " << flatbuffers::BufferHasIdentifier(data, type_id, sizePrefixed) << "\n";
+
     // Instead, we're going to access it right away (as if we just received it).
-    read(builder, true);
+    const Monster* monster = GetSizePrefixedMonster(data);
+    read(monster);
   }
 }

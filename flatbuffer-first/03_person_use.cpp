@@ -42,7 +42,7 @@ int main()
   builder.Finish(CreatePerson(builder, name, age));
 
   // 직렬화된 버퍼를 가져온다. 이 버퍼값을 네트워크로 전송하거나 파일로 저장할 수 있다.
-  auto data = builder.GetBufferPointer();
+  uint8_t* data = builder.GetBufferPointer();
   //std::cout << "size=" << builder.GetSize() << "\n";
     
 
@@ -54,11 +54,11 @@ int main()
 
   // 객체 출력 확인
   const flatbuffers::String* person_name = person->name();
-  std::cout << "이름 : " << person_name->c_str() << "\n";
-  std::cout << "나이 : " << person->age() << "\n";
+  //std::cout << "이름 : " << person_name->c_str() << "\n";
+  //std::cout << "나이 : " << person->age() << "\n";
 
   builder.Release();
-  std::cout << "size=" << builder.GetSize() << "\n";
+  //std::cout << "size=" << builder.GetSize() << "\n";
 
   builder.Clear();
 
