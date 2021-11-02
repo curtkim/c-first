@@ -1,0 +1,8 @@
+table sample
+{
+    firstName: string;
+    lastName: string;
+    age: int;
+}
+
+root_type sample;
