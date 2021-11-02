@@ -5,7 +5,7 @@
 
 using namespace MyGame::Sample;
 
-void create(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
+void build(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
   // First, lets serialize some weapons for the Monster: A 'sword' and an 'axe'.
   flatbuffers::Offset<flatbuffers::String> weapon_one_name = builder.CreateString("Sword");
   short weapon_one_damage = 3;
@@ -13,7 +13,7 @@ void create(flatbuffers::FlatBufferBuilder& builder, bool sizePrefixed) {
   auto weapon_two_name = builder.CreateString("Axe");
   short weapon_two_damage = 5;
 
-  // Use the `CreateWeapon` shortcut to create Weapons with all fields set.
+  // Use the `CreateWeapon` shortcut to build Weapons with all fields set.
   flatbuffers::Offset<Weapon> sword = CreateWeapon(builder, weapon_one_name, weapon_one_damage);
   flatbuffers::Offset<Weapon> axe = CreateWeapon(builder, weapon_two_name, weapon_two_damage);
 
@@ -88,7 +88,7 @@ int main(int /*argc*/, const char * /*argv*/[]) {
   flatbuffers::FlatBufferBuilder builder(INIT_SIZE);
 
   {
-    create(builder, false);
+    build(builder, false);
     std::cout << "size=" << builder.GetSize() << std::endl;
     // We now have a FlatBuffer we can store on disk or send over a network.
 
@@ -107,7 +107,7 @@ int main(int /*argc*/, const char * /*argv*/[]) {
 
   //////////////////////////////////////////////
   {
-    create(builder, true);
+    build(builder, true);
     std::cout << "size=" << builder.GetSize() << std::endl;
     // We now have a FlatBuffer we can store on disk or send over a network.
 
