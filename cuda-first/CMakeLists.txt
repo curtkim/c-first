@@ -122,7 +122,7 @@ foreach(APP npp_image_resize )
             nppig)
 endforeach()
 
-foreach(APP 90_simple 91_simple 92_simple_graph 93_simple_all)
+foreach(APP 90_simple 91_simple 92_simple_graph 93_simple_graph2)
     add_executable(${APP} blog_graph/${APP}.cu)
 endforeach()
 
@@ -153,7 +153,7 @@ set_target_properties(first
         90_simple
         91_simple
         92_simple_graph
-        93_simple_all
+        93_simple_graph2
 
 
         PROPERTIES CUDA_ARCHITECTURES 61)
