@@ -122,7 +122,9 @@ foreach(APP npp_image_resize )
             nppig)
 endforeach()
 
-
+foreach(APP 90_simple 91_simple 92_simple_graph 93_simple_all)
+    add_executable(${APP} blog_graph/${APP}.cu)
+endforeach()
 
 
 set_target_properties(first
@@ -148,4 +150,11 @@ set_target_properties(first
         npp_image_resize
         threadMigration
 
+        90_simple
+        91_simple
+        92_simple_graph
+        93_simple_all
+
+
         PROPERTIES CUDA_ARCHITECTURES 61)
+
