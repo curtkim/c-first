@@ -106,6 +106,8 @@ foreach(APP
         rule_of_three
         rule_of_five
         rule_of_zero
+
+        print_struct_layout
         )
     message("${APP}")
     add_executable(${APP} ${APP}.cpp)

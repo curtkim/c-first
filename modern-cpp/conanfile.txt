@@ -1,5 +1,6 @@
 [requires]
 doctest/2.4.4
+pfr/2.0.2
 
 [generators]
 cmake
