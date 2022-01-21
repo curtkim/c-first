@@ -109,7 +109,7 @@ int main(int /*argc*/, const char * /*argv*/[]) {
     builder.Clear();
   }
 
-  //////////////////////////////////////////////
+  std::cout << "=== sizePrefixed ===\n";
   {
     const bool sizePrefixed = true;
     build(builder, sizePrefixed, type_id);
