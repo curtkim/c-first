@@ -1,5 +1,5 @@
 [requires]
-taskflow/3.1.0
+taskflow/3.3.0
 
 [generators]
 cmake
