@@ -102,6 +102,8 @@ static void warmupTBB() {
 
 int main() {
   int num_tokens = tbb::task_scheduler_init::default_num_threads();
+  std::cout << "num_tokens " << num_tokens << "\n";
+
   int num_strings = 100;
   int string_len = 100000;
   int free_list_size = num_tokens;

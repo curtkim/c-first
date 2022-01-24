@@ -1,6 +1,7 @@
 [requires]
 tbb/2020.3
-onedpl/20200330  #parallelstl/20181004@conan/stable
+onedpl/20200330
+
 fmt/6.1.2
 lodepng/cci.20200615
 
