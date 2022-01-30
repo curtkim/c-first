@@ -1,0 +1,7 @@
+[requires]
+gtsam/4.0.3
+
+[generators]
+cmake
+
+[options]
