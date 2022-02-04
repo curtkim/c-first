@@ -1,0 +1,7 @@
+[requires]
+manif/0.0.4@demo/testing
+
+[generators]
+cmake
+
+[options]
