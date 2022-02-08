@@ -1,0 +1,1 @@
+https://www.cppstories.com/2022/tuple-iteration-basics/
