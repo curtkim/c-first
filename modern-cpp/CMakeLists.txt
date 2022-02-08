@@ -77,6 +77,13 @@ foreach(APP allocator_test temporary_allocations)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
 
+### tuple_iter
+foreach(APP tuple_iter_01 tuple_iter_02)
+    add_executable(${APP} tuple_iter/${APP}.cpp)
+    target_compile_features(${APP} PUBLIC cxx_std_20)
+endforeach()
+
+
 foreach(APP
         debug_release
         generic
