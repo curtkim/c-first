@@ -32,7 +32,7 @@ foreach(APP cpp17 from_chars set_extract_means_move map_try_emplace map_insert_o
 endforeach()
 
 ### c++20
-foreach(APP utility stop_token_test )
+foreach(APP utility stop_token_test constexpr_dyna_alloc)
     add_executable(${APP} cpp20/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
     target_link_libraries(${APP} PUBLIC pthread )
