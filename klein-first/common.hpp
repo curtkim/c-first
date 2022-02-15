@@ -6,6 +6,7 @@
 void print(const std::string_view name, const kln::point& p){
     fmt::print("{} = ({}, {}, {})\n", name, p.x(), p.y(), p.z());
 }
+
 void print(const kln::mat4x4& mat){
     fmt::print("{} {} {} {}\n", mat.data[0], mat.data[4], mat.data[8], mat.data[12]);
     fmt::print("{} {} {} {}\n", mat.data[1], mat.data[5], mat.data[9], mat.data[13]);

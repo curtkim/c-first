@@ -1,9 +1,9 @@
 [requires]
-opencv/4.3.0@conan/stable
+opencv/4.5.2
 
 [generators]
 cmake
 
 [options]
 opencv:contrib=True
-opencv:cuda=True
+opencv:with_cuda=True

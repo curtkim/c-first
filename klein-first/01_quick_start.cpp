@@ -12,7 +12,7 @@ int main() {
     // Create a rotor representing a pi/2 rotation about the z-axis
     // Normalization is done automatically
     rotor r{M_PI * 0.5f, 0.f, 0.f, 1.f};
-    print("rotor", r(p1));
+    print("rotor(p1)", r(p1));
     print(r.as_mat3x4());
 
     // Create a translator that represents a translation of 1 unit
