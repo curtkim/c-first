@@ -8,14 +8,14 @@ int main(void) {
   asio::io_service io_service;
 
   int cnt = 0;
-  TimerContext* t = setInterval(io_service, [&](){
-    puts("aaaa");
-    cnt++;
-    if (cnt == 3) clearInterval(t);
+  TimerContext *t = setInterval(io_service, [&]() {
+      puts("aaaa");
+      cnt++;
+      if (cnt == 3) clearInterval(t);
   }, 1000);
 
-  TimerContext* t2 = setTimeout(io_service, [](){
-    puts("bbb");
+  TimerContext *t2 = setTimeout(io_service, []() {
+      puts("bbb");
   }, 2000);
 
   io_service.run();

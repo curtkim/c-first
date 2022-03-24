@@ -1,5 +1,5 @@
 [requires]
-asio/1.19.2
+asio/1.22.0
 #protobuf/3.17.1
 
 [generators]

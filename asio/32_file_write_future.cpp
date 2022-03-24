@@ -2,7 +2,7 @@
 #include <iostream>
 #include <asio.hpp>
 
-// 그러나 실제로 test.txt에는 데이터가 쓰여 있지 않다.
+// IO_URING을 사용하면 test.txt에는 데이터가 쓰여 진다.
 int main() {
   if( ASIO_HAS_POSIX_STREAM_DESCRIPTOR )
     std::cout << "ASIO_HAS_POSIX_STREAM_DESCRIPTOR ON" << std::endl;

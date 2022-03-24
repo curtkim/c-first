@@ -28,6 +28,7 @@ foreach(APP
   target_compile_features(${APP} PUBLIC cxx_std_17)
   #target_compile_options(${APP} PRIVATE -fcoroutines-ts)
   #target_compile_definitions(${APP} PRIVATE ASIO_HAS_CO_AWAIT)
+  target_compile_definitions(${APP} PRIVATE ASIO_HAS_IO_URING)
 endforeach()
 
 # gcc10으로 테스트에서 for co_await에서 에러발생
