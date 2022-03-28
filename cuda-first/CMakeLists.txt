@@ -6,6 +6,8 @@ conan_basic_setup()
 
 add_executable(first first.cc first-gpu.cu)
 
+add_executable(smid_assembly smid_assembly.cu)
+
 add_executable(nvtx_first nvtx_first.cpp)
 target_include_directories(nvtx_first PUBLIC /usr/local/cuda/include)
 target_link_directories(nvtx_first PUBLIC /usr/local/cuda/lib64)
