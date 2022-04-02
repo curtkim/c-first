@@ -7,6 +7,11 @@ https://engineering.linecorp.com/ko/blog/code-obfuscation-compiler-tool-ork-1/
     clang -S -emit-llvm test.c    # .ll
     clang -S test.c               # .s
     clang -c test.c               # .o 
+    ./a.out 2 3
+
+## clang++
+
+    clangv++ -o hello hello.cpp
 
 
 ## CUDA
