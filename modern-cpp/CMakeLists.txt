@@ -13,7 +13,7 @@ foreach(APP array array_dynamic variant variant_polymorphism vector_test vector_
 endforeach()
 
 ### time
-foreach(APP chrono_duration chrono_timepoint chrono_to_time_t clock_steady)
+foreach(APP chrono_duration chrono_timepoint chrono_to_time_t clock_steady interval_20min)
     add_executable(${APP} time/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_17)
 endforeach()
