@@ -15,12 +15,15 @@
 #include <algorithm>
 #include <numeric>
 
+const char* IMAGENET_CLASSES_FILE = "imagenet_classes.txt";
+
+
 // utilities ----------------------------------------------------------------------------------------------------------
 // class to log errors, warnings, and other information during the build and inference phases
 class Logger : public nvinfer1::ILogger
 {
 public:
-  void log(Severity severity, const char* msg) override {
+  void log(Severity severity, const char* msg) noexcept override {
     // remove this 'if' if you need more logged info
     if ((severity == Severity::kERROR) || (severity == Severity::kINTERNAL_ERROR)) {
       std::cout << msg << "\n";
@@ -91,20 +94,25 @@ void preprocessImage(const std::string& image_path, float* gpu_input, const nvin
   auto input_height = dims.d[1];
   auto channels = dims.d[0];
   auto input_size = cv::Size(input_width, input_height);
+
   // resize
   cv::cuda::GpuMat resized;
   cv::cuda::resize(gpu_frame, resized, input_size, 0, 0, cv::INTER_NEAREST);
+
   // normalize
   cv::cuda::GpuMat flt_image;
   resized.convertTo(flt_image, CV_32FC3, 1.f / 255.f);
   cv::cuda::subtract(flt_image, cv::Scalar(0.485f, 0.456f, 0.406f), flt_image, cv::noArray(), -1);
   cv::cuda::divide(flt_image, cv::Scalar(0.229f, 0.224f, 0.225f), flt_image, 1, -1);
+
   // to tensor
   std::vector<cv::cuda::GpuMat> chw;
   for (size_t i = 0; i < channels; ++i)
   {
     chw.emplace_back(cv::cuda::GpuMat(input_size, CV_32FC1, gpu_input + i * input_width * input_height));
   }
+  // Copies each plane of a multi-channel matrix into an array
+  // cv::cuda::split(InputArray src, std::vector<GpuMat> dst)
   cv::cuda::split(flt_image, chw);
 }
 
@@ -112,7 +120,7 @@ void preprocessImage(const std::string& image_path, float* gpu_input, const nvin
 void postprocessResults(float *gpu_output, const nvinfer1::Dims &dims, int batch_size)
 {
   // get class names
-  auto classes = getClassNames("imagenet_classes.txt");
+  auto classes = getClassNames(IMAGENET_CLASSES_FILE);
 
   // copy results from GPU to CPU
   std::vector<float> cpu_output(getSizeByDim(dims) * batch_size);
@@ -121,10 +129,12 @@ void postprocessResults(float *gpu_output, const nvinfer1::Dims &dims, int batch
   // calculate softmax
   std::transform(cpu_output.begin(), cpu_output.end(), cpu_output.begin(), [](float val) {return std::exp(val);});
   auto sum = std::accumulate(cpu_output.begin(), cpu_output.end(), 0.0);
+
   // find top classes predicted by the model
   std::vector<int> indices(getSizeByDim(dims) * batch_size);
   std::iota(indices.begin(), indices.end(), 0); // generate sequence 0, 1, 2, 3, ..., 999
   std::sort(indices.begin(), indices.end(), [&cpu_output](int i1, int i2) {return cpu_output[i1] > cpu_output[i2];});
+
   // print results
   int i = 0;
   while (cpu_output[indices[i]] / sum > 0.005)
@@ -193,6 +203,7 @@ int main(int argc, char* argv[])
   for (size_t i = 0; i < engine->getNbBindings(); ++i)
   {
     auto binding_size = getSizeByDim(engine->getBindingDimensions(i)) * batch_size * sizeof(float);
+    // gpu에 메모리 할당
     cudaMalloc(&buffers[i], binding_size);
     if (engine->bindingIsInput(i))
     {

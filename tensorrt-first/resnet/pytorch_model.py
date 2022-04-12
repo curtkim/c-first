@@ -27,7 +27,7 @@ def preprocess_image(img_path):
 
 def postprocess(output_data):
     # get class names
-    with open("imagenet_classes.txt") as f:
+    with open("../imagenet_classes.txt") as f:
         classes = [line.strip() for line in f.readlines()]
     # calculate human-readable value by softmax
     confidences = torch.nn.functional.softmax(output_data, dim=1)[0] * 100

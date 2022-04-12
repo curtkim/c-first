@@ -1,67 +1,5 @@
-//! \file sampleMNIST.cpp
-//! \brief This file contains the implementation of the MNIST sample.
-//!
-//! It builds a TensorRT engine by importing a trained MNIST Caffe model. It uses the engine to run
-//! inference on an input image of a digit.
-//! It can be run with the following command line:
-//! Command: ./sample_mnist [-h or --help] [-d=/path/to/data/dir or --datadir=/path/to/data/dir]
+#include "sample_mnist.hpp"
 
-#include "argsParser.h"
-#include "buffers.h"
-#include "common.h"
-#include "logger.h"
-
-#include <NvCaffeParser.h>
-#include <NvInfer.h>
-
-#include <cassert>
-#include <cmath>
-#include <cuda_runtime_api.h>
-#include <iostream>
-
-const std::string gSampleName = "TensorRT.sample_mnist";
-
-//! \brief  The SampleMNIST class implements the MNIST sample
-//! \details It creates the network using a trained Caffe MNIST classification model
-class SampleMNIST {
-  template<typename T>
-  using SampleUniquePtr = std::unique_ptr<T, samplesCommon::InferDeleter>;
-
-public:
-  SampleMNIST(const samplesCommon::CaffeSampleParams &params)
-    : mParams(params) {}
-
-  bool build();
-
-  bool infer();
-
-  bool teardown();
-
-private:
-  //! \brief uses a Caffe parser to create the MNIST Network and marks the output layers
-  bool constructNetwork(SampleUniquePtr<nvcaffeparser1::ICaffeParser> &parser,
-                        SampleUniquePtr<nvinfer1::INetworkDefinition> &network);
-
-  //! \brief Reads the input and mean data, preprocesses, and stores the result in a managed buffer
-  bool
-  processInput(const samplesCommon::BufferManager &buffers, const std::string &inputTensorName, int inputFileIdx) const;
-
-  //! \brief Verifies that the output is correct and prints it
-  bool verifyOutput(const samplesCommon::BufferManager &buffers, const std::string &outputTensorName,
-                    int groundTruthDigit) const;
-
-  //!< The TensorRT engine used to run the network
-  std::shared_ptr<nvinfer1::ICudaEngine> mEngine{nullptr};
-
-  //!< The parameters for the sample.
-  samplesCommon::CaffeSampleParams mParams;
-
-  //!< The dimensions of the input to the network.
-  nvinfer1::Dims mInputDims;
-
-  //! the mean blob, which we need to keep around until build is done
-  SampleUniquePtr<nvcaffeparser1::IBinaryProtoBlob> mMeanBlob;
-};
 
 //! \brief Creates the network, configures the builder and creates the network engine
 //! \details This function creates the MNIST network by parsing the caffe model and builds
@@ -73,7 +11,7 @@ bool SampleMNIST::build() {
     return false;
   }
 
-  auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(builder->createNetwork());
+  auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(0));
   if (!network) {
     return false;
   }
@@ -106,7 +44,7 @@ bool SampleMNIST::build() {
   samplesCommon::enableDLA(builder.get(), config.get(), mParams.dlaCore);
 
   mEngine = std::shared_ptr<nvinfer1::ICudaEngine>(
-    builder->buildEngineWithConfig(*network, *config), samplesCommon::InferDeleter());
+          builder->buildEngineWithConfig(*network, *config), samplesCommon::InferDeleter());
 
   if (!mEngine)
     return false;
@@ -175,7 +113,7 @@ bool SampleMNIST::verifyOutput(const samplesCommon::BufferManager &buffers, cons
 //! \param builder Pointer to the engine builder
 bool SampleMNIST::constructNetwork(SampleUniquePtr<nvcaffeparser1::ICaffeParser> &parser, SampleUniquePtr<nvinfer1::INetworkDefinition> &network) {
   const nvcaffeparser1::IBlobNameToTensor *blobNameToTensor = parser->parse(
-    mParams.prototxtFileName.c_str(), mParams.weightsFileName.c_str(), *network, nvinfer1::DataType::kFLOAT);
+          mParams.prototxtFileName.c_str(), mParams.weightsFileName.c_str(), *network, nvinfer1::DataType::kFLOAT);
 
   for (auto &s : mParams.outputTensorNames) {
     network->markOutput(*blobNameToTensor->find(s.c_str()));
@@ -192,7 +130,7 @@ bool SampleMNIST::constructNetwork(SampleUniquePtr<nvcaffeparser1::ICaffeParser>
   // and apply each one individually based on the tensor. The range here is large enough for the
   // network, but is chosen for example purposes only.
   float maxMean
-    = samplesCommon::getMaxValue(static_cast<const float *>(meanWeights.values), samplesCommon::volume(inputDims));
+          = samplesCommon::getMaxValue(static_cast<const float *>(meanWeights.values), samplesCommon::volume(inputDims));
 
   auto mean = network->addConstant(nvinfer1::Dims3(1, inputDims.d[1], inputDims.d[2]), meanWeights);
   if (!mean->getOutput(0)->setDynamicRange(-maxMean, maxMean)) {
@@ -206,7 +144,7 @@ bool SampleMNIST::constructNetwork(SampleUniquePtr<nvcaffeparser1::ICaffeParser>
     return false;
   }
   network->getLayer(0)->setInput(0, *meanSub->getOutput(0));
-  samplesCommon::setAllTensorScales(network.get(), 127.0f, 127.0f);
+  samplesCommon::setAllDynamicRanges(network.get(), 127.0f, 127.0f);
 
   return true;
 }
@@ -270,83 +208,4 @@ bool SampleMNIST::teardown() {
   //! ShutdownProtobufLibrary() has been called.
   nvcaffeparser1::shutdownProtobufLibrary();
   return true;
-}
-
-//! \brief Initializes members of the params struct using the command line args
-samplesCommon::CaffeSampleParams initializeSampleParams(const samplesCommon::Args &args) {
-  samplesCommon::CaffeSampleParams params;
-  if (args.dataDirs.empty()) //!< Use default directories if user hasn't provided directory paths
-  {
-    params.dataDirs.push_back(".");
-  } else //!< Use the data directory provided by the user
-  {
-    params.dataDirs = args.dataDirs;
-  }
-
-  params.prototxtFileName = locateFile("mnist.prototxt", params.dataDirs);
-  params.weightsFileName = locateFile("mnist.caffemodel", params.dataDirs);
-  params.meanFileName = locateFile("mnist_mean.binaryproto", params.dataDirs);
-  params.inputTensorNames.push_back("data");
-  params.batchSize = 1;
-  params.outputTensorNames.push_back("prob");
-  params.dlaCore = args.useDLACore;
-  params.int8 = args.runInInt8;
-  params.fp16 = args.runInFp16;
-
-  return params;
-}
-
-//!
-//! \brief Prints the help information for running this sample
-//!
-void printHelpInfo() {
-  std::cout
-    << "Usage: ./sample_mnist [-h or --help] [-d or --datadir=<path to data directory>] [--useDLACore=<int>]\n";
-  std::cout << "--help          Display help information\n";
-  std::cout << "--datadir       Specify path to a data directory, overriding the default. This option can be used "
-               "multiple times to add multiple directories. If no data directories are given, the default is to use "
-               "(data/samples/mnist/, data/mnist/)"
-            << std::endl;
-  std::cout << "--useDLACore=N  Specify a DLA engine for layers that support DLA. Value can range from 0 to n-1, "
-               "where n is the number of DLA engines on the platform."
-            << std::endl;
-  std::cout << "--int8          Run in Int8 mode.\n";
-  std::cout << "--fp16          Run in FP16 mode.\n";
-}
-
-int main(int argc, char **argv) {
-  samplesCommon::Args args;
-  bool argsOK = samplesCommon::parseArgs(args, argc, argv);
-  if (!argsOK) {
-    sample::gLogError << "Invalid arguments" << std::endl;
-    printHelpInfo();
-    return EXIT_FAILURE;
-  }
-  if (args.help) {
-    printHelpInfo();
-    return EXIT_SUCCESS;
-  }
-
-  auto sampleTest = sample::gLogger.defineTest(gSampleName, argc, argv);
-
-  sample::gLogger.reportTestStart(sampleTest);
-
-  samplesCommon::CaffeSampleParams params = initializeSampleParams(args);
-
-  SampleMNIST sample(params);
-  sample::gLogInfo << "Building and running a GPU inference engine for MNIST" << std::endl;
-
-  if (!sample.build()) {
-    return sample::gLogger.reportFail(sampleTest);
-  }
-
-  if (!sample.infer()) {
-    return sample::gLogger.reportFail(sampleTest);
-  }
-
-  if (!sample.teardown()) {
-    return sample::gLogger.reportFail(sampleTest);
-  }
-
-  return sample::gLogger.reportPass(sampleTest);
 }
