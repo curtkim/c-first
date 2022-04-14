@@ -52,7 +52,6 @@ void align(){
 }
 
 int main() {
-  basic();
   print_with_argument_id();
   fill_align();
   align();
