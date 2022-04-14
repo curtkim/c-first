@@ -43,9 +43,17 @@ void fill_align() {
   std::cout << '\n';
 }
 
-int main() {
+void align(){
+  std::string word = "hello";
 
+  std::cout << fmt::format("{:=<20}", word) << "\n";
+  std::cout << fmt::format("{:->20}", word) << "\n";
+  std::cout << fmt::format("{:/^20}", word) << "\n";
+}
+
+int main() {
   basic();
   print_with_argument_id();
   fill_align();
+  align();
 }
