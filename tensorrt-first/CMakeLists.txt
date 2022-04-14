@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(tensorrt-first LANGUAGES CXX)
 
-set(TENSORRT_DIR /usr/local/TensorRT-8.2.3.0)
+#set(TENSORRT_DIR /usr/local/TensorRT-8.2.3.0)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -31,15 +31,15 @@ add_executable(infer_mnist infer_mnist.cpp
 )
 target_include_directories(infer_mnist PRIVATE common)
 target_include_directories(infer_mnist PRIVATE /usr/local/cuda/include)
-target_include_directories(infer_mnist PRIVATE ${TENSORRT_DIR}/include)
-target_link_directories(infer_mnist PUBLIC /usr/local/cuda/lib64 ${TENSORRT_DIR}/lib)
+#target_include_directories(infer_mnist PRIVATE ${TENSORRT_DIR}/include)
+target_link_directories(infer_mnist PUBLIC /usr/local/cuda/lib64) #${TENSORRT_DIR}/lib)
 target_link_libraries(infer_mnist PUBLIC ${CONAN_LIBS} ${TENSORRT_LIBS} ${CUDA_LIBS} rt dl pthread)
 
 
 add_executable(infer_resnet resnet/infer_resnet.cpp)
 target_include_directories(infer_resnet PRIVATE common)
 target_include_directories(infer_resnet PRIVATE /usr/local/cuda/include)
-target_include_directories(infer_resnet PRIVATE ${TENSORRT_DIR}/include)
-target_link_directories(infer_resnet PUBLIC /usr/local/cuda/lib64 ${TENSORRT_DIR}/lib)
+#target_include_directories(infer_resnet PRIVATE ${TENSORRT_DIR}/include)
+target_link_directories(infer_resnet PUBLIC /usr/local/cuda/lib64 ) #${TENSORRT_DIR}/lib
 target_link_libraries(infer_resnet PUBLIC ${CONAN_LIBS} ${TENSORRT_LIBS} ${CUDA_LIBS} rt dl pthread
     nppc nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist npps)

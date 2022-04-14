@@ -1,3 +1,8 @@
+## build
+- header file(ex NvInfer.h) is located at /usr/include/x86_64-linux-gnu 
+- lib file(ex libnvinfer.so) is located at /lib/x86_64-linux-gnu/libnvinfer.so
+- target_link_directories에 tensorrt_dir/lib 포함시킬 필요없다.
+
 ## main
     caffemodel을 로딩해서 TensorRT를 실행한다. 
 
