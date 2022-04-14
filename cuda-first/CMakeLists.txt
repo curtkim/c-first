@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(cuda-first LANGUAGES CUDA C CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
