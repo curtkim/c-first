@@ -1,5 +1,5 @@
 [requires]
-libunifex/20200908@curt/testing
+libunifex/20220210@curt/testing
 
 [generators]
 cmake

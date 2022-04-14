@@ -5,7 +5,7 @@ from conans import ConanFile, tools, CMake
 
 class Libunifex(ConanFile):
 
-    version = "20200908"
+    version = "20220210"
 
     name = "libunifex"
     url = ""
@@ -47,7 +47,7 @@ class Libunifex(ConanFile):
         git = tools.Git(folder=self._source_subfolder)
 
         git.clone("https://github.com/facebookexperimental/libunifex.git")
-        git.run("reset --hard " + "e0d70047036c4c44a1bf86db64e4189cd913e80a")
+        git.run("reset --hard " + "7c646b063ce55a8c999c906e7845dd5c53d88f76")
 
     def build(self):
         cmake = self._configure_cmake()
