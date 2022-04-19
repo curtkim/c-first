@@ -25,6 +25,7 @@ foreach(APP
         01_triangle
         01_triangle_curt_style
         03_texture_two
+        04_texture_manipulate
         12_point 13_point_multi 14_grid 15_polylines 16_triangle_animation
         21_renderable
         31_mouse
