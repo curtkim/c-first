@@ -1,0 +1,5 @@
+[requires]
+freeimage/3.18.0
+
+[generators]
+cmake
