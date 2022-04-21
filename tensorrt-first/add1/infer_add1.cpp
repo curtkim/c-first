@@ -1,11 +1,9 @@
 #include <iostream>
-#include <fstream>
 #include <NvInfer.h>
 #include <memory>
 #include <NvOnnxParser.h>
 #include <vector>
 #include <algorithm>
-#include <numeric>
 
 
 // utilities ----------------------------------------------------------------------------------------------------------
@@ -81,6 +79,7 @@ int main(){
   {
     cudaFree(buf);
   }
+
   delete context;
   delete engine;
   delete config;
