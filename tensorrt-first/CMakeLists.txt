@@ -22,12 +22,12 @@ foreach(FILE
         mnist.caffemodel
         mnist_mean.binaryproto
         7.pgm)
-    file(COPY ${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
+    file(COPY mnist_caffe/${FILE} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 endforeach()
 
-add_executable(infer_mnist infer_mnist.cpp
+add_executable(infer_mnist mnist_caffe/infer_mnist.cpp
     common/logger.cpp
-    sample_mnist.cpp
+    mnist_caffe/sample_mnist.cpp
 )
 target_include_directories(infer_mnist PRIVATE common)
 target_include_directories(infer_mnist PRIVATE /usr/local/cuda/include)

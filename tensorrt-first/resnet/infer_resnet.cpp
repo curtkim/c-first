@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <numeric>
 
-const char* IMAGENET_CLASSES_FILE = "imagenet_classes.txt";
+const char* IMAGENET_CLASSES_FILE = "resnet/imagenet_classes.txt";
 
 
 // utilities ----------------------------------------------------------------------------------------------------------

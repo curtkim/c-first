@@ -3,10 +3,10 @@
 - lib file(ex libnvinfer.so) is located at /lib/x86_64-linux-gnu/libnvinfer.so
 - target_link_directories에 tensorrt_dir/lib 포함시킬 필요없다.
 
-## main
+## infer_mnist
     caffemodel을 로딩해서 TensorRT를 실행한다. 
 
-    cmake-build-debug/bin/main
+    cmake-build-debug/bin/infer_mnist
 
     [04/12/2022-13:58:25] [I] Building and running a GPU inference engine for MNIST
     [04/12/2022-13:58:25] [I] [TRT] [MemUsageChange] Init CUDA: CPU +458, GPU +0, now: CPU 469, GPU 1279 (MiB)
