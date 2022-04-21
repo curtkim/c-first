@@ -214,6 +214,7 @@ int main(int argc, char* argv[])
       output_dims.emplace_back(engine->getBindingDimensions(i));
     }
   }
+
   if (input_dims.empty() || output_dims.empty())
   {
     std::cerr << "Expect at least one input and one output for network\n";

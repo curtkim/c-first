@@ -1,1 +1,2 @@
 resnet/resnet50.onnx
+**/*.onnx
