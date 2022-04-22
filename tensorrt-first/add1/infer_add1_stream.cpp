@@ -12,7 +12,6 @@ class Logger : public nvinfer1::ILogger
 {
 public:
     void log(Severity severity, const char* msg) noexcept override {
-      // remove this 'if' if you need more logged info
       if ((severity == Severity::kERROR) || (severity == Severity::kINTERNAL_ERROR)) {
         std::cout << msg << "\n";
       }
@@ -32,11 +31,7 @@ size_t getSizeByDim(const nvinfer1::Dims& dims)
 }
 
 
-int main(){
-  const int N = 4;
-  float input[N] = {1., 2., 3., 4.};
-  float output[N] = {0., 0., 0., 0.};
-  const char* model_path = "../../add1/add1.onnx";
+nvinfer1::ICudaEngine* build_engine(const char* model_path){
 
   const auto explicitBatch = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kEXPLICIT_BATCH);
 
@@ -47,13 +42,29 @@ int main(){
 
   if(!parser->parseFromFile(model_path, static_cast<int>(nvinfer1::ILogger::Severity::kINFO))){
     std::cerr << "Error";
-    return 1;
+    exit(EXIT_FAILURE);
   }
   config->setMaxWorkspaceSize(1ULL << 30);
   config->setFlag(nvinfer1::BuilderFlag::kFP16);
   builder->setMaxBatchSize(1);
-
   nvinfer1::ICudaEngine* engine = builder->buildEngineWithConfig(*network, *config);
+
+  delete config;
+  delete parser;
+  delete network;
+  delete builder;
+
+  return engine;
+}
+
+
+int main(){
+  const int N = 4;
+  float input[N] = {1., 2., 3., 4.};
+  float output[N] = {0., 0., 0., 0.};
+  const char* model_path = "../../add1/add1.onnx";
+
+  nvinfer1::ICudaEngine* engine = build_engine(model_path);
   std::cout << "make engine\n";
 
   nvinfer1::IExecutionContext* context = engine->createExecutionContext();
@@ -89,8 +100,4 @@ int main(){
 
   delete context;
   delete engine;
-  delete config;
-  delete parser;
-  delete network;
-  delete builder;
 }

@@ -12,10 +12,7 @@ class Logger : public nvinfer1::ILogger
 {
 public:
     void log(Severity severity, const char* msg) noexcept override {
-      // remove this 'if' if you need more logged info
-      if ((severity == Severity::kERROR) || (severity == Severity::kINTERNAL_ERROR)) {
-        std::cout << msg << "\n";
-      }
+      std::cout << msg << "\n";
     }
 } gLogger;
 
@@ -63,9 +60,9 @@ int main(){
     cudaMalloc(&buffers[i], binding_size);
 
     if( engine->bindingIsInput(i))
-      std::cout << "input: " << binding_size << "\n";
+      std::cout << "input: " << engine->getBindingName(i) << " " << binding_size << "\n";
     else
-      std::cout << "output: " << binding_size << "\n";
+      std::cout << "output: " << engine->getBindingName(i) << " " << binding_size << "\n";
   }
 
   cudaMemcpy(buffers[0], input, N * sizeof(float), cudaMemcpyHostToDevice);
