@@ -1,13 +1,5 @@
-// workaround issue between gcc >= 4.7 and cuda 5.5
-#if (defined __GNUC__) && (__GNUC__>4 || __GNUC_MINOR__>=7)
-#undef _GLIBCXX_ATOMIC_BUILTINS
-#undef _GLIBCXX_USE_INT128
-#endif
-
 #include <cuda.h>
-#include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
-
 
 #include <iostream>
 #include <Eigen/Dense>
@@ -35,8 +27,7 @@ struct redux {
 
 
 template<typename Kernel, typename Input, typename Output>
-__global__
-EIGEN_HIP_LAUNCH_BOUNDS_1024
+__global__ EIGEN_HIP_LAUNCH_BOUNDS_1024
 void run_on_gpu_meta_kernel(const Kernel ker, int n, const Input* in, Output* out)
 {
     int i = threadIdx.x + blockIdx.x*blockDim.x;
@@ -93,7 +84,6 @@ void run_on_gpu(const Kernel& ker, int n, const Input& in, Output& out)
 }
 
 int main() {
-
     Eigen::VectorXf in, out;
     int nthreads = 100;
 
@@ -102,6 +92,5 @@ int main() {
     out.setConstant(data_size, -1);
 
     run_on_gpu(redux<Eigen::Array4f>(), nthreads, in, out);
-
     return 0;
 }

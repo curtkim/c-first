@@ -1,9 +1,3 @@
-// workaround issue between gcc >= 4.7 and cuda 5.5
-#if (defined __GNUC__) && (__GNUC__ > 4 || __GNUC_MINOR__ >= 7)
-#undef _GLIBCXX_ATOMIC_BUILTINS
-#undef _GLIBCXX_USE_INT128
-#endif
-
 #include <Eigen/Dense>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>

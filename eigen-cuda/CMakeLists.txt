@@ -7,7 +7,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 
-foreach(APP 01_first 02_second)
+foreach(APP 01_first 02_lambda_kernel_thrust)
     add_executable(${APP} ${APP}.cu)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PRIVATE /usr/local/cuda/lib64)
@@ -26,3 +26,5 @@ foreach(APP 01_first 02_second)
             # 를 추가해서 error no를 보고
             # --diag_suppress에 추가한다.
 endforeach()
+
+add_executable(03_launch 03_launch.cpp 03_kernel.cu)
