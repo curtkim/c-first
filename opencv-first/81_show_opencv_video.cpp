@@ -157,6 +157,10 @@ static void init_opengl(int w, int h) {
 
 int main(int argc, char **argv)
 {
+    char tmp[256];
+    getcwd(tmp, 256);
+    cout << "Current working directory: " << tmp << endl;
+
     cv::VideoCapture capture("../../target_1280.mp4");
     if (!capture.isOpened()) {
         cout << "Cannot open video: " << endl;

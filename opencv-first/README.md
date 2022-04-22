@@ -1,3 +1,10 @@
+## note
+- gcc9에서 conan install과정에서 에러가 발생해서 gcc10으로 변경
+
+    conan install .. --build=ffmpeg --build=opencv --profile gcc10
+
+
+## ldd
 
     ldd sobel
         linux-vdso.so.1 (0x00007fff03f36000)
