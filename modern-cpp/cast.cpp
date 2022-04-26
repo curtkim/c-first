@@ -27,7 +27,7 @@ int main(){
   // static_pointer_cast to go up class hierarchy
   basePtr = std::static_pointer_cast<Base>(derivedPtr);
   std::cout << "Base pointer to derived says: ";
-  basePtr->f();
+  basePtr->f(); // I am derived!
 
   // dynamic_pointer_cast to go down/across class hierarchy
   auto downcastedPtr = std::dynamic_pointer_cast<Derived>(basePtr);

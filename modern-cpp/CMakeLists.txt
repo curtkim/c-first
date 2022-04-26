@@ -32,11 +32,13 @@ foreach (APP cpp17 from_chars set_extract_means_move map_try_emplace map_insert_
 endforeach ()
 
 ### c++20
-foreach (APP utility stop_token_test constexpr_dyna_alloc)
+foreach (APP utility stop_token_test constexpr_dyna_alloc )
     add_executable(${APP} cpp20/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
     target_link_libraries(${APP} PUBLIC pthread)
 endforeach ()
+
+add_executable(initialized initialized.cpp)
 
 add_executable(atomic_reference_test cpp20/atomic_reference_test.cpp)
 target_compile_features(atomic_reference_test PUBLIC cxx_std_20)
@@ -84,8 +86,8 @@ endforeach ()
 
 
 foreach (APP
-        debug_release
-        generic
+        debug_release_NDEBUG
+        generic                 # generic함수에서 return type에 대한 부분
         cast
         struct_test
         main
