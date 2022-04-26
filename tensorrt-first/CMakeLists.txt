@@ -45,10 +45,7 @@ target_link_libraries(infer_resnet PUBLIC ${CONAN_LIBS} ${TENSORRT_LIBS} ${CUDA_
     nppc nppig nppisu nppial nppidei nppim nppitc nppicc nppif nppist npps)
 
 foreach(APP infer_add1 infer_add1_stream)
-    add_executable(${APP} add1/${APP}.cpp
-            common/logger.cpp
-            )
-    target_include_directories(${APP} PRIVATE common)
+    add_executable(${APP} add1/${APP}.cpp)
     target_include_directories(${APP} PRIVATE /usr/local/cuda/include)
     target_link_directories(${APP} PUBLIC /usr/local/cuda/lib64) #${TENSORRT_DIR}/lib)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} ${TENSORRT_LIBS} ${CUDA_LIBS} rt dl pthread)
