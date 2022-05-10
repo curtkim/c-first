@@ -142,7 +142,7 @@ foreach (APP type_erasure_with_template type_erasure_with_oop) #type_erasure_wit
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach ()
 
-foreach (APP equal)
+foreach (APP equal search search_constexpr)
     add_executable(${APP} algorithm/${APP}.cpp)
     target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach ()
