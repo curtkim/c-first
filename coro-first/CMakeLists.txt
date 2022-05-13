@@ -18,6 +18,8 @@ foreach(APP
         41_helloworld
         42_helloworld_return
         43_helloworld_yield
+
+        51_hello_task
         )
     add_executable(${APP} ${APP}.cpp)
     target_compile_options(${APP} PRIVATE -fcoroutines)
