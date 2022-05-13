@@ -32,9 +32,17 @@ foreach(APP
 
         21_io_epoll_basic
         22_io_epoll_test
-
         )
     add_executable(${APP} ${APP}.cpp)
     target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )
     target_compile_features(${APP} PUBLIC cxx_std_17)
+endforeach()
+
+
+foreach(APP
+        99_sender_receiver_impl
+        )
+    add_executable(${APP} ${APP}.cpp)
+    target_link_libraries(${APP} PUBLIC ${CONAN_LIBS} )
+    target_compile_features(${APP} PUBLIC cxx_std_20)
 endforeach()
