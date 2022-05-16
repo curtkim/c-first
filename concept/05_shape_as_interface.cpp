@@ -1,4 +1,10 @@
 // from https://www.cppfiddler.com/2019/06/09/concept-based-interfaces/
+// Shape
+// ---------
+// Rectangle
+// Square
+// Circle
+
 #include <concepts>
 #include <cstdio>
 
@@ -51,21 +57,21 @@ struct Circle : ShapeBase<Circle<T>>
 
 
 template <Shape S>
-void foo(S s){
+void print_area(S s){
   printf("%f\n", s.area());
 }
 
 int main()
 {
   Rectangle r;
-  foo(r);
+  print_area(r);
 
   Square<int> s{1};
-  foo(s);
+  print_area(s);
 
   Circle<float> c;
   c.radius = 1.0;
-  foo(c);
+  print_area(c);
 
   return 0;
 }

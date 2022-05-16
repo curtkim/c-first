@@ -6,6 +6,7 @@ conan_basic_setup()
 
 foreach(APP
         01_hashable 02_test-predicate 03_norm 04_tick_tok_with_hana 05_shape_as_interface
+        06_type_check_with_concept
         11_std_regular 12_not_copyable
         13_decap_equiv
         21_simple_requirements 22_type_requirements 23_compound_requirements 24_nested_requirements
