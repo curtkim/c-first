@@ -1,0 +1,7 @@
+[requires]
+blend2d/0.9
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
